@@ -1,9 +1,9 @@
 /* NOTIFICATIONS */
 create type public.notification_type as enum (
-	'guide_pending',
-	'guide_changes_requested',
-	'guide_approved',
-	'guide_rejected',
+	'howto_pending',
+	'howto_changes_requested',
+	'howto_approved',
+	'howto_rejected',
 	'event_pending',
 	'event_changes_requested',
 	'event_approved',
@@ -21,25 +21,25 @@ create table public.notifications (
 	data jsonb default '{}'::jsonb not null,
 	read boolean not null default false
 );
-create or replace function public.handle_guides_moderation_notification() returns trigger as $$
+create or replace function public.handle_howtos_moderation_notification() returns trigger as $$
 declare notification_type notification_type;
-begin if new.status = 'pending' then notification_type := 'guide_pending';
-elsif new.status = 'changes_requested' then notification_type := 'guide_changes_requested';
-elsif new.status = 'approved' then notification_type := 'guide_approved';
-elsif new.status = 'rejected' then notification_type := 'guide_rejected';
+begin if new.status = 'pending' then notification_type := 'howto_pending';
+elsif new.status = 'changes_requested' then notification_type := 'howto_changes_requested';
+elsif new.status = 'approved' then notification_type := 'howto_approved';
+elsif new.status = 'rejected' then notification_type := 'howto_rejected';
 end if;
 insert into public.notifications (user_id, type, data)
 values (
 		new.user_id,
 		notification_type,
-		jsonb_build_object('guide_id', new.guide_id)
+		jsonb_build_object('howto_id', new.howto_id)
 	);
 return new;
 end;
 $$ language plpgsql security definer;
-create trigger guide_notification_trigger
+create trigger howto_notification_trigger
 after
-insert on public.guides_moderation for each row execute function public.handle_guides_moderation_notification();
+insert on public.howtos_moderation for each row execute function public.handle_howtos_moderation_notification();
 create or replace function public.handle_events_moderation_notification() returns trigger as $$
 declare notification_type notification_type;
 begin if new.status = 'pending' then notification_type := 'event_pending';

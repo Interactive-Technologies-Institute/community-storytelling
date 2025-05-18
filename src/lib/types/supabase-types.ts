@@ -8,7 +8,7 @@ export type Database = MergeDeep<
 	{
 		public: {
 			Tables: {
-				guides: {
+				howtos: {
 					Row: {
 						steps: Step[];
 					};
@@ -54,11 +54,11 @@ export type Database = MergeDeep<
 						tag: string;
 					};
 				};
-				guides_view: {
+				howtos_view: {
 					Row: {
 						description: string;
-						difficulty: Database['public']['Enums']['guide_difficulty'];
-						duration: Database['public']['Enums']['guide_duration'];
+						difficulty: Database['public']['Enums']['how_to_difficulty'];
+						duration: Database['public']['Enums']['how_to_duration'];
 						fts: unknown;
 						id: number;
 						image: string;
@@ -71,7 +71,7 @@ export type Database = MergeDeep<
 						user_id: string;
 					};
 				};
-				guides_tags: {
+				howtos_tags: {
 					Row: {
 						count: number;
 						tag: string;
@@ -87,10 +87,10 @@ export type Database = MergeDeep<
 						user_id: string;
 					};
 				};
-				latest_guides_moderation: {
+				latest_howtos_moderation: {
 					Row: {
 						comment: string;
-						guide_id: number;
+						howto_id: number;
 						id: number;
 						inserted_at: string;
 						status: Database['public']['Enums']['moderation_status'];
@@ -129,19 +129,6 @@ export type Database = MergeDeep<
 						type: string;
 						updated_at: string;
 					};
-				};
-			};
-			Functions: {
-				get_guides_ordered_by_useful: {
-					Args: {
-						sort_order: string;
-						search: string;
-						tag_filters: string[];
-						user_id?: string;
-						filter_liked: boolean;
-						filter_bookmarked: boolean;
-					};
-					Returns: Database['public']['Views']['guides_view']['Row'][];
 				};
 			};
 		};

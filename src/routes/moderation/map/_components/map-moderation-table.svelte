@@ -9,7 +9,7 @@
 	import { writable } from 'svelte/store';
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import MapModerationActions from './map-moderation-actions.svelte';
-	import MapModerationStatusCell from './map-moderation-status-cell.svelte';
+	import HowToModerationStatusCell from './map-moderation-status-cell.svelte';
 
 	export let mapPins: MapPinWithModeration[];
 	export let updateModerationForm: SuperValidated<Infer<UpdateModerationInfoSchema>>;
@@ -37,7 +37,7 @@
 			header: 'Status',
 			cell: ({ value, row }) => {
 				if (row.isData()) {
-					return createRender(MapModerationStatusCell, {
+					return createRender(HowToModerationStatusCell, {
 						status: value,
 					});
 				}

@@ -29,28 +29,28 @@ export const load = async (event) => {
 
 		if (userProfile.avatar) {
 			userProfile.avatar = event.locals.supabase.storage
-				.from('users')
+				.from('avatars')
 				.getPublicUrl(userProfile.avatar).data.publicUrl;
 		}
 
 		return userProfile;
 	}
 
-	async function getGuides(): Promise<{ id: number; label: string }[]> {
-		const { data: guides, error: guidesError } = await event.locals.supabase
-			.from('guides_view')
+	async function getHowTos(): Promise<{ id: number; label: string }[]> {
+		const { data: howTos, error: howTosError } = await event.locals.supabase
+			.from('howtos_view')
 			.select('id, label:title')
 			.order('moderation_status', { ascending: true })
 			.order('inserted_at', { ascending: false })
 			.eq('user_id', id);
 
-		if (guidesError) {
-			const errorMessage = 'Error fetching guides, please try again later.';
+		if (howTosError) {
+			const errorMessage = 'Error fetching how tos, please try again later.';
 			setFlash({ type: 'error', message: errorMessage }, event.cookies);
 			return error(500, errorMessage);
 		}
 
-		return guides;
+		return howTos;
 	}
 
 	async function getEvents(): Promise<{ id: number; label: string }[]> {
@@ -88,7 +88,7 @@ export const load = async (event) => {
 
 	return {
 		userProfile: await getUserProfile(),
-		guides: await getGuides(),
+		howTos: await getHowTos(),
 		events: await getEvents(),
 		mapPin: await getMapPin(),
 	};

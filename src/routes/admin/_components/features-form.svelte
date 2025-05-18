@@ -29,17 +29,17 @@
 			<div class="max-w-2xl space-y-4">
 				<Form.Field
 					{form}
-					name="guides"
+					name="howtos"
 					class="flex flex-row items-center justify-between rounded-lg border p-4"
 				>
 					<Form.Control let:attrs>
 						<div class="space-y-0.5">
-							<Form.Label>Guides</Form.Label>
+							<Form.Label>How Tos</Form.Label>
 							<Form.Description>
-								Enable this feature to allow users to create and share guides.
+								Enable this feature to allow users to create and share how-to guides.
 							</Form.Description>
 						</div>
-						<Switch includeInput {...attrs} bind:checked={$formData.guides} />
+						<Switch includeInput {...attrs} bind:checked={$formData.howtos} />
 					</Form.Control>
 				</Form.Field>
 				<Form.Field
@@ -66,7 +66,7 @@
 						<div class="space-y-0.5">
 							<Form.Label>Map</Form.Label>
 							<Form.Description>
-								Enable this feature to create a map of your community.
+								Enable this feature to allow users to create and share maps.
 							</Form.Description>
 						</div>
 						<Switch includeInput {...attrs} bind:checked={$formData.map} />
@@ -74,17 +74,17 @@
 				</Form.Field>
 				<Form.Field
 					{form}
-					name="docs"
+					name="academy"
 					class="flex flex-row items-center justify-between rounded-lg border p-4"
 				>
 					<Form.Control let:attrs>
 						<div class="space-y-0.5">
-							<Form.Label>Docs</Form.Label>
+							<Form.Label>Academy</Form.Label>
 							<Form.Description>
-								Enable this feature to create and share documentation.
+								Enable this feature to allow users to create and share courses.
 							</Form.Description>
 						</div>
-						<Switch includeInput {...attrs} bind:checked={$formData.docs} />
+						<Switch includeInput {...attrs} bind:checked={$formData.academy} />
 					</Form.Control>
 				</Form.Field>
 			</div>

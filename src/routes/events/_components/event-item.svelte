@@ -20,8 +20,8 @@
 	$: imageUrl = $page.data.supabase.storage.from('events').getPublicUrl(event.image).data.publicUrl;
 </script>
 
-<a href="/events/{event.id}" class="h-full">
-	<Card class="relative flex h-full flex-col overflow-hidden">
+<a href="/events/{event.id}">
+	<Card class="relative overflow-hidden">
 		<AspectRatio ratio={3 / 2}>
 			{#if imageUrl}
 				<img src={imageUrl} alt="Event Cover" class="h-full w-full object-cover" />
@@ -35,7 +35,7 @@
 				{/if}
 			{/if}
 		</AspectRatio>
-		<div class="flex flex-1 flex-col px-4 py-3">
+		<div class="flex flex-col px-4 py-3">
 			<div class="mb-5">
 				<p class="font-medium leading-none">
 					{dayjs(event.date).format(

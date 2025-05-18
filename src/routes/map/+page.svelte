@@ -41,13 +41,10 @@
 	<Map bind:lng={$lng} bind:lat={$lat} bind:zoom={$zoom}>
 		{#each filteredUsers as user (user.id)}
 			{#if user?.pin}
-				{@const imageUrl = user.avatar
-					? data.supabase.storage.from('users').getPublicUrl(user.avatar).data.publicUrl
-					: undefined}
 				<Marker lng={user.pin.lng} lat={user.pin.lat}>
 					<div class="rounded-full border-2 border-primary bg-foreground">
 						<Avatar.Root class="h-10 w-10">
-							<Avatar.Image src={imageUrl} alt={user.display_name} />
+							<Avatar.Image src={user.avatar} alt={user.display_name} />
 							<Avatar.Fallback>{firstAndLastInitials(user.display_name)}</Avatar.Fallback>
 						</Avatar.Root>
 					</div>
@@ -55,7 +52,7 @@
 						<Card class="max-w-80 px-4">
 							<div class="flex flex-row items-center gap-x-2 py-4">
 								<Avatar.Root class="h-12 w-12">
-									<Avatar.Image src={imageUrl} alt={user.display_name} />
+									<Avatar.Image src={user.avatar} alt={user.display_name} />
 									<Avatar.Fallback>{firstAndLastInitials(user.display_name)}</Avatar.Fallback>
 								</Avatar.Root>
 								<div>

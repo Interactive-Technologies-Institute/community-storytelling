@@ -79,7 +79,7 @@ public = true
 allowed_mime_types = ["image/*"]
 # objects_path = "./seed/branding"
 
-[storage.buckets.guides]
+[storage.buckets.howtos]
 public = true
 allowed_mime_types = ["image/*"]
 objects_path = "./seed/placeholders"

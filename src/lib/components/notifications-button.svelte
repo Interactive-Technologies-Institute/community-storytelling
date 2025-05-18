@@ -18,10 +18,10 @@
 	});
 
 	const notificationTypeToLabel: Record<NotificationType, string> = {
-		guide_pending: 'Your guide is pending moderation',
-		guide_changes_requested: 'Your guide needs changes',
-		guide_approved: 'Your guide has been approved',
-		guide_rejected: 'Your guide has been rejected',
+		howto_pending: 'Your how to is pending moderation',
+		howto_changes_requested: 'Your how to needs changes',
+		howto_approved: 'Your how to has been approved',
+		howto_rejected: 'Your how to has been rejected',
 		event_pending: 'Your event is pending moderation',
 		event_changes_requested: 'Your event needs changes',
 		event_approved: 'Your event has been approved',
@@ -34,11 +34,11 @@
 
 	function getNotificationHref(notification: Notification): string {
 		switch (notification.type) {
-			case 'guide_pending':
-			case 'guide_changes_requested':
-			case 'guide_approved':
-			case 'guide_rejected':
-				return `/guides/${notification.data.guide_id ?? 'error'}`;
+			case 'howto_pending':
+			case 'howto_changes_requested':
+			case 'howto_approved':
+			case 'howto_rejected':
+				return `/how-to/${notification.data.howto_id ?? 'error'}`;
 			case 'event_pending':
 			case 'event_changes_requested':
 			case 'event_approved':

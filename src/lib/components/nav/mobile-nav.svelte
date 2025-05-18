@@ -27,28 +27,28 @@
 		</a>
 		<ScrollArea orientation="both" class="my-4 h-[calc(100vh-8rem)] pb-10">
 			<nav class="flex flex-col items-start gap-y-4 font-medium">
-				<FeatureWrapper feature="docs">
+				<FeatureWrapper feature="academy">
 					<a
-						href="/docs"
+						href="/academy"
 						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
-							$page.url.pathname.startsWith('/docs') ? 'text-foreground' : 'text-foreground/60'
+							$page.url.pathname.startsWith('/academy') ? 'text-foreground' : 'text-foreground/60'
 						)}
 					>
-						ocs
+						Academy
 					</a>
 				</FeatureWrapper>
-				<FeatureWrapper feature="guides">
+				<FeatureWrapper feature="howtos">
 					<a
-						href="/guides"
+						href="/how-to"
 						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
-							$page.url.pathname.startsWith('/guides') ? 'text-foreground' : 'text-foreground/60'
+							$page.url.pathname.startsWith('/how-to') ? 'text-foreground' : 'text-foreground/60'
 						)}
 					>
-						Guides
+						How To
 					</a>
 				</FeatureWrapper>
 				<FeatureWrapper feature="events">
@@ -73,6 +73,18 @@
 						)}
 					>
 						Map
+					</a>
+				</FeatureWrapper>
+				<FeatureWrapper feature="stories">
+					<a
+						href="/story"
+						on:click={() => (open = false)}
+						class={cn(
+							'transition-colors hover:text-foreground/80',
+							$page.url.pathname.startsWith('/story') ? 'text-foreground' : 'text-foreground/60'
+						)}
+					>
+						Story
 					</a>
 				</FeatureWrapper>
 			</nav>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PageHeader from '@/components/page-header.svelte';
+	import SortButton from '@/components/sort-button.svelte';
 	import TagFilterButton from '@/components/tag-filter-button.svelte';
 	import { Button } from '@/components/ui/button';
 	import { Input } from '@/components/ui/input';
@@ -24,7 +25,7 @@
 	<div class="flex flex-1 flex-row gap-x-2 sm:gap-x-4 md:flex-auto">
 		<Input placeholder="Search..." class="flex-1 sm:max-w-64" bind:value={$search}></Input>
 		<TagFilterButton tags={data.tags} bind:filterValues={$tags} />
-		<!-- <SortButton /> -->
+		<SortButton />
 	</div>
 	<Button href="/events/create" class="w-10 p-0 sm:w-auto sm:px-4 sm:py-2">
 		<PlusCircle class="h-4 w-4 sm:mr-2" />

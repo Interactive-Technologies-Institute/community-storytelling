@@ -1,6 +1,6 @@
 import type { User } from '@supabase/supabase-js';
 
-export type Feature = 'map' | 'guides' | 'events' | 'docs';
+export type Feature = 'map' | 'howtos' | 'events' | 'academy' | 'stories';
 
 export type UserRole = 'user' | 'moderator' | 'admin';
 
@@ -54,11 +54,11 @@ export type MapPinWithModeration = MapPin & { moderation: ModerationInfo[] };
 
 export type UserProfileWithPin = UserProfile & { pin: MapPin | null };
 
-export type GuideDifficulty = 'easy' | 'medium' | 'hard';
+export type HowToDifficulty = 'easy' | 'medium' | 'hard';
 
-export type GuideDuration = 'short' | 'medium' | 'long';
+export type HowToDuration = 'short' | 'medium' | 'long';
 
-export type Guide = {
+export type HowTo = {
 	id: number;
 	inserted_at: string;
 	updated_at: string;
@@ -67,17 +67,17 @@ export type Guide = {
 	description: string;
 	image: string;
 	tags: string[];
-	difficulty: GuideDifficulty;
-	duration: GuideDuration;
-	steps: GuideStep[];
+	difficulty: HowToDifficulty;
+	duration: HowToDuration;
+	steps: HowToStep[];
 	moderation_status: ModerationStatus;
 };
 
-export type GuideWithAuthor = Guide & { author: UserProfile };
+export type HowToWithAuthor = HowTo & { author: UserProfile };
 
-export type GuideWithModeration = Guide & { moderation: ModerationInfo[] };
+export type HowToWithModeration = HowTo & { moderation: ModerationInfo[] };
 
-type GuideStep = {
+type HowToStep = {
 	title: string;
 	description: string;
 	image: string;
@@ -113,10 +113,10 @@ export type EventWithAuthor = Event & { author: UserProfile };
 export type EventWithModeration = Event & { moderation: ModerationInfo[] };
 
 export type NotificationType =
-	| 'guide_pending'
-	| 'guide_changes_requested'
-	| 'guide_approved'
-	| 'guide_rejected'
+	| 'howto_pending'
+	| 'howto_changes_requested'
+	| 'howto_approved'
+	| 'howto_rejected'
 	| 'event_pending'
 	| 'event_changes_requested'
 	| 'event_approved'
@@ -133,4 +133,37 @@ export type Notification = {
 	type: NotificationType;
 	data: Record<string, string>;
 	read: boolean;
+};
+
+export type CommunityRole = 'community' | 'technician';
+
+export type Story = {
+	id: number;
+	storyteller: string;
+	user_id: string;
+	inserted_at: string;
+	updated_at: string;
+	image: string[];
+	tags: string[];
+	role: CommunityRole;
+	transcription: string;
+	recording_link: string;
+	pub_story_text: string[];
+	pub_quotes: string[];
+	pub_selected_images: string[];
+	insights_gpt: string;
+	template: string;
+	moderation_status: ModerationStatus;
+};
+
+export type StoryWithTranscription = {
+	recording_link: string;
+	transcription: string;
+};
+
+export type StoryWithInsights = {
+	role: CommunityRole;
+	recording_link: string;
+	insights_gpt: string;
+	transcription: string;
 };

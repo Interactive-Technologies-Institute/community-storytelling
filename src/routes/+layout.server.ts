@@ -10,7 +10,9 @@ export const load = loadFlash(async ({ locals: { supabase, safeGetSession }, coo
 		if (data) {
 			profile = data;
 			if (profile.avatar) {
-				profile.avatar = supabase.storage.from('users').getPublicUrl(profile.avatar).data.publicUrl;
+				profile.avatar = supabase.storage
+					.from('avatars')
+					.getPublicUrl(profile.avatar).data.publicUrl;
 			}
 		}
 	}

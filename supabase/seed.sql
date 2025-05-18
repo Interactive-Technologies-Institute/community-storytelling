@@ -57,8 +57,8 @@ INSERT INTO auth.identities (
 			current_timestamp
 		from auth.users
 	);
--- Guide
-insert into public.guides (
+-- How To
+insert into public.howtos (
 		user_id,
 		title,
 		description,

@@ -58,8 +58,8 @@
 <Dialog.Root bind:open={openApproveDialog}>
 	<Dialog.Content class="sm:max-w-[425px]">
 		<Dialog.Header>
-			<Dialog.Title>Approve Map Pin</Dialog.Title>
-			<Dialog.Description>Are you sure you want to approve this Map Pin?</Dialog.Description>
+			<Dialog.Title>Approve How To</Dialog.Title>
+			<Dialog.Description>Are you sure you want to approve this How To?</Dialog.Description>
 		</Dialog.Header>
 		<form method="POST" use:enhance>
 			<input type="hidden" name="ref_id" value={id} />
@@ -84,8 +84,8 @@
 <Dialog.Root bind:open={openRejectDialog}>
 	<Dialog.Content class="sm:max-w-[425px]">
 		<Dialog.Header>
-			<Dialog.Title>Reject Map Pin</Dialog.Title>
-			<Dialog.Description>Are you sure you want to reject this Map Pin?</Dialog.Description>
+			<Dialog.Title>Reject How To</Dialog.Title>
+			<Dialog.Description>Are you sure you want to reject this How To?</Dialog.Description>
 		</Dialog.Header>
 		<form method="POST" use:enhance>
 			<input type="hidden" name="ref_id" value={id} />
@@ -112,7 +112,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Request Changes</Dialog.Title>
 			<Dialog.Description
-				>Are you sure you want to request changes for this Map Pin?</Dialog.Description
+				>Are you sure you want to request changes for this How To?</Dialog.Description
 			>
 		</Dialog.Header>
 		<form method="POST" use:enhance>

@@ -13,26 +13,26 @@
 		<span class="font-bold"> {$page.data.branding.name} </span>
 	</a>
 	<nav class="flex items-center space-x-6 text-sm font-medium">
-		<FeatureWrapper feature="docs">
+		<FeatureWrapper feature="academy">
 			<a
-				href="/docs"
+				href="/academy"
 				class={cn(
 					'transition-colors hover:text-foreground/80',
-					$page.url.pathname.startsWith('/docs') ? 'text-foreground' : 'text-foreground/60'
+					$page.url.pathname.startsWith('/academy') ? 'text-foreground' : 'text-foreground/60'
 				)}
 			>
-				Docs
+				Academy
 			</a>
 		</FeatureWrapper>
-		<FeatureWrapper feature="guides">
+		<FeatureWrapper feature="howtos">
 			<a
-				href="/guides"
+				href="/how-to"
 				class={cn(
 					'transition-colors hover:text-foreground/80',
-					$page.url.pathname.startsWith('/guides') ? 'text-foreground' : 'text-foreground/60'
+					$page.url.pathname.startsWith('/how-to') ? 'text-foreground' : 'text-foreground/60'
 				)}
 			>
-				Guides
+				How To
 			</a>
 		</FeatureWrapper>
 		<FeatureWrapper feature="events">
@@ -55,6 +55,17 @@
 				)}
 			>
 				Map
+			</a>
+		</FeatureWrapper>
+		<FeatureWrapper feature="stories">
+			<a
+				href="/story"
+				class={cn(
+					'transition-colors hover:text-foreground/80',
+					$page.url.pathname.startsWith('/story') ? 'text-foreground' : 'text-foreground/60'
+				)}
+			>
+				Story
 			</a>
 		</FeatureWrapper>
 	</nav>

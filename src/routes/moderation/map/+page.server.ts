@@ -10,7 +10,7 @@ export const load = async (event) => {
 	async function getMapPins(): Promise<MapPinWithModeration[]> {
 		const query = event.locals.supabase
 			.from('map_pins_view')
-			.select('*, moderation:latest_map_pins_moderation(status, inserted_at, comment)')
+			.select('*, moderation:map_pins_moderation(status, inserted_at, comment)')
 			.order('updated_at', { ascending: false });
 
 		const { data: mapPins, error: mapPinsError } = await query;
