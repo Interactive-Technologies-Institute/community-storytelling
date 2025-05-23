@@ -7,10 +7,10 @@
 
 <svelte:head>
 	<title>Criar história</title>
-	<meta name="description" content="Collect community stories" />
+	<meta name="description" content="Introduce Yourself!" />
 </svelte:head>
 
-<PageHeader title={'História da Comunidade'} subtitle="" />
+<PageHeader title={'Introdução'} subtitle="" />
 <div class="container mx-auto space-y-10 pb-10">
 	<StoryForm data={data.createForm} />
 </div>

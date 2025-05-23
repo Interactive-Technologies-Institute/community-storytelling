@@ -9,7 +9,7 @@
 		type UpdateStoryInsightsSchema,
 	} from '@/schemas/story-insights';
 	import { PencilLine } from 'lucide-svelte';
-	import OpenAI from 'openai';
+	//import OpenAI from 'openai';
 	import { afterUpdate, onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
@@ -28,7 +28,7 @@
 
 	let updateStoryForm: HTMLFormElement;
 
-	const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
+	/*const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });*/
 	$: insights = '';
 	$: transcription = '';
 	$: submitting = false;
@@ -39,7 +39,7 @@
 	let community_text =
 		'Eu tenho uma transcrição de uma atendente e um cliente. A atendente faz as seguintes perguntas: Fale-nos de si (o seu nome, idade, bairro onde vive), Fale-nos de um problema que o Balcão o ajudou a resolver e das consequências desse problema, Diga-nos como o Balcão o ajudou a resolver o problema, especificando ao máximo os passos e todas as barreiras que enfrentou, Diz-nos como te sentiste quando o Balcão te ajudou, qual foi o impacto na tua vida?, Como resolverias isso se o Balcão não existisse? Seria mais fácil ou mais difícil? E a partir da transcrição, diga quais são os pontos fortes do balcão e quais pontos precisam ser melhorados. No máximo 3 de cada e escolha os mais importantes e relevantes.';
 
-	async function transcribe(audioFile: File) {
+	/* async function transcribe(audioFile: File) {
 		try {
 			const transcription = await openai.audio.transcriptions.create({
 				file: audioFile,
@@ -79,6 +79,7 @@
 			return null;
 		}
 	}
+	*/
 
 	const getIdentifier = (url: string) => {
 		const regex = /\/([^/]+)\.(mov|mp3|mp4|3gp|avi|mkv|flv|wmv|wav|ogg|aac)$/i;
@@ -99,6 +100,7 @@
 		return blob;
 	};
 
+	/*
 	onMount(async () => {
 		const formData = $formData.updateInsightsForm.data;
 
@@ -147,6 +149,8 @@
 			}
 		});
 	});
+
+	*/
 
 	async function submitUpdateStoryForm(event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) {
 		submitting = true;

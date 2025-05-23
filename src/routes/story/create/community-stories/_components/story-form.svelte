@@ -14,11 +14,10 @@
 	import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
 
 	const questions = [
-		'Fale-nos de si (o seu nome, idade, bairro onde vive)',
-		'Fale-nos de um problema que o Balcão o ajudou a resolver e das consequências desse problema',
-		'Diga-nos como o Balcão o ajudou a resolver o problema, especificando ao máximo os passos e todas as barreiras que enfrentou',
-		'Diz-nos como te sentiste quando o Balcão te ajudou, qual foi o impacto na tua vida?',
-		'Como resolverias isso se o Balcão não existisse? Seria mais fácil ou mais difícil?',
+		'Fale-nos de si (o seu nome, idade e, por exemplo, a característica que o/a mais descreve e/ou qual é o seu trabalho)',
+		'Diga-nos qual é o seu bairro e um aspeto que goste sobre viver lá',
+		'Se tiver, diga-nos sobre a sua relação com o bairro Horizonte?',
+		'Estás pronto/a para partilhares as tuas histórias?',
 	];
 
 	let altImg = 'Taking notes';
@@ -35,7 +34,7 @@
 
 	const { form: formData, errors } = form;
 
-	$formData.role = 'community';
+	$formData.role = 'introduction';
 
 	let recordingState = 'idle'; // states: 'idle', 'recorded'
 	let recordingType = ''; // 'video' or 'audio'
@@ -85,7 +84,7 @@
 		async function uploadVideo(video, type) {
 			const tempFormData = new FormData();
 			tempFormData.append('file', video);
-			tempFormData.append('upload_preset', 'bb-comunidade'); // Ensure you have an unsigned upload preset
+			tempFormData.append('upload_preset', 'curraleira'); // Ensure you have an unsigned upload preset
 
 			// Make the request to Cloudinary's upload endpoint
 			try {
@@ -166,7 +165,7 @@
 			<Form.Field {form} name="storyteller" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Qual é o nome da pessoa?</Form.Label
+						>Qual é o seu nome?</Form.Label
 					>
 					<span class="inline-block flex justify-center gap-2 pt-3">
 						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} required />
@@ -185,7 +184,7 @@
 			<Form.Field {form} name="tags" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Em qual Balcão você está?</Form.Label
+						>Em que Bairro estás situado?</Form.Label
 					>
 					<span class="inline-block flex justify-center gap-2 pt-3">
 						<Input class="w-auto" {...attrs} bind:value={$formData.tags} required />

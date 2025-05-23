@@ -16,9 +16,9 @@
 
 <PageHeader
 	title={data.story.storyteller}
-	subtitle={data.story.role === 'technician' ? 'Técnico' : 'Membro da Comunidade'}
+	subtitle={data.story.role === 'interview' ? 'Interview' : 'Introduction'}
 />
-<div class="container mx-auto space-y-10 pb-10">
+	<div class="container mx-auto space-y-10 pb-10">
 	{#if data.moderation.status !== 'approved'}
 		<ModerationBanner moderation={data.moderation} />
 	{/if}
@@ -43,7 +43,7 @@
 	{#if data.permission}
 		<div
 			class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
-		>
+		>	<!--
 			{#if data.story.transcription}
 				<Button href="/story/{data.story.id}/transcription" class="w-full sm:w-auto">
 					<Eye class="mr-2 h-4 w-4" />
@@ -72,6 +72,7 @@
 					Pré-visualizar história
 				</Button>
 			{/if}
+			-->
 			{#if data.story.user_id === data.user?.id && data.moderation.status === 'approved'}
 				<Button
 					variant="destructive"

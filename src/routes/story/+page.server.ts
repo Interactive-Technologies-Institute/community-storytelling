@@ -23,7 +23,7 @@ export const load = async (event) => {
 		}
 
 		if (tags && tags.length) {
-			query = query.overlaps('tags', tags);
+			query = query.contains('tags', tags);
 		}
 
 		const { data: stories, error: storiesError } = await query;

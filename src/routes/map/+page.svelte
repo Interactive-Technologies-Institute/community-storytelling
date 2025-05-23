@@ -1,4 +1,4 @@
-<script lang="ts">
+<!--<script lang="ts">
 	import ModerationBanner from '@/components/moderation-banner.svelte';
 	import * as Avatar from '@/components/ui/avatar';
 	import { Button } from '@/components/ui/button';
@@ -109,3 +109,49 @@
 		</div>
 	</Map>
 </div>
+-->
+
+<script>
+	// Range value bound to slider
+	let value = 2000;
+
+	// Total images (0 to 4)
+	const maxImages = 4;
+
+	// Compute current image path
+	$: imagePath = `map_images/image${value}.jpg`;
+</script>
+
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<div class="container">
+	<label>
+    	Ano selecionado: <strong>{value}</strong>
+  	</label>
+
+  	<input
+    	type="range"
+    	min="2000"
+    	max="2015"
+    	bind:value
+    	step="5"
+	/>
+
+  	<img src={imagePath} alt="Dynamic Image" class="preview-image" />
+</div>
+
+<style>
+	.container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+
+	.preview-image {
+		width: 800px;
+		height: auto;
+		border-radius: 8px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+</style>

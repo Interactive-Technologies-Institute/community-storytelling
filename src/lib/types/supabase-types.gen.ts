@@ -1153,7 +1153,7 @@ export type Database = {
         | "map_pin_changes_requested"
         | "map_pin_approved"
         | "map_pin_rejected"
-      story_role: "community" | "technician"
+      story_role: "introduction" | "interview"
       user_permission:
         | "user_roles.update"
         | "user_types.update"

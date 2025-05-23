@@ -25,12 +25,10 @@
 		<TagFilterButton tags={data.tags} bind:filterValues={$tags} />
 		<SortButton />
 	</div>
-	{#if data.permission}
-		<Button href="/story/create" class="w-10 p-0 sm:w-auto sm:px-4 sm:py-2">
-			<PlusCircle class="h-4 w-4 sm:mr-2" />
-			<span class="sr-only sm:not-sr-only">Create Story</span>
-		</Button>
-	{/if}
+	<Button href="/story/create" class="w-10 p-0 sm:w-auto sm:px-4 sm:py-2">
+		<PlusCircle class="h-4 w-4 sm:mr-2" />
+		<span class="sr-only sm:not-sr-only">Create Story</span>
+	</Button>
 </div>
 <div
 	class="container mx-auto grid grid-cols-1 gap-6 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"

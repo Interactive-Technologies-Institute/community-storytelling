@@ -15,7 +15,9 @@
 	import { onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import OpenAI from 'openai';
+
+	//import OpenAI from 'openai';
+
 	import { applyAction, deserialize } from '$app/forms';
 	import { Loader2 } from 'lucide-svelte';
 
@@ -38,7 +40,7 @@
 	let user_id;
 	let currentTab = 't1';
 
-	const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
+	//const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 	$: story = '';
 	$: transcription = '';
 
@@ -153,6 +155,7 @@
 		return [paragraphsText, quotesText];
 	}
 
+	/*
 	async function transcribe(audioFile) {
 		try {
 			const transcription = await openai.audio.transcriptions.create({
@@ -195,6 +198,7 @@
 			return null;
 		}
 	}
+	*/
 
 	const getIdentifier = (url: string) => {
 		const regex = /\/([^/]+)\.(mov|mp3|mp4|3gp|avi|mkv|flv|wmv|wav|ogg|aac)$/i;
@@ -214,7 +218,7 @@
 		return blob;
 	};
 
-	onMount(async () => {
+	/*onMount(async () => {
 		const formData = $formData;
 		user_id = formData.user_id;
 
@@ -262,7 +266,7 @@
 			}
 		}
 	});
-
+	*/
 	function submit(field: string) {
 		return ({ detail: newValue }) => {
 			// IRL: POST value to server here

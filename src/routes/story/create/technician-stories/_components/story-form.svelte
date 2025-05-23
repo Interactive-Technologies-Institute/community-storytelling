@@ -13,12 +13,18 @@
 
 	import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
 
+	/*const questions = [
+		'Fale-nos de si (o seu nome, idade e uma característica sobre si)',
+		'Se pudesse resumir o que o bairro Horizonte significa para si, o que diria? (Se não tiver quaisquer relação com o bairro Horizonte, fale do seu próprio bairro)',
+		'Que lugar do dia a dia ou pessoa faz o bairro, mencionado por si, ter um sentimento de casa?',
+		'Descreva uma memória importante que tenha do seu bairro escolhido',
+		'Como vê o bairro daqui a cinco ou dez anos?',
+	];*/
+
 	const questions = [
-		'Fale-nos de si (o seu nome, idade, o que faz no Balcão do Bairro)',
-		'Diga-nos porque é que contribui com o seu tempo para o Balcão do Bairro (É uma ligação pessoal? Um sentido de justiça? Já foi atendido(a) e agora está em condições de retribuir?)',
-		'Conte-nos uma história de uma pessoa que tenha ajudado e que nunca esquecerá',
-		'Diga-nos como se sentiu quando ajudou essa pessoa',
-		'Diga-nos como acha que trabalhar no Balcão do Bairro mudou a sua vida',
+		'Placeholder 1',
+		'Placeholder 2',
+		'Placeholder 3',
 	];
 
 	let altImg = 'Taking notes';
@@ -35,7 +41,8 @@
 
 	const { form: formData, errors } = form;
 
-	$formData.role = 'technician';
+	$formData.role = 'interview';
+	$formData.tags[0] = 'Interview';
 
 	let recordingState = 'idle'; // states: 'idle', 'recorded'
 	let recordingType = ''; // 'video' or 'audio'
@@ -45,6 +52,16 @@
 	let createStoryForm: HTMLFormElement;
 
 	let mediaFile;
+
+	let stream = null;
+	let mediaRecorder = null;
+	let recordedChunks = [];
+	let recording = false;
+	let recorded = false;
+	let videoBlob = null;
+	let uploading = false;
+	let cloudinaryUrl = '';
+
 	$: imageFiles = [];
 	$: submitting = false;
 
@@ -64,17 +81,76 @@
 		}
 	}
 
+	/*
 	const startRecording = (type) => {
 		recordingType = type;
 		document.getElementById(type === 'video' ? 'videoFile' : 'audioFile').click();
 	};
+	*/
 
-	const deleteRecording = () => {
-		mediaFile = null;
-		recordingState = 'idle';
-		recordingType = '';
-		document.getElementById(recordingType === 'video' ? 'videoFile' : 'audioFile').value = null;
-	};
+	async function startRecording() {
+		try {
+			stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+			mediaRecorder = new MediaRecorder(stream);
+			recordedChunks = [];
+
+			mediaRecorder.ondataavailable = (e) => {
+				if (e.data.size > 0) {
+				recordedChunks.push(e.data);
+			}
+		};
+
+		mediaRecorder.onstop = async () => {
+			videoBlob = new Blob(recordedChunks, { type: 'video' });
+			recorded = true;
+		};
+
+		mediaRecorder.start();
+		recording = true;
+		} catch (err) {
+			console.error('Camera access error:', err);
+		}
+	}
+
+	function stopRecording() {
+		if (mediaRecorder && recording) {
+			mediaRecorder.stop();
+			stream.getTracks().forEach(track => track.stop());
+			recording = false;
+		}
+	}
+
+	function deleteRecording(){
+		videoBlob = null;
+		recorded = false;
+		recording = false;
+	}
+
+	async function uploadVideo(video, type) {
+		const tempFormData = new FormData();
+		tempFormData.append('file', video);
+		tempFormData.append('upload_preset', 'curraleira');
+
+		// Make the request to Cloudinary's upload endpoint
+		try {
+			const response = await fetch(
+			`https://api.cloudinary.com/v1_1/${PUBLIC_CLOUDINARY_CLOUD_NAME}/${type}/upload`,
+				{
+					method: 'POST',
+					body: tempFormData,
+				}
+			);
+
+			const data = await response.json();
+
+			return data.secure_url;
+
+		} catch (error) {
+			console.error('Error uploading the video:', error);
+			return null;
+		}
+	}
 
 	async function submitCreateStoryForm(event) {
 		submitting = true;
@@ -82,31 +158,7 @@
 
 		const formData = new FormData(event.currentTarget);
 
-		async function uploadVideo(video, type) {
-			const tempFormData = new FormData();
-			tempFormData.append('file', video);
-			tempFormData.append('upload_preset', 'bb-comunidade');
-
-			// Make the request to Cloudinary's upload endpoint
-			try {
-				const response = await fetch(
-					`https://api.cloudinary.com/v1_1/${PUBLIC_CLOUDINARY_CLOUD_NAME}/${type}/upload`,
-					{
-						method: 'POST',
-						body: tempFormData,
-					}
-				);
-
-				const data = await response.json();
-
-				return data.secure_url;
-			} catch (error) {
-				console.error('Error uploading the video:', error);
-				return null;
-			}
-		}
-
-		const videoUrl = await uploadVideo(mediaFile, 'video');
+		const videoUrl = await uploadVideo(videoBlob, 'video');
 
 		if (!videoUrl) {
 			console.error('Failed to upload video');
@@ -131,7 +183,9 @@
 			}
 		}
 
-		newFormData.append('recording_link', videoUrl);
+		const mp4Url = videoUrl.replace('/upload/', '/upload/f_mp4/')
+
+		newFormData.append('recording_link', mp4Url);
 		urls.forEach((url) => newFormData.append('image', url));
 
 		const response = await fetch('?/createStory', {
@@ -169,7 +223,7 @@
 			<Form.Field {form} name="storyteller" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Qual é o nome da pessoa?</Form.Label
+						>Qual é o nome da pessoa a ser entrevistada?</Form.Label
 					>
 					<span class="inline-block flex justify-center gap-2 pt-3">
 						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} required />
@@ -188,10 +242,10 @@
 			<Form.Field {form} name="tags" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Em qual Balcão você está?</Form.Label
+						>Se existe, qual é o local em que esta entrevista se foca? </Form.Label
 					>
 					<span class="inline-block flex justify-center gap-2 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.tags} required />
+						<Input class="w-auto" {...attrs} bind:value={$formData.tags[1]} />
 						<Form.FieldErrors />
 						<span
 							><Button class="p-2" type="button" on:click={() => (page = 3)}><ArrowRight /></Button
@@ -200,16 +254,40 @@
 					</span>
 				</Form.Control>
 			</Form.Field>
-
 			<Form.Field {form} hidden name="role" class="text-center">
 				<Form.Control let:attrs>
 					<input hidden name="role" bind:value={$formData.role} />
 					<Form.FieldErrors />
 				</Form.Control>
 			</Form.Field>
+			<Form.Field {form} hidden name="tags" class="text-center">
+				<Form.Control let:attrs>
+					<input hidden name="tags" bind:value={$formData.tags[0]} />
+					<Form.FieldErrors />
+				</Form.Control>
+			</Form.Field>
 		</div>
 
 		<div class="page" class:show={page === 3}>
+			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<Form.Field {form} name="tags" class="text-center">
+				<Form.Control let:attrs>
+					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
+						>Se existe, em que período é que esta entrevista se foca?</Form.Label
+					>
+					<span class="inline-block flex justify-center gap-2 pt-3">
+						<Input class="w-auto" {...attrs} bind:value={$formData.tags[2]} />
+						<Form.FieldErrors />
+						<span
+							><Button class="p-2" type="button" on:click={() => (page = 4)}><ArrowRight /></Button
+							></span
+						>
+					</span>
+				</Form.Control>
+			</Form.Field>
+		</div>
+
+		<div class="page" class:show={page === 4}>
 			<Form.Field hidden {form} name="recording_link" class="text-center">
 				<Form.Control let:attrs>
 					<div class="flex flex-col items-center gap-2">
@@ -292,36 +370,36 @@
                       Refazer gravação
                     </Button>
                   {/if} -->
-						{#if recordingState === 'idle'}
+				  <!-- Live preview while recording -->
+						{#if !recording && !recorded}
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white"
-								on:click={() => startRecording('video')}
-								disabled={recordingState === 'recorded'}
+								on:click={() => startRecording()}
 							>
-								<Video />
+							Start Recording
 							</Button>
+						{:else if recording && !recorded}
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white"
-								on:click={() => startRecording('audio')}
-								disabled={recordingState === 'recorded'}
+								on:click={() => stopRecording()}
 							>
-								<Mic />
+							Stop Recording
 							</Button>
-						{:else}
+						{:else if recorded && !recording} 
 							<Button
 								type="button"
 								class="cursor-pointer bg-red-500 p-2 text-sm text-white"
-								on:click={deleteRecording}
+								on:click={() => deleteRecording()}
 							>
-								Refazer gravação
+							Refazer gravação
 							</Button>
 						{/if}
 						<Button
 							class="p-2"
-							on:click={() => (page = 4)}
-							disabled={recordingState === 'recording' || recordingState === 'idle'}
+							on:click={() => (page = 5)}
+							disabled={recorded === false}
 						>
 							<ArrowRight />
 						</Button>
@@ -390,7 +468,7 @@
         </div>
       </div> -->
 
-		<div class="page" class:show={page === 4}>
+		<div class="page" class:show={page === 5}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 			<Form.Field {form} name="image" class="text-center">
 				<Form.Control let:attrs>

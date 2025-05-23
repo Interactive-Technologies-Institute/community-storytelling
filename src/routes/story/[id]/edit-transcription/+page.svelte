@@ -9,7 +9,7 @@
 		type UpdateStoryTranscriptionSchema,
 	} from '@/schemas/story-transcription';
 	import { Loader2, PencilLine } from 'lucide-svelte';
-	import OpenAI from 'openai';
+	//import OpenAI from 'openai';
 	import { afterUpdate, onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
@@ -27,11 +27,11 @@
 
 	let updateStoryForm: HTMLFormElement;
 
-	const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
+	/*const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });*/
 	$: transcription = '';
 	$: submitting = false;
 	let textarea: HTMLTextAreaElement;
-
+	/*
 	async function transcribe(audioFile: File) {
 		try {
 			const transcription = await openai.audio.transcriptions.create({
@@ -46,6 +46,7 @@
 			return null;
 		}
 	}
+	*/
 
 	const getIdentifier = (url: string) => {
 		const regex = /\/([^/]+)\.(mov|mp3|mp4|3gp|avi|mkv|flv|wmv|wav|ogg|aac)$/i;
@@ -66,6 +67,7 @@
 		return blob;
 	};
 
+	/*
 	onMount(async () => {
 		const formData = $formData.updateTranscriptionForm.data;
 
@@ -107,6 +109,7 @@
 			}
 		});
 	});
+	*/
 
 	async function submitUpdateStoryForm(event : { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) {
 		submitting = true;

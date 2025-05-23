@@ -35,7 +35,7 @@
 			<div class="mb-5">
 				<h2 class="text-lg font-medium">{story.storyteller}</h2>
 				<h2 class="text-md font-medium">
-					{story.role === 'technician' ? 'Técnico' : 'Membro da Comunidade'}
+					{story.role === 'interview' ? 'Interview' : 'Introduction'}
 				</h2>
 			</div>
 			<div class="flex gap-x-1">

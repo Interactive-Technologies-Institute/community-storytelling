@@ -135,7 +135,7 @@ export type Notification = {
 	read: boolean;
 };
 
-export type CommunityRole = 'community' | 'technician';
+export type CommunityRole = 'introduction' | 'interview';
 
 export type Story = {
 	id: number;

@@ -6,7 +6,7 @@ export const load = loadFlash(async ({ locals: { supabase, safeGetSession }, coo
 
 	let profile: UserProfile | null = null;
 	if (user) {
-		const { data } = await supabase.from('profiles_view').select().eq('id', user.id).single();
+		const { data } = await supabase.from('profiles').select().eq('id', user.id).single();
 		if (data) {
 			profile = data;
 			if (profile.avatar) {
@@ -35,8 +35,8 @@ export const load = loadFlash(async ({ locals: { supabase, safeGetSession }, coo
 	if (featuresData) features = featuresData.map((f: { id: Feature }) => f.id);
 
 	let branding: Branding = {
-		name: 'Community',
-		slogan: 'A community for everyone',
+		name: 'Curraleira Out Loud!',
+		slogan: 'Share your story',
 		color_theme: 'neutral',
 		radius: 0.5,
 	};
