@@ -59,8 +59,7 @@
 	let recording = false;
 	let recorded = false;
 	let videoBlob = null;
-	let uploading = false;
-	let cloudinaryUrl = '';
+	let videoUrl = null;
 
 	$: imageFiles = [];
 	$: submitting = false;
@@ -103,6 +102,7 @@
 
 		mediaRecorder.onstop = async () => {
 			videoBlob = new Blob(recordedChunks, { type: 'video' });
+			videoUrl = URL.createObjectURL(videoBlob);
 			recorded = true;
 		};
 
@@ -125,6 +125,7 @@
 		videoBlob = null;
 		recorded = false;
 		recording = false;
+		videoUrl = null;
 	}
 
 	async function uploadVideo(video, type) {
@@ -158,9 +159,9 @@
 
 		const formData = new FormData(event.currentTarget);
 
-		const videoUrl = await uploadVideo(videoBlob, 'video');
+		const cloudUrl = await uploadVideo(videoBlob, 'video');
 
-		if (!videoUrl) {
+		if (!cloudUrl) {
 			console.error('Failed to upload video');
 			return;
 		}
@@ -183,7 +184,7 @@
 			}
 		}
 
-		const mp4Url = videoUrl.replace('/upload/', '/upload/f_mp4/')
+		const mp4Url = cloudUrl.replace('/upload/', '/upload/f_mp4/')
 
 		newFormData.append('recording_link', mp4Url);
 		urls.forEach((url) => newFormData.append('image', url));
@@ -330,6 +331,11 @@
 					<Carousel.Previous />
 					<Carousel.Next />
 				</Carousel.Root>
+			</div>
+			<div class="flex justify-center mt-4">
+				{#if videoUrl && !recording}
+					<video src={videoUrl} controls class="rounded shadow-lg w-[640px] max-w-full"></video>
+				{/if}
 			</div>
 			<div class="mt-4 text-center">
 				<div class="flex flex-col items-center gap-2">
