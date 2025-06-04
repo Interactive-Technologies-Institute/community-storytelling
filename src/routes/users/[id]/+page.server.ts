@@ -29,7 +29,7 @@ export const load = async (event) => {
 
 		if (userProfile.avatar) {
 			userProfile.avatar = event.locals.supabase.storage
-				.from('avatars')
+				.from('users')
 				.getPublicUrl(userProfile.avatar).data.publicUrl;
 		}
 

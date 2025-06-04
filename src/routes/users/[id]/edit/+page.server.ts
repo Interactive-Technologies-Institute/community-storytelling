@@ -34,13 +34,12 @@ export const load = async (event) => {
 			return error(500, errorMessage);
 		}
 
-		let avatarUrl: string | undefined;
+		let avatarUrl = '';
 		if (userProfile.avatar) {
-			avatarUrl = event.locals.supabase.storage.from('users').getPublicUrl(userProfile.avatar)
-				.data.publicUrl;
+			avatarUrl = event.locals.supabase.storage.from('users').getPublicUrl(userProfile.avatar).data.publicUrl ?? '';
 		}
 
-		return { ...userProfile, avatar: undefined, avatarUrl };
+		return { ...userProfile, avatar: null, avatarUrl, avatarPath: userProfile.avatar ?? ''};
 	}
 
 	const userProfileData = await getUserProfile(id);
@@ -81,24 +80,32 @@ export const actions = {
 					return { path: avatarFileData.path, error: null };
 				}
 
-				let avatarPath = '';
+				let avatarPath: string | undefined = undefined;
+
 				if (form.data.avatar) {
 					const { path, error } = await uploadAvatar(form.data.avatar);
 					if (error) {
 						return fail(500, withFiles({ message: error.message, form }));
 					}
 					avatarPath = path;
-				} else if (form.data.avatarUrl) {
-					avatarPath = form.data.avatarUrl.split('/').pop() ?? '';
+				}
+
+				else if (form.data.avatarPath) {
+						avatarPath = form.data.avatarPath;
+				}
+
+				const updatedProfile: Record<string, any> = {
+					display_name: form.data.display_name,
+					description: form.data.description,
+				};
+
+				if (avatarPath !== undefined) {
+					updatedProfile.avatar = avatarPath;
 				}
 
 				const { error: profileError } = await event.locals.supabase
 					.from('profiles')
-					.update({
-						display_name: form.data.display_name,
-						description: form.data.description,
-						avatar: avatarPath,
-					})
+					.update(updatedProfile)
 					.eq('id', userId);
 
 				if (profileError) {
