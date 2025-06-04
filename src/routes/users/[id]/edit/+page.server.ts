@@ -82,7 +82,25 @@ export const actions = {
 
 				let avatarPath: string | undefined = undefined;
 
-				if (form.data.avatar) {
+				if (form.data.avatarReset === true && form.data.avatarPath) {
+					const avatarFileName = form.data.avatarPath.split('?')[0];
+
+					console.log(avatarFileName);
+
+					const { error: deleteError } = await event.locals.supabase.storage
+						.from('users')
+						.remove([avatarFileName]);
+
+					if (deleteError) {
+						setFlash({ type: 'error', message: deleteError.message }, event.cookies);
+						return fail(500, withFiles({ message: deleteError.message, form }));
+					}
+
+					avatarPath = undefined;
+					form.data.avatarReset = false;
+				}
+
+				else if (form.data.avatar) {
 					const { path, error } = await uploadAvatar(form.data.avatar);
 					if (error) {
 						return fail(500, withFiles({ message: error.message, form }));
@@ -103,6 +121,10 @@ export const actions = {
 					updatedProfile.avatar = avatarPath;
 				}
 
+				else {
+					updatedProfile.avatar = '';
+				}
+
 				const { error: profileError } = await event.locals.supabase
 					.from('profiles')
 					.update(updatedProfile)
@@ -114,7 +136,9 @@ export const actions = {
 				}
 
 				setFlash({ type: 'success', message: 'Profile updated successfully' }, event.cookies);
-				return withFiles({ form });
+				withFiles({ form });
+
+				throw redirect(303, '/users/me')
 			}
 		),
 	updatePassword: async (event) =>

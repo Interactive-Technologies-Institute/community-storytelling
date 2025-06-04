@@ -35,9 +35,27 @@
 			avatarUrl = $formData.avatarUrl;
 		}
 	}
+
+	let resettingAvatar = false;
+
+	function resetAvatar() {
+		if (resettingAvatar) return;
+		
+		resettingAvatar = true;
+		avatar.set(null);
+		avatarUrl = null;
+		$formData.avatarReset = true;
+	}
+
 </script>
 
-<form method="POST" enctype="multipart/form-data" action="?/updateProfile" use:enhance>
+<form method="POST" enctype="multipart/form-data" action="?/updateProfile" use:enhance={{
+		onResult: ({ result }) => {
+			if (result.type === 'success' || result.type === 'failure') {
+				resettingAvatar = false;
+			}
+		}
+	}}>
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>Edit Profile</Card.Title>
@@ -62,14 +80,25 @@
 				<Form.Field {form} name="avatar">
 					<Form.Control let:attrs>
 						<Form.Label>Avatar</Form.Label>
-						<Card.Root class="flex aspect-[3/2] items-center justify-center p-4">
+						<div class="relative flex aspect-[3/2] items-center justify-center p-4">
 							<Avatar.Root class="h-20 w-20 md:h-40 md:w-40">
 								<Avatar.Image src={avatarUrl} alt="User avatar" />
 								<Avatar.Fallback>{firstAndLastInitials($formData.display_name)}</Avatar.Fallback>
 							</Avatar.Root>
-						</Card.Root>
+							<Button
+								type="button"
+								variant="destructive"
+								size="sm"
+								class="absolute right-2"
+								on:click={resetAvatar}
+								disabled={resettingAvatar}>
+								Reset Avatar
+							</Button>
+						</div>
 						<FileInput {...attrs} bind:files={$avatar} accept="image/*" />
 						<input hidden value={$formData.avatarUrl} name="avatarUrl" />
+						<input hidden name="avatarReset" value={$formData.avatarReset ? 'true' : 'false'} />
+						<input hidden name="avatarPath" value={$formData.avatarPath ?? ''} />
 						<Form.FieldErrors />
 					</Form.Control>
 				</Form.Field>

@@ -9,6 +9,7 @@ export const updateUserProfileSchema = z.object({
 	avatar: z.instanceof(File).nullish(),
 	avatarUrl: z.string().nullish(),
 	avatarPath: z.string().optional(),
+	avatarReset: z.coerce.boolean().optional().default(false),
 });
 
 export type UpdateUserProfileSchema = typeof updateUserProfileSchema;

@@ -70,6 +70,26 @@ export const load = async (event) => {
 		return events;
 	}
 
+	async function getStories(): Promise<{ id: number; storyteller: string }[]> {
+		let query = event.locals.supabase
+			.from('story_view')
+			.select('*')
+			.order('moderation_status', { ascending: true })
+			.order('inserted_at', { ascending: false })
+			.eq('user_id', id);
+		
+		const { data: stories, error: storiesError } = await query;
+		
+		if (storiesError) {
+			console.log(storiesError);
+			const errorMessage = 'Error fetching stories, please try again later.';
+			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			return error(500, errorMessage);
+		}
+
+		return stories;
+	}
+
 	async function getMapPin(): Promise<{ id: number } | null> {
 		const { data: mapPin, error: mapPinError } = await event.locals.supabase
 			.from('map_pins_view')
@@ -90,6 +110,7 @@ export const load = async (event) => {
 		userProfile: await getUserProfile(),
 		howTos: await getHowTos(),
 		events: await getEvents(),
+		stories: await getStories(),
 		mapPin: await getMapPin(),
 	};
 };

@@ -94,4 +94,26 @@
 			</Card.Content>
 		</Card.Root>
 	</FeatureWrapper>
+	<FeatureWrapper feature="stories">
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Stories ({data.stories.length})</Card.Title>
+				<Card.Description>List of Stories created</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				{#if data.stories && data.stories.length > 0}
+					<div class="flex flex-wrap gap-4">
+						{#each data.stories as story}
+							<Button href="/story/{story.id}" variant="outline" class="max-w-full">
+								<span class="truncate">{story.storyteller}</span>
+								<SquareArrowOutUpRight class="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
+							</Button>
+						{/each}
+					</div>
+				{:else}
+					<p class="text-sm text-muted-foreground">User has not created any Stories</p>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+	</FeatureWrapper>
 </div>
