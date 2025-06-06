@@ -21,13 +21,31 @@ export const load = async (event) => {
 export const actions = {
 	createStory: async (event) =>
 		handleFormAction(event, createStorySchema, 'create-story', async (event, userId, form) => {
-			const { error: supabaseError } = await event.locals.supabase
+			const { data: storyInsert, error: supabaseError } = await event.locals.supabase
 				.from('story')
-				.insert({ ...form.data, user_id: userId, recording_link: form.data.recording_link ?? '' });
+				.insert({ storyteller: form.data.storyteller, tags: form.data.tags, role: form.data.role, image: form.data.image, user_id: userId, recording_link: form.data.recording_link ?? '' })
+				.select('id')
+				.single();
 
 			if (supabaseError) {
 				setFlash({ type: 'error', message: supabaseError.message }, event.cookies);
 				return fail(500, withFiles({ message: supabaseError.message, form }));
+			}
+
+			if (form.data.lat) {
+				const { error: locationError } = await event.locals.supabase
+					.from('map_pins').insert({
+					story_id: storyInsert.id,
+					user_id: userId,
+					lat: form.data.lat,
+					lng: form.data.lng,
+					year: form.data.tags[2]
+				});
+			
+				if (locationError) {
+					setFlash({ type: 'error', message: locationError.message }, event.cookies);
+					return fail(500, withFiles({ message: locationError.message, form }));
+				}
 			}
 
 			return redirect(303, '/story');

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { applyAction, deserialize } from '$app/forms';
-	import { PUBLIC_CLOUDINARY_CLOUD_NAME } from '$env/static/public';
+	import { PUBLIC_CLOUDINARY_CLOUD_NAME, PUBLIC_GOOGLE_MAPS_KEY } from '$env/static/public';
 	import { Button } from '$lib/components/ui/button';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	import * as Form from '$lib/components/ui/form';
@@ -10,8 +10,17 @@
 	import { zodClient, type Infer } from 'sveltekit-superforms/adapters';
 
 	import Input from '$lib/components/ui/input/input.svelte';
+	import { onMount } from 'svelte';
 
 	import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
+
+	import { Loader } from '@googlemaps/js-api-loader';
+
+	let mapContainer: HTMLDivElement;
+	let map: google.maps.Map;
+	let marker;
+
+	const apiKey = PUBLIC_GOOGLE_MAPS_KEY;
 
 	/*const questions = [
 		'Fale-nos de si (o seu nome, idade e uma característica sobre si)',
@@ -63,6 +72,39 @@
 
 	$: imageFiles = [];
 	$: submitting = false;
+
+	onMount(async () => {
+		const loader = new Loader({
+			apiKey,
+			version: 'weekly',
+		});
+
+		await loader.load();
+
+		map = new google.maps.Map(mapContainer, {
+			center: { lat: 38.736946, lng: -9.142685 }, // Lisbon
+			zoom: 15,
+			mapTypeControl: false,
+			streetViewControl: false,
+		});
+
+		map.addListener('click', (e) => {
+			const lat = e.latLng.lat();
+			const lng = e.latLng.lng();
+			$formData.lat = lat;
+			$formData.lng = lng;
+
+			if (marker) {
+				marker.setPosition({ lat, lng });
+
+			} else {
+				marker = new google.maps.Marker({
+					position: { lat, lng },
+					map,
+				});
+			}
+		});
+	});
 
 	function handleMediaUpload(event) {
 		mediaFile = event.target.files[0];
@@ -237,7 +279,6 @@
 				</Form.Control>
 			</Form.Field>
 		</div>
-
 		<div class="page" class:show={page === 2}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 			<Form.Field {form} name="tags" class="text-center">
@@ -289,6 +330,24 @@
 		</div>
 
 		<div class="page" class:show={page === 4}>
+			<h2 class="pb-4 text-center text-3xl font-semibold">
+				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
+			</h2>
+
+			<div bind:this={mapContainer} class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg"></div>
+
+			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
+			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
+
+			<div class="flex justify-center pt-6">
+				<Button on:click={() => (page = 5)}>
+					<ArrowRight class="mr-2 h-4 w-4" />
+					Continuar
+				</Button>
+			</div>
+		</div>
+
+		<div class="page" class:show={page === 5}>
 			<Form.Field hidden {form} name="recording_link" class="text-center">
 				<Form.Control let:attrs>
 					<div class="flex flex-col items-center gap-2">
@@ -404,7 +463,7 @@
 						{/if}
 						<Button
 							class="p-2"
-							on:click={() => (page = 5)}
+							on:click={() => (page = 6)}
 							disabled={recorded === false}
 						>
 							<ArrowRight />
@@ -474,7 +533,7 @@
         </div>
       </div> -->
 
-		<div class="page" class:show={page === 5}>
+		<div class="page" class:show={page === 6}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 			<Form.Field {form} name="image" class="text-center">
 				<Form.Control let:attrs>

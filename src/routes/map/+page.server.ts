@@ -1,4 +1,4 @@
-import { createMapPinSchema, deleteMapPinSchema } from '@/schemas/map-pin';
+/* import { createMapPinSchema, deleteMapPinSchema } from '@/schemas/map-pin';
 import type { ModerationInfo, UserProfileWithPin, UserType } from '@/types/types';
 import { handleFormAction, numberQueryParam } from '@/utils';
 import { error, fail, redirect } from '@sveltejs/kit';
@@ -170,4 +170,21 @@ export const actions = {
 			setFlash({ type: 'success', message: 'Your pin has been deleted.' }, event.cookies);
 			return { form };
 		}),
+};
+*/ 
+
+export const load = async (event) => {
+  // Query your Supabase table, e.g. 'story' or 'locations'
+  const { data: pins, error } = await event.locals.supabase
+    .from('map_pins') // or your table name
+    .select('lat, lng, year, story_id')
+    .not('lat', 'is', null)
+    .not('lng', 'is', null);
+
+  if (error) {
+    console.error('Error fetching pins:', error);
+    return { pins: [] };
+  }
+
+  return { pins };
 };

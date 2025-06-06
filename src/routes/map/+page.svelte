@@ -111,7 +111,7 @@
 </div>
 -->
 
-<script>
+<!--<script>
 	// Range value bound to slider
 	let value = 2000;
 
@@ -121,8 +121,9 @@
 	// Compute current image path
 	$: imagePath = `map_images/image${value}.jpg`;
 </script>
-
+-->
 <!-- svelte-ignore a11y-label-has-associated-control -->
+<!--
 <div class="container">
 	<label>
     	Ano selecionado: <strong>{value}</strong>
@@ -155,3 +156,118 @@
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
 </style>
+-->
+
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { Loader } from '@googlemaps/js-api-loader';
+  import { PUBLIC_GOOGLE_MAPS_KEY } from '$env/static/public';
+	import { goto } from '$app/navigation';
+
+  export let data;
+  let allPins = data.pins; // array of { lat: number, lng: number, year: number }
+
+  let filteredPins = [];
+
+  let mapContainer: HTMLDivElement;
+  let map: google.maps.Map;
+  let markers: google.maps.Marker[] = [];
+
+  const apiKey = PUBLIC_GOOGLE_MAPS_KEY;
+
+  let year = 2000;
+
+  // Update filtered pins whenever year changes
+  $: filteredPins = allPins.filter(pin => pin.year === year);
+
+  onMount(async () => {
+    const loader = new Loader({ apiKey, version: 'weekly' });
+    await loader.load();
+
+    map = new google.maps.Map(mapContainer, {
+      center: filteredPins.length ? { lat: filteredPins[0].lat, lng: filteredPins[0].lng } : { lat: 38.736946, lng: -9.142685 },
+      zoom: 15,
+      mapTypeControl: false,
+      streetViewControl: false,
+      zoomControl: true,
+    });
+
+    // Show markers for the initial filtered pins
+    updateMarkers();
+  });
+
+  // Whenever filteredPins changes, update markers on the map
+  $: if (map && filteredPins) {
+    updateMarkers();
+  }
+
+  function updateMarkers() {
+    // Remove old markers
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+
+    // Add new markers
+    filteredPins.forEach(({ lat, lng, story_id }) => {
+      const marker = new google.maps.Marker({
+        position: { lat, lng },
+        map,
+      });
+
+	  marker.addListener('click', () => {
+        goto(`/story/${story_id}`);
+      });
+
+      markers.push(marker);
+    });
+
+    // Optionally, recenter the map on first filtered pin
+    if (filteredPins.length) {
+      map.setCenter({ lat: filteredPins[0].lat, lng: filteredPins[0].lng });
+    }
+  }
+</script>
+
+<style>
+  .wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .year-selector {
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    width: fit-content;
+    margin: 10px auto; /* center horizontally with margin auto */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    z-index: 10;
+  }
+
+  .map-container {
+    height: 600px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+</style>
+
+<div class="wrapper">
+  <div class="year-selector">
+    <label for="yearRange">Ano selecionado:</label>
+    <input
+      id="yearRange"
+      type="range"
+      min="2000"
+      max="2015"
+      step="1"
+      bind:value={year}
+    />
+    <strong>{year}</strong>
+  </div>
+
+  <div class="map-container" bind:this={mapContainer}></div>
+</div>
