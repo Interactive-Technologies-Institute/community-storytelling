@@ -128,6 +128,7 @@ export type Database = MergeDeep<
 						role: Database['public']['Enums']['user_role'];
 						type: string;
 						updated_at: string;
+						avatar: string | null;
 					};
 				};
 			};

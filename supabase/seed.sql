@@ -94,7 +94,7 @@ values (
 			select id
 			from auth.users
 			limit 1
-		), 'Community BBQ', 'Join us for a community BBQ. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', 'placeholder.webp', array ['community', 'bbq'], current_timestamp,
+		), 'Community BBQ', 'Join us for a community BBQ. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', 'placeholder.webp', array ['introduction', 'bbq'], current_timestamp,
 		'Community Park'
 	);
 -- Map Pin

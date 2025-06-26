@@ -62,6 +62,16 @@ export const load = async (event) => {
 export const actions = {
 	delete: async (event) =>
 		handleFormAction(event, deleteStorySchema, 'delete-story', async (event, userId, form) => {
+			const { error: supabaseError2 } = await event.locals.supabase
+				.from('map_pins')
+				.delete()
+				.eq('story_id', form.data.id);
+
+			if (supabaseError2) {
+				setFlash({ type: 'error', message: supabaseError2.message }, event.cookies);
+				return fail(500, { message: supabaseError2.message, form });
+			}
+			
 			const { error: supabaseError } = await event.locals.supabase
 				.from('story')
 				.delete()

@@ -70,7 +70,7 @@
 	let videoBlob = null;
 	let videoUrl = null;
 
-	$: imageFiles = [];
+	let imageFiles: File[] = [];
 	$: submitting = false;
 
 	onMount(async () => {
@@ -106,28 +106,37 @@
 		});
 	});
 
-	function handleMediaUpload(event) {
-		mediaFile = event.target.files[0];
-		recordingState = 'recorded';
-		console.log('video', mediaFile);
-	}
-
-	function handleImageUpload(event) {
-		imageFiles.push(...event.target.files);
-		console.log('images', imageFiles);
-		if (!firstImageTaken) {
-			firstImageTaken = true;
-		} else if (!secondImageTaken) {
-			secondImageTaken = true;
+	function handleMediaUpload(event: Event) {
+		if (event.target){
+			const target = event.target as HTMLInputElement;
+			if(target.files){
+				videoBlob = target.files[0];
+				videoUrl = URL.createObjectURL(videoBlob);
+				recorded = true;
+				console.log('video', videoBlob);
+			}
 		}
 	}
 
-	/*
-	const startRecording = (type) => {
+	function handleImageUpload(event: Event) {
+		if (event.target){
+			const target = event.target as HTMLInputElement;
+			if(target.files){
+				imageFiles.push(...target.files);
+				console.log('images', imageFiles);
+				if (!firstImageTaken) {
+					firstImageTaken = true;
+				} else if (!secondImageTaken) {
+					secondImageTaken = true;
+				}
+			}
+		}
+	}
+
+	const upload = (type) => {
 		recordingType = type;
 		document.getElementById(type === 'video' ? 'videoFile' : 'audioFile').click();
 	};
-	*/
 
 	async function startRecording() {
 		try {
@@ -168,6 +177,8 @@
 		recorded = false;
 		recording = false;
 		videoUrl = null;
+		const id = recordingType === 'video' ? 'videoFile' : 'audioFile';
+		(document.getElementById(id) as HTMLInputElement).value = '';
 	}
 
 	async function uploadVideo(video, type) {
@@ -398,44 +409,7 @@
 			</div>
 			<div class="mt-4 text-center">
 				<div class="flex flex-col items-center gap-2">
-					<!-- <Form.Field {form} name="recording_link" class="text-center">
-            <Form.Control let:attrs>
-              <div class="flex flex-col items-center gap-2">
-                <input
-                  type="file"
-                  accept="video/*"
-                  id="videoFile"
-                  on:change={handleMediaUpload}
-                  class="hidden"
-                  required
-                />
-                <input
-                  type="file"
-                  accept="audio/*"
-                  id="audioFile"
-                  on:change={handleMediaUpload}
-                  class="hidden"
-                  required
-                /> -->
 					<div class="flex items-center gap-2">
-						<!-- {#if recordingState === 'idle'}
-                    <Button
-                      type="button"
-                      class="p-2 bg-black text-white cursor-pointer text-sm"
-                      on:click={startRecording}
-                    >
-                      Iniciar gravação
-                    </Button>
-                  {:else if recordingState === 'recorded'}
-                    <Button
-                      type="button"
-                      class="p-2 bg-red-500 text-white cursor-pointer text-sm"
-                      on:click={deleteRecording}
-                    >
-                      Refazer gravação
-                    </Button>
-                  {/if} -->
-				  <!-- Live preview while recording -->
 						{#if !recording && !recorded}
 							<Button
 								type="button"
@@ -443,6 +417,20 @@
 								on:click={() => startRecording()}
 							>
 							Start Recording
+							</Button>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white"
+								on:click={() => upload('video')}
+							>
+								<Video />
+							</Button>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white"
+								on:click={() => upload('audio')}
+							>
+								<Mic />
 							</Button>
 						{:else if recording && !recorded}
 							<Button
@@ -470,69 +458,8 @@
 						</Button>
 					</div>
 				</div>
-				<!-- <Form.FieldErrors />
-              </div>
-            </Form.Control>
-          </Form.Field> -->
 			</div>
 		</div>
-
-		<!-- <div class="page" class:show={page === 3}>
-        <div class="mx-auto mt-6 w-[280px] h-[150px] px-4">
-          <Carousel.Root>
-            <Carousel.Content>
-              {#each questions as question}
-                <Carousel.Item class="w-full">
-                  <div class="text-center p-2">
-                    <span class="text-sm font-semibold">{question}</span>
-                  </div>
-                </Carousel.Item>
-              {/each}
-            </Carousel.Content>
-            <Carousel.Previous />
-            <Carousel.Next />
-          </Carousel.Root>
-        </div>
-        <div class="mt-4 text-center">
-          <Form.Field {form} name="recording_link" class="text-center">
-            <Form.Control let:attrs>
-              <div class="flex flex-col items-center gap-2">
-                <input
-                  type="file"
-                  accept="video/*"
-                  id="videoFile"
-                  on:change={handleVideoUpload}
-                  class="hidden"
-                />
-                <div class="flex items-center gap-2">
-                  {#if recordingState === 'idle'}
-                    <Button
-                      type="button"
-                      class="p-2 bg-black text-white cursor-pointer text-sm"
-                      on:click={startRecording}
-                    >
-                      Iniciar gravação
-                    </Button>
-                  {:else if recordingState === 'recorded'}
-                    <Button
-                      type="button"
-                      class="p-2 bg-red-500 text-white cursor-pointer text-sm"
-                      on:click={deleteRecording}
-                    >
-                      Refazer gravação
-                    </Button>
-                  {/if}
-                  <Button class="p-2" on:click={() => page = 4} disabled={recordingState === 'recording' || recordingState === 'idle'}>
-                    <ArrowRight />
-                  </Button>
-                </div>
-                <Form.FieldErrors />
-              </div>
-            </Form.Control>
-          </Form.Field>
-        </div>
-      </div> -->
-
 		<div class="page" class:show={page === 6}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 			<Form.Field {form} name="image" class="text-center">
