@@ -53,22 +53,19 @@
 	$formData.role = 'interview';
 	$formData.tags[0] = 'Interview';
 
-	let recordingState = 'idle'; // states: 'idle', 'recorded'
 	let recordingType = ''; // 'video' or 'audio'
 	let firstImageTaken = false;
 	let secondImageTaken = false;
 
 	let createStoryForm: HTMLFormElement;
 
-	let mediaFile;
-
-	let stream = null;
-	let mediaRecorder = null;
-	let recordedChunks = [];
+	let stream: MediaStream | null = null;
+	let mediaRecorder: MediaRecorder | null = null;
+	let recordedChunks: Blob[] = [];
 	let recording = false;
 	let recorded = false;
-	let videoBlob = null;
-	let videoUrl = null;
+	let videoBlob: File | Blob;
+	let videoUrl: string | null = null;
 
 	let imageFiles: File[] = [];
 	$: submitting = false;
@@ -133,9 +130,10 @@
 		}
 	}
 
-	const upload = (type) => {
+	const upload = (type: string) => {
 		recordingType = type;
-		document.getElementById(type === 'video' ? 'videoFile' : 'audioFile').click();
+		const id = type === 'video' ? 'videoFile' : 'audioFile';
+		document.getElementById(id)!.click();
 	};
 
 	async function startRecording() {
@@ -167,13 +165,16 @@
 	function stopRecording() {
 		if (mediaRecorder && recording) {
 			mediaRecorder.stop();
-			stream.getTracks().forEach(track => track.stop());
-			recording = false;
+
+			if(stream){
+				stream.getTracks().forEach(track => track.stop());
+				recording = false;
+			}
 		}
 	}
 
 	function deleteRecording(){
-		videoBlob = null;
+		videoBlob = new Blob();
 		recorded = false;
 		recording = false;
 		videoUrl = null;
@@ -181,7 +182,7 @@
 		(document.getElementById(id) as HTMLInputElement).value = '';
 	}
 
-	async function uploadVideo(video, type) {
+	async function uploadVideo(video: File | Blob, type: string) {
 		const tempFormData = new FormData();
 		tempFormData.append('file', video);
 		tempFormData.append('upload_preset', 'curraleira');
@@ -206,11 +207,13 @@
 		}
 	}
 
-	async function submitCreateStoryForm(event) {
+	async function submitCreateStoryForm(event: Event) {
 		submitting = true;
 		event.preventDefault();
 
-		const formData = new FormData(event.currentTarget);
+		const form = event.currentTarget as HTMLFormElement;
+
+		const formData = new FormData(form);
 
 		const cloudUrl = await uploadVideo(videoBlob, 'video');
 
@@ -232,7 +235,7 @@
 
 		// Iterate over the entries of the original FormData
 		for (let [key, value] of formData.entries()) {
-			if (key !== 'image' || key !== 'recording_link') {
+			if (key !== 'image' && key !== 'recording_link') {
 				newFormData.append(key, value);
 			}
 		}
@@ -258,8 +261,8 @@
 		applyAction(result);
 	}
 
-	function triggerFileInput(id) {
-		document.getElementById(id).click();
+	function triggerFileInput(id: string) {
+		(document.getElementById(id) as HTMLElement | null)?.click();
 	}
 </script>
 

@@ -16,8 +16,7 @@
 			Está na altura de criar a sua própria história.
 		</h2>
 		<span class="flex justify-center gap-2 pb-3 pt-3">
-			<!--<span><Button class="p-10" href="/story/create/community-stories">Introdução</Button></span>-->
-			<span><Button class="p-10" href="/story/create/technician-stories">Entrevista</Button></span>
+			<span><Button class="p-10" href="/story/create/interview">Entrevista</Button></span>
 		</span>
 	</div>
 </div>
