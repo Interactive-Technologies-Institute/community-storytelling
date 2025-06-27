@@ -38,12 +38,6 @@
 					<Mail class="mr-2 h-4 w-4" />
 					Email
 				</Button>
-				{#if data.mapPin}
-					<Button href="/map?id={data.mapPin.id}&zoom=10" variant="outline">
-						<Map class="mr-2 h-4 w-4" />
-						View on Map
-					</Button>
-				{/if}
 			</div>
 			{#if $page.url.pathname === '/users/me'}
 				<Button href="/users/me/edit">Edit Profile</Button>

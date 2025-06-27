@@ -160,7 +160,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Loader } from '@googlemaps/js-api-loader';
+  import Loader from '@googlemaps/js-api-loader';
   import { PUBLIC_GOOGLE_MAPS_KEY } from '$env/static/public';
 	import { goto } from '$app/navigation';
 

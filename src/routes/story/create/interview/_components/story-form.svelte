@@ -14,7 +14,7 @@
 
 	import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
 
-	import { Loader } from '@googlemaps/js-api-loader';
+	import Loader from '@googlemaps/js-api-loader';
 
 	let mapContainer: HTMLDivElement;
 	let map: google.maps.Map;
@@ -276,92 +276,6 @@
 		class="flex flex-col gap-y-10"
 	>
 		<div class="page" class:show={page === 1}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
-			<Form.Field {form} name="storyteller" class="text-center">
-				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Qual é o nome da pessoa a ser entrevistada?</Form.Label
-					>
-					<span class="inline-block flex justify-center gap-2 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} required />
-						<Form.FieldErrors />
-						<span
-							><Button class="p-2" type="button" on:click={() => (page = 2)}><ArrowRight /></Button
-							></span
-						>
-					</span>
-				</Form.Control>
-			</Form.Field>
-		</div>
-		<div class="page" class:show={page === 2}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
-			<Form.Field {form} name="tags" class="text-center">
-				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Se existe, qual é o local em que esta entrevista se foca? </Form.Label
-					>
-					<span class="inline-block flex justify-center gap-2 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.tags[1]} />
-						<Form.FieldErrors />
-						<span
-							><Button class="p-2" type="button" on:click={() => (page = 3)}><ArrowRight /></Button
-							></span
-						>
-					</span>
-				</Form.Control>
-			</Form.Field>
-			<Form.Field {form} hidden name="role" class="text-center">
-				<Form.Control let:attrs>
-					<input hidden name="role" bind:value={$formData.role} />
-					<Form.FieldErrors />
-				</Form.Control>
-			</Form.Field>
-			<Form.Field {form} hidden name="tags" class="text-center">
-				<Form.Control let:attrs>
-					<input hidden name="tags" bind:value={$formData.tags[0]} />
-					<Form.FieldErrors />
-				</Form.Control>
-			</Form.Field>
-		</div>
-
-		<div class="page" class:show={page === 3}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
-			<Form.Field {form} name="tags" class="text-center">
-				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Se existe, em que período é que esta entrevista se foca?</Form.Label
-					>
-					<span class="inline-block flex justify-center gap-2 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.tags[2]} />
-						<Form.FieldErrors />
-						<span
-							><Button class="p-2" type="button" on:click={() => (page = 4)}><ArrowRight /></Button
-							></span
-						>
-					</span>
-				</Form.Control>
-			</Form.Field>
-		</div>
-
-		<div class="page" class:show={page === 4}>
-			<h2 class="pb-4 text-center text-3xl font-semibold">
-				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
-			</h2>
-
-			<div bind:this={mapContainer} class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg"></div>
-
-			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
-			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
-
-			<div class="flex justify-center pt-6">
-				<Button on:click={() => (page = 5)}>
-					<ArrowRight class="mr-2 h-4 w-4" />
-					Continuar
-				</Button>
-			</div>
-		</div>
-
-		<div class="page" class:show={page === 5}>
 			<Form.Field hidden {form} name="recording_link" class="text-center">
 				<Form.Control let:attrs>
 					<div class="flex flex-col items-center gap-2">
@@ -454,13 +368,98 @@
 						{/if}
 						<Button
 							class="p-2"
-							on:click={() => (page = 6)}
+							on:click={() => (page = 2)}
 							disabled={recorded === false}
 						>
 							<ArrowRight />
 						</Button>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="page" class:show={page === 2}>
+			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<Form.Field {form} name="storyteller" class="text-center">
+				<Form.Control let:attrs>
+					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
+						>Qual é o nome da pessoa a ser entrevistada?</Form.Label
+					>
+					<span class="inline-block flex justify-center gap-2 pt-3">
+						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} required />
+						<Form.FieldErrors />
+						<span
+							><Button class="p-2" type="button" on:click={() => (page = 3)}><ArrowRight /></Button
+							></span
+						>
+					</span>
+				</Form.Control>
+			</Form.Field>
+		</div>
+		<div class="page" class:show={page === 3}>
+			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<Form.Field {form} name="tags" class="text-center">
+				<Form.Control let:attrs>
+					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
+						>Se existe, qual é o local em que esta entrevista se foca? </Form.Label
+					>
+					<span class="inline-block flex justify-center gap-2 pt-3">
+						<Input class="w-auto" {...attrs} bind:value={$formData.tags[1]} />
+						<Form.FieldErrors />
+						<span
+							><Button class="p-2" type="button" on:click={() => (page = 4)}><ArrowRight /></Button
+							></span
+						>
+					</span>
+				</Form.Control>
+			</Form.Field>
+			<Form.Field {form} hidden name="role" class="text-center">
+				<Form.Control let:attrs>
+					<input hidden name="role" bind:value={$formData.role} />
+					<Form.FieldErrors />
+				</Form.Control>
+			</Form.Field>
+			<Form.Field {form} hidden name="tags" class="text-center">
+				<Form.Control let:attrs>
+					<input hidden name="tags" bind:value={$formData.tags[0]} />
+					<Form.FieldErrors />
+				</Form.Control>
+			</Form.Field>
+		</div>
+
+		<div class="page" class:show={page === 4}>
+			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<Form.Field {form} name="tags" class="text-center">
+				<Form.Control let:attrs>
+					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
+						>Se existe, em que período é que esta entrevista se foca?</Form.Label
+					>
+					<span class="inline-block flex justify-center gap-2 pt-3">
+						<Input class="w-auto" {...attrs} bind:value={$formData.tags[2]} />
+						<Form.FieldErrors />
+						<span
+							><Button class="p-2" type="button" on:click={() => (page = 5)}><ArrowRight /></Button
+							></span
+						>
+					</span>
+				</Form.Control>
+			</Form.Field>
+		</div>
+
+		<div class="page" class:show={page === 5}>
+			<h2 class="pb-4 text-center text-3xl font-semibold">
+				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
+			</h2>
+
+			<div bind:this={mapContainer} class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg"></div>
+
+			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
+			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
+
+			<div class="flex justify-center pt-6">
+				<Button on:click={() => (page = 6)}>
+					<ArrowRight class="mr-2 h-4 w-4" />
+					Continuar
+				</Button>
 			</div>
 		</div>
 		<div class="page" class:show={page === 6}>

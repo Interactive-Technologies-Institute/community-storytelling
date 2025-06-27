@@ -90,27 +90,10 @@ export const load = async (event) => {
 		return stories;
 	}
 
-	async function getMapPin(): Promise<{ id: number } | null> {
-		const { data: mapPin, error: mapPinError } = await event.locals.supabase
-			.from('map_pins_view')
-			.select('id')
-			.eq('user_id', id)
-			.maybeSingle();
-
-		if (mapPinError) {
-			const errorMessage = 'Error fetching map pin, please try again later.';
-			setFlash({ type: 'error', message: errorMessage }, event.cookies);
-			return error(500, errorMessage);
-		}
-
-		return mapPin;
-	}
-
 	return {
 		userProfile: await getUserProfile(),
 		howTos: await getHowTos(),
 		events: await getEvents(),
 		stories: await getStories(),
-		mapPin: await getMapPin(),
 	};
 };
