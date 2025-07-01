@@ -116,6 +116,8 @@ export type Database = MergeDeep<
 						moderation_status: Database['public']['Enums']['moderation_status'];
 						updated_at: string;
 						user_id: string;
+						story_id: number;
+						year: number;
 					};
 				};
 				profiles_view: {

@@ -48,6 +48,8 @@ export type MapPin = {
 	lng: number;
 	lat: number;
 	moderation_status: ModerationStatus;
+	story_id: number;
+	year: number;
 };
 
 export type MapPinWithModeration = MapPin & { moderation: ModerationInfo[] };

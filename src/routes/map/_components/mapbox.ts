@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 
 mapboxgl.accessToken =
-	'pk.eyJ1Ijoic29ja2l0b3MiLCJhIjoiY2t6NzUydWZwMGlyajJvbXVuZ2gyNTRjaiJ9.-fuONam95R59PjyGsEVdCQ';
+	'pk.eyJ1IjoiaXRpbGFyc3lzIiwiYSI6ImNtY2V4MWQyMDAybnEyanNpbXRteTJ2YXMifQ.kImRpFq1PecY0VPc9wJyXQ';
 
 const key = Symbol();
 

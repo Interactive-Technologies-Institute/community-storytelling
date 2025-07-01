@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { applyAction, deserialize } from '$app/forms';
-	import { PUBLIC_CLOUDINARY_CLOUD_NAME, PUBLIC_GOOGLE_MAPS_KEY } from '$env/static/public';
+	import { PUBLIC_CLOUDINARY_CLOUD_NAME} from '$env/static/public';
 	import { Button } from '$lib/components/ui/button';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	import * as Form from '$lib/components/ui/form';
@@ -14,13 +14,11 @@
 
 	import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
 
-	import Loader from '@googlemaps/js-api-loader';
+	import Map from '../../../../map/_components/map.svelte';
+	import Marker from '../../../../map/_components/marker.svelte';
 
-	let mapContainer: HTMLDivElement;
-	let map: google.maps.Map;
-	let marker;
-
-	const apiKey = PUBLIC_GOOGLE_MAPS_KEY;
+	let mapCenter = { lat: 38.736946, lng: -9.142685 }; // Lisbon center default
+	let markerPosition: { lat: number; lng: number } | null = null;
 
 	/*const questions = [
 		'Fale-nos de si (o seu nome, idade e uma característica sobre si)',
@@ -70,38 +68,12 @@
 	let imageFiles: File[] = [];
 	$: submitting = false;
 
-	onMount(async () => {
-		const loader = new Loader({
-			apiKey,
-			version: 'weekly',
-		});
-
-		await loader.load();
-
-		map = new google.maps.Map(mapContainer, {
-			center: { lat: 38.736946, lng: -9.142685 }, // Lisbon
-			zoom: 15,
-			mapTypeControl: false,
-			streetViewControl: false,
-		});
-
-		map.addListener('click', (e) => {
-			const lat = e.latLng.lat();
-			const lng = e.latLng.lng();
-			$formData.lat = lat;
-			$formData.lng = lng;
-
-			if (marker) {
-				marker.setPosition({ lat, lng });
-
-			} else {
-				marker = new google.maps.Marker({
-					position: { lat, lng },
-					map,
-				});
-			}
-		});
-	});
+	function handleMapClick(event: CustomEvent<{ lat: number; lng: number }>) {
+		console.log('Map clicked at:', event.detail);
+		markerPosition = event.detail;
+		$formData.lat = event.detail.lat;
+		$formData.lng = event.detail.lng;
+	}
 
 	function handleMediaUpload(event: Event) {
 		if (event.target){
@@ -450,7 +422,17 @@
 				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
 			</h2>
 
-			<div bind:this={mapContainer} class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg"></div>
+			<div class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
+				<Map lng={mapCenter.lng}
+					lat={mapCenter.lat}
+					zoom={13}
+					on:mapClick={handleMapClick}>
+
+					{#if markerPosition}
+						<Marker lng={markerPosition.lng} lat={markerPosition.lat} disableClick={true} />
+					{/if}
+				</Map>
+			</div>
 
 			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
@@ -547,5 +529,8 @@
 	}
 	.page.show {
 		display: block;
+	}
+	.no-pointer {
+		pointer-events: none;
 	}
 </style>
