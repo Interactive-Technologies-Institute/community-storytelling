@@ -10,14 +10,14 @@
 	import { zodClient, type Infer } from 'sveltekit-superforms/adapters';
 
 	import Input from '$lib/components/ui/input/input.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
 
 	import Map from '../../../../map/_components/map.svelte';
 	import Marker from '../../../../map/_components/marker.svelte';
 
-	let mapCenter = { lat: 38.736946, lng: -9.142685 }; // Lisbon center default
+	let mapCenter = { lat: 38.7382, lng: -9.1212 };
 	let markerPosition: { lat: number; lng: number } | null = null;
 
 	/*const questions = [
@@ -52,8 +52,6 @@
 	$formData.tags[0] = 'Interview';
 
 	let recordingType = ''; // 'video' or 'audio'
-	let firstImageTaken = false;
-	let secondImageTaken = false;
 
 	let createStoryForm: HTMLFormElement;
 
@@ -64,9 +62,19 @@
 	let recorded = false;
 	let videoBlob: File | Blob;
 	let videoUrl: string | null = null;
+	let videoElement: HTMLVideoElement;
 
+	let firstImageTaken = false;
+	let secondImageTaken = false;
 	let imageFiles: File[] = [];
+	let photoStream: MediaStream | null = null;
+	let photoVideoEl: HTMLVideoElement;
+	let takingPhoto = false;
+	let retakeMode = false;
+
 	$: submitting = false;
+
+	let currentCaptureSlot: 'first' | 'second' | null = null;
 
 	function handleMapClick(event: CustomEvent<{ lat: number; lng: number }>) {
 		console.log('Map clicked at:', event.detail);
@@ -88,17 +96,17 @@
 	}
 
 	function handleImageUpload(event: Event) {
-		if (event.target){
-			const target = event.target as HTMLInputElement;
-			if(target.files){
-				imageFiles.push(...target.files);
-				console.log('images', imageFiles);
-				if (!firstImageTaken) {
-					firstImageTaken = true;
-				} else if (!secondImageTaken) {
-					secondImageTaken = true;
-				}
+		const target = event.target as HTMLInputElement;
+		if (target.files && target.files.length > 0) {
+			const file = target.files[0];
+			if (target.id === 'firstImageFile') {
+				imageFiles[0] = file;
+				firstImageTaken = true;
+			} else if (target.id === 'secondImageFile') {
+				imageFiles[1] = file;
+				secondImageTaken = true;
 			}
+			retakeMode = false;
 		}
 	}
 
@@ -108,9 +116,78 @@
 		document.getElementById(id)!.click();
 	};
 
-	async function startRecording() {
+	async function startPhotoCapture(slot: 'first' | 'second') {
 		try {
-			stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+			photoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+			takingPhoto = true;
+			retakeMode = false;
+			currentCaptureSlot = slot;
+			await tick();
+			photoVideoEl.srcObject = photoStream;
+			await photoVideoEl.play();
+		} catch (error) {
+			console.error('Camera access denied:', error);
+		}
+	}
+	function capturePhoto() {
+		const canvas = document.createElement('canvas');
+		canvas.width = photoVideoEl.videoWidth;
+		canvas.height = photoVideoEl.videoHeight;
+
+		const ctx = canvas.getContext('2d');
+		if (ctx) {
+			ctx.drawImage(photoVideoEl, 0, 0, canvas.width, canvas.height);
+			canvas.toBlob((blob) => {
+				if (blob) {
+					const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+
+					if (!firstImageTaken) {
+						imageFiles[0] = file;
+						firstImageTaken = true;
+					} else if (!secondImageTaken) {
+						imageFiles[1] = file;
+						secondImageTaken = true;
+					}
+					retakeMode = true;
+					stopPhotoCapture();
+				}
+			}, 'image/jpeg');
+		}
+	}
+
+	function stopPhotoCapture() {
+		if (photoStream) {
+			photoStream.getTracks().forEach((track) => track.stop());
+			takingPhoto = false;
+		}
+	}
+
+	function retakePhoto() {
+		retakeMode = false;
+		if (currentCaptureSlot) {
+			startPhotoCapture(currentCaptureSlot);
+		}
+	}
+
+	function confirmPhoto() {
+		retakeMode = false;
+		currentCaptureSlot = null;
+	}
+
+	async function startRecording(type: string) {
+		try {
+			if(type === 'video'){
+				stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+				await tick();
+				if (videoElement) {
+					videoElement.srcObject = stream;
+					await videoElement.play();
+				}
+			}
+
+			else{
+				stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+			}
 
 			mediaRecorder = new MediaRecorder(stream);
 			recordedChunks = [];
@@ -130,7 +207,7 @@
 		mediaRecorder.start();
 		recording = true;
 		} catch (err) {
-			console.error('Camera access error:', err);
+			console.error('Camera and/or audio access error:', err);
 		}
 	}
 
@@ -298,27 +375,48 @@
 			</div>
 			<div class="mt-4 text-center">
 				<div class="flex flex-col items-center gap-2">
+					<!-- Camera Preview
+					{#if recording}
+					<video
+						bind:this={videoElement}
+						autoplay
+						muted
+						playsinline
+						class="rounded border border-gray-300"
+						style="width: 320px; height: 240px;"
+					></video>
+					{/if}
+					-->
 					<div class="flex items-center gap-2">
 						{#if !recording && !recorded}
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white"
-								on:click={() => startRecording()}
+								on:click={() => startRecording('video')}
 							>
-							Start Recording
+								Gravar Vídeo
 							</Button>
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white"
+								on:click={() => startRecording('audio')}
+							>
+								Gravar Áudio
+							</Button>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white gap-2"
 								on:click={() => upload('video')}
 							>
+								<span>Upload</span> 
 								<Video />
 							</Button>
 							<Button
 								type="button"
-								class="cursor-pointer bg-black p-2 text-sm text-white"
+								class="cursor-pointer bg-black p-2 text-sm text-white gap-2"
 								on:click={() => upload('audio')}
 							>
+								<span>Upload</span>
 								<Mic />
 							</Button>
 						{:else if recording && !recorded}
@@ -405,7 +503,7 @@
 			<div class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
 				<Map lng={mapCenter.lng}
 					lat={mapCenter.lat}
-					zoom={13}
+					zoom={14}
 					on:mapClick={handleMapClick}>
 
 					{#if markerPosition}
@@ -431,48 +529,92 @@
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
 						>Tire duas fotografias da pessoa.</Form.Label
 					>
-					<div class="flex flex-col items-center gap-2">
-						<input
-							type="file"
-							accept="image/*"
-							id="firstImageFile"
-							capture="environment"
-							on:change={handleImageUpload}
-							class="hidden"
-						/>
-						<input
-							type="file"
-							accept="image/*"
-							id="secondImageFile"
-							capture="environment"
-							on:change={handleImageUpload}
-							class="hidden"
-						/>
-						<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-4">
+						<!-- Upload Buttons -->
+						<div class="flex items-center gap-2 justify-center">
 							{#if !firstImageTaken}
 								<Button
 									type="button"
-									class="cursor-pointer bg-black p-2 text-sm text-white"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('firstImageFile')}
 								>
 									<Camera class="mr-2 h-4 w-4" />
 									Tirar Primeira Fotografia
 								</Button>
+								<Button
+									type="button"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => startPhotoCapture('first')}
+								>
+									Tirar com Câmara
+								</Button>
 							{:else if !secondImageTaken}
 								<Button
 									type="button"
-									class="cursor-pointer bg-black p-2 text-sm text-white"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('secondImageFile')}
 								>
 									<Camera class="mr-2 h-4 w-4" />
 									Tirar Segunda Fotografia
 								</Button>
+								<Button
+									type="button"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => startPhotoCapture('second')}
+								>
+									Tirar com Câmara
+								</Button>
 							{/if}
 						</div>
-						{#if imageFiles.length > 1}
-							<Check class="h-4 w-4 text-green-600" />
-							<p class="text-green-600">Fotografias guardadas</p>
+
+						<!-- Hidden File Inputs for Upload -->
+						<input
+							id="firstImageFile"
+							type="file"
+							accept="image/*"
+							on:change={handleImageUpload}
+							class="hidden"
+						/>
+						<input
+							id="secondImageFile"
+							type="file"
+							accept="image/*"
+							on:change={handleImageUpload}
+							class="hidden"
+						/>
+
+						{#if imageFiles.length > 0}
+							<div class="flex items-center gap-2">
+								<Check class="h-4 w-4 text-green-600" />
+								<p class="text-green-600">Fotografias guardadas ({imageFiles.length})</p>
+							</div>
 						{/if}
+
+						<!-- Camera Preview & Capture -->
+						<div class="flex flex-col items-center justify-center gap-4">
+							{#if takingPhoto}
+							<video bind:this={photoVideoEl} autoplay playsinline class="w-full max-w-md rounded-lg" />
+							<div class="mt-2 flex gap-2">
+								<Button on:click={capturePhoto} class="bg-green-600 text-white p-2">Capturar Foto</Button>
+								<Button on:click={stopPhotoCapture} class="bg-red-500 text-white p-2">Cancelar</Button>
+							</div>
+							{/if}
+						</div>
+
+						<!-- Retake / Confirm -->
+						 <div class="flex flex-col items-center justify-center gap-4">
+							{#if retakeMode}
+								<img
+									src={URL.createObjectURL(currentCaptureSlot === 'first' ? imageFiles[0] : imageFiles[1])}
+									alt="Foto capturada"
+									class="w-full max-w-md rounded-lg mt-4"
+								/>
+								<div class="flex gap-2 mt-2">
+									<Button on:click={confirmPhoto} class="bg-green-600 text-white p-2">Confirmar</Button>
+									<Button on:click={retakePhoto} class="bg-yellow-500 text-white p-2">Refazer</Button>
+								</div>
+							{/if}
+						</div>
 					</div>
 				</Form.Control>
 			</Form.Field>

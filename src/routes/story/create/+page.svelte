@@ -13,7 +13,7 @@
 	<div>
 		<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 		<h2 class="pb-2 text-center text-3xl font-semibold tracking-tight transition-colors">
-			Está na altura de criar a sua própria história.
+			Está na altura de criar a tua história.
 		</h2>
 		<span class="flex justify-center gap-2 pb-3 pt-3">
 			<span><Button class="p-10" href="/story/create/interview">Entrevista</Button></span>
