@@ -7,6 +7,7 @@
 	import StoryDeleteDialog from './_components/story-delete-dialog.svelte';
 	import StoryUnpublishDialog from './_components/story-unpublish-dialog.svelte';
 	import Story from './_components/story.svelte';
+	import StoryLikeButton from './_components/story-like-button.svelte';
 
 	export let data;
 
@@ -21,6 +22,10 @@
 	<div class="container mx-auto space-y-10 pb-10">
 	{#if data.moderation[0].status !== 'approved'}
 		<ModerationBanner moderation={data.moderation} />
+	{:else}
+		<div class="flex justify-center my-6">
+			<StoryLikeButton count={data.likeCount} data={data.toggleLikeForm} />
+		</div>
 	{/if}
 	<div class="mb-10 flex flex-col items-center gap-y-4">
 		<div class="flex flex-row gap-x-2">

@@ -1,5 +1,5 @@
 //import { deleteStorychema } from '@/schemas/story';
-import { deleteStorySchema, unpublishStorySchema } from '@/schemas/story';
+import { deleteStorySchema, unpublishStorySchema, toggleStoryLikeSchema } from '@/schemas/story';
 import type { ModerationInfo, Story } from '@/types/types';
 import { handleFormAction } from '@/utils';
 import { error, fail, redirect } from '@sveltejs/kit';
@@ -45,16 +45,42 @@ export const load = async (event) => {
 		return user ? user.role !== 'user' : false;
 	}
 
+	async function getLikeCount(id: string): Promise<{ count: number; userLiked: boolean }> {
+			const { data: liked, error: interestedError } = await event.locals.supabase
+				.rpc('get_story_like_count', {
+					story_id: parseInt(id),
+					user_id: user?.id,
+				})
+				.single();
+	
+			if (interestedError) {
+				const errorMessage = 'Error fetching interest count, please try again later.';
+				setFlash({ type: 'error', message: errorMessage }, event.cookies);
+				return error(500, errorMessage);
+			}
+			return { count: liked.count, userLiked: liked.has_liked };
+		}
+	
+		const likeCount = await getLikeCount(event.params.id);
+
 	return {
 		story: await getStory(event.params.id),
 		moderation: await getStoryModeration(event.params.id),
 		permission: await getUserPermission(),
+		likeCount: likeCount.count,
 		deleteForm: await superValidate(zod(deleteStorySchema), {
 			id: 'delete-story',
 		}),
 		unpublishForm: await superValidate(zod(unpublishStorySchema), {
 			id: 'unpublish-story',
 		}),
+		toggleLikeForm: await superValidate(
+					{ value: likeCount.userLiked },
+					zod(toggleStoryLikeSchema),
+					{
+						id: 'toggle-story-like',
+					}
+				),
 	};
 };
 
@@ -92,14 +118,72 @@ export const actions = {
 				const { error: supabaseModerationError } = await event.locals.supabase
 					.from('story_moderation')
 					.update({ status: 'pending', comment: 'Pending moderation' })
-					.eq('id', form.data.id);
+					.eq('story_id', form.data.id);
 
 				if (supabaseModerationError) {
 					setFlash({ type: 'error', message: supabaseModerationError.message }, event.cookies);
 					return fail(500, { message: supabaseModerationError.message, form });
 				}
 
+				const { data: storyPin, error: pinsError } = await event.locals.supabase
+						.from('map_pins_view')
+						.select('id')
+						.eq('story_id', form.data.id)
+						.single();
+							
+					if (pinsError) {
+						console.log(pinsError.message);
+
+						return fail(500, { message: pinsError.message });
+					}
+
+					const { error: supabaseModerationError2 } = await event.locals.supabase
+						.from('map_pins_moderation')
+						.update({ status: 'pending', comment: 'Pending moderation' })
+						.eq('map_pin_id', storyPin.id);
+
+					if (supabaseModerationError2) {
+						console.log(supabaseModerationError2.message);
+						return fail(500, { message: supabaseModerationError2.message });
+					}
+
 				return redirect(303, '/story');
 			}
 		),
+	toggleLike: async (event) =>
+			handleFormAction(
+				event,
+				toggleStoryLikeSchema,
+				'toggle-story-like',
+				async (event, userId, form) => {
+					if (form.data.value) {
+						const { error: supabaseError } = await event.locals.supabase
+							.from('liked_stories')
+							.insert([
+								{
+									story_id: parseInt(event.params.id),
+									user_id: userId,
+								},
+							]);
+	
+						if (supabaseError) {
+							setFlash({ type: 'error', message: supabaseError.message }, event.cookies);
+							return fail(500, { message: supabaseError.message, form });
+						}
+					} else {
+						const { error: supabaseError } = await event.locals.supabase
+							.from('liked_stories')
+							.delete()
+							.eq('story_id', parseInt(event.params.id))
+							.eq('user_id', userId);
+	
+						if (supabaseError) {
+							setFlash({ type: 'error', message: supabaseError.message }, event.cookies);
+							return fail(500, { message: supabaseError.message, form });
+						}
+					}
+	
+					return { form };
+				}
+			),
 };

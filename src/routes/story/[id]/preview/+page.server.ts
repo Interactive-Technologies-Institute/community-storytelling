@@ -137,6 +137,30 @@ export const actions = {
 						return fail(500, { message: supabaseModerationError.message });
 					}
 
+
+					const { data: storyPin, error: pinsError } = await locals.supabase
+						.from('map_pins_view')
+						.select('id')
+						.eq('story_id', id)
+						.single();
+							
+					if (pinsError) {
+						console.log(pinsError.message);
+
+						return fail(500, { message: pinsError.message });
+					}
+
+					const { error: supabaseModerationError2 } = await locals.supabase
+						.from('map_pins_moderation')
+						.update({ status: 'approved', comment: '' })
+						.eq('map_pin_id', storyPin.id);
+
+					if (supabaseModerationError2) {
+						console.log(supabaseModerationError2.message);
+						return fail(500, { message: supabaseModerationError2.message });
+					}
+
+
 					throw redirect(303, `/story/${id}`);
 
 					return { success: true };

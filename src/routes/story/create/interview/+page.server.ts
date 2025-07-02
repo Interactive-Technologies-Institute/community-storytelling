@@ -28,6 +28,7 @@ export const actions = {
 				.single();
 
 			if (supabaseError) {
+				console.log('B');
 				setFlash({ type: 'error', message: supabaseError.message }, event.cookies);
 				return fail(500, withFiles({ message: supabaseError.message, form }));
 			}
@@ -39,7 +40,7 @@ export const actions = {
 					user_id: userId,
 					lat: form.data.lat,
 					lng: form.data.lng,
-					year: form.data.tags[2]
+					year: form.data.tags[0]
 				});
 			
 				if (locationError) {

@@ -372,7 +372,7 @@
 			<Form.Field {form} name="tags" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Se existe, qual é o local em que esta entrevista se foca? </Form.Label
+						>Se existe, em que período é que esta entrevista se foca?</Form.Label
 					>
 					<span class="inline-block flex justify-center gap-2 pt-3">
 						<Input class="w-auto" {...attrs} bind:value={$formData.tags[1]} />
@@ -397,27 +397,7 @@
 				</Form.Control>
 			</Form.Field>
 		</div>
-
 		<div class="page" class:show={page === 4}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
-			<Form.Field {form} name="tags" class="text-center">
-				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Se existe, em que período é que esta entrevista se foca?</Form.Label
-					>
-					<span class="inline-block flex justify-center gap-2 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.tags[2]} />
-						<Form.FieldErrors />
-						<span
-							><Button class="p-2" type="button" on:click={() => (page = 5)}><ArrowRight /></Button
-							></span
-						>
-					</span>
-				</Form.Control>
-			</Form.Field>
-		</div>
-
-		<div class="page" class:show={page === 5}>
 			<h2 class="pb-4 text-center text-3xl font-semibold">
 				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
 			</h2>
@@ -438,13 +418,13 @@
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
 
 			<div class="flex justify-center pt-6">
-				<Button on:click={() => (page = 6)}>
+				<Button on:click={() => (page = 5)}>
 					<ArrowRight class="mr-2 h-4 w-4" />
 					Continuar
 				</Button>
 			</div>
 		</div>
-		<div class="page" class:show={page === 6}>
+		<div class="page" class:show={page === 5}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 			<Form.Field {form} name="image" class="text-center">
 				<Form.Control let:attrs>

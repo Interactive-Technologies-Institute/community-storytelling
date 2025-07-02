@@ -23,3 +23,9 @@ export const unpublishStorySchema = z.object({
 });
 
 export type UnpublishStorySchema = typeof unpublishStorySchema;
+
+export const toggleStoryLikeSchema = z.object({
+	value: z.boolean(),
+});
+
+export type toggleStoryLikeSchema = typeof toggleStoryLikeSchema;

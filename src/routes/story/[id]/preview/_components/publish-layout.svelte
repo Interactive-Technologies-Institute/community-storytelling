@@ -46,10 +46,10 @@
     
     A partir desta  transcrição, em linguagem Português de Portugal, crie a história da entrevista de uma perspectiva externa, sem inventar dados que não estejam na transcrição e adicionando citações do entrevistador a ser entrevistado para dar mais visibilidade. Seguindo estes passos de como contar uma boa história:    
     - Exposição - Apresenta as personagens principais (pessoas reais!), o cenário da história (o tempo e o local relacionados, se houver) e o ambiente (a urgência é um bom ponto de partida)
-    - Conflito - Este é o problema da sua história, o principal fator que impulsiona o enredo. O problema é frequentemente resolvido por algo que a sua organização sem fins lucrativos fez. A exposição e o conflito podem ocorrer quase simultaneamente, especialmente em textos mais curtos.
-    - Ação ascendente - Todos os acontecimentos que conduzem ao clímax da sua história são considerados ação ascendente. Este é um bom local para mostrar como funciona a sua organização sem fins lucrativos e os passos que levam ao impacto que a sua equipa causa.
+    - Conflito - Este é o problema da sua história, o principal fator que impulsiona o enredo. A exposição e o conflito podem ocorrer quase simultaneamente, especialmente em textos mais curtos.
+    - Ação ascendente - Todos os acontecimentos que conduzem ao clímax da sua história são considerados ação ascendente, o que irá levar ao clímax.
     - Clímax - Este é o ponto de viragem da história, o pico da ação e o ponto em que o caminho para a resolução é concretizado. Este é o nível emocional mais elevado da sua história e a parte que realmente o liga ao seu público.
-    - Resolução - O fim. Não tem necessariamente de deixar o leitor com uma sensação de calor, mas deve pelo menos fazê-lo pensar e deve definitivamente deixar o seu público com uma ligação entre as suas emoções e a sua organização sem fins lucrativos.
+    - Resolução - O fim. Não tem necessariamente de deixar o leitor com uma sensação de calor, mas deve pelo menos fazê-lo pensar e deve definitivamente deixar o seu público com uma ligação entre as suas emoções e a história contada.
     O texto deve ter 5 parágrafos.
 
     Além disso, em uma secção chamada Quotes Importantes, crie 2 quotes que sejam muito importantes, que dão mais visibilidade ao tema que foi abordado.
