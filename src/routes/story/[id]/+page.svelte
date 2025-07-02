@@ -19,7 +19,7 @@
 	subtitle={data.story.role === 'interview' ? 'Interview' : 'Introduction'}
 />
 	<div class="container mx-auto space-y-10 pb-10">
-	{#if data.moderation.status !== 'approved'}
+	{#if data.moderation[0].status !== 'approved'}
 		<ModerationBanner moderation={data.moderation} />
 	{/if}
 	<div class="mb-10 flex flex-col items-center gap-y-4">
@@ -31,7 +31,7 @@
 				</Button>
 			{/each}
 		</div>
-		{#if data.moderation.status == 'approved'}
+		{#if data.moderation[0].status == 'approved'}
 			<Story data={data.story} />
 		{/if}
 
@@ -43,7 +43,7 @@
 	{#if data.permission}
 		<div
 			class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
-		>	<!--
+		>
 			{#if data.story.transcription}
 				<Button href="/story/{data.story.id}/transcription" class="w-full sm:w-auto">
 					<Eye class="mr-2 h-4 w-4" />
@@ -55,25 +55,13 @@
 					Gerar Transcrição
 				</Button>
 			{/if}
-			{#if data.story.insights_gpt}
-				<Button href="/story/{data.story.id}/insights" class="w-full sm:w-auto">
-					<Eye class="mr-2 h-4 w-4" />
-					Abrir Análise
-				</Button>
-			{:else}
-				<Button href="/story/{data.story.id}/edit-insights" class="w-full sm:w-auto">
-					<Wand class="mr-2 h-4 w-4" />
-					Gerar Análise
-				</Button>
-			{/if}
-			{#if data.moderation.status === 'pending'}
+			{#if data.moderation[0].status === 'pending'}
 				<Button href="/story/{data.story.id}/preview" class="w-full sm:w-auto">
 					<LayoutPanelTop class="mr-2 h-4 w-4" />
 					Pré-visualizar história
 				</Button>
 			{/if}
-			-->
-			{#if data.story.user_id === data.user?.id && data.moderation.status === 'approved'}
+			{#if data.story.user_id === data.user?.id && data.moderation[0].status === 'approved'}
 				<Button
 					variant="destructive"
 					on:click={() => (openUnpublishDialog = true)}

@@ -19,7 +19,7 @@ export const load = async (event) => {
 	async function getStories(): Promise<Story[]> {
 		const { data: stories, error } = await event.locals.supabase
 			.from('story_view')
-			.select('id, storyteller')
+			.select('id, title')
 		if (error) {
 			console.error('Error fetching stories:', error);
 		}

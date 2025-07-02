@@ -948,7 +948,7 @@ CREATE OR REPLACE VIEW "public"."story_view" WITH ("security_invoker"='on') AS
     "h"."pub_story_text",
     "h"."pub_quotes",
     "h"."pub_selected_images",
-    "h"."insights_gpt",
+    "h"."title",
     "h"."fts",
     "m"."status" AS "moderation_status"
    FROM ("public"."story" "h"

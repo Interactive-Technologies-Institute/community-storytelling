@@ -5,9 +5,9 @@
 	import * as Alert from './ui/alert';
 	import { Button } from './ui/button';
 
-	export let moderation: ModerationInfo;
+	export let moderation: ModerationInfo[];
 
-	$: latestModeration = moderation;
+	$: latestModeration = moderation[0];
 	let variant: Alert.Variant = 'default';
 	$: variant = latestModeration.status === 'rejected' ? 'destructive' : 'default';
 	let openSheet = false;
@@ -25,6 +25,10 @@
 		{/if}
 	</Alert.Title>
 	<Alert.Description>{latestModeration.comment}</Alert.Description>
+	<Button size="sm" variant="outline" class="mt-2" on:click={() => (openSheet = true)}>
+		More Details
+	</Button>
 </Alert.Root>
 
 <ModerationDetails {moderation} bind:open={openSheet} />
+

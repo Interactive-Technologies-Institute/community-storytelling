@@ -11,21 +11,19 @@
 
 	import InPlaceEdit from './in-place-edit.svelte';
 	import PageHeader from '@/components/page-header.svelte';
-	import { createStorySchema, type CreateStorySchema } from '@/schemas/story';
+	import { previewStorySchema, type PreviewStorySchema } from '@/schemas/preview_story';
 	import { onMount } from 'svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-
-	//import OpenAI from 'openai';
-
+	import OpenAI from 'openai';
 	import { applyAction, deserialize } from '$app/forms';
 	import { Loader2 } from 'lucide-svelte';
 
-	export let data: SuperValidated<Infer<CreateStorySchema>>;
+	export let data: SuperValidated<Infer<PreviewStorySchema>>;
 	export let user;
 
 	const form = superForm(data, {
-		validators: zodClient(createStorySchema),
+		validators: zodClient(previewStorySchema),
 		taintedMessage: true,
 		dataType: 'json',
 		resetForm: false,
@@ -34,44 +32,40 @@
 	const { form: formData, enhance } = form;
 
 	let updateStoryForm: HTMLFormElement;
-
-	$: paragraphs = [];
-	$: quotes = [];
-	let user_id;
+	let title: string;
+	let paragraphs: string[] = [];
+	let quotes: string[] = [];
+	let user_id = '';
 	let currentTab = 't1';
 
-	//const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
-	$: story = '';
+	const openai = new OpenAI({ apiKey: PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 	$: transcription = '';
 
-	let technician_text = `
-    Eu tenho uma transcrição de uma atendente e outro atendente que trabalha na mesma ONG. A atendente faz as seguintes perguntas:
+	let interview_text = `
+    Eu tenho uma transcrição de uma entrevista entre duas pessoas com o tema (X). O entrevistador fará as perguntas relacionadas ao tema, de forma a seguir um certo modelo de perguntas a atingir o passado, presente e futuro:
     
-    - Fale-nos de si (o seu nome, idade, o que faz no Balcão do Bairro)
-    - Diga-nos porque é que contribui com o seu tempo para o Balcão do Bairro (É uma ligação pessoal? Um sentido de justiça? Já foi atendido(a) e agora está em condições de retribuir?)
-    - Conte-nos uma história de uma pessoa que tenha ajudado e que nunca esquecerá
-    - Diga-nos como se sentiu quando ajudou essa pessoa
-    - Diga-nos como acha que trabalhar no Balcão do Bairro mudou a sua vida
-    
-    A partir desta  transcrição, em linguagem Português de Portugal, crie a história do atendente entrevistado de uma perspectiva externa, sem inventar dados que não estejam na transcrição e adicionando citações do atendente a ser entrevistado para dar mais visibilidade. Seguindo estes passos de como contar uma boa história:    
-    - Exposição - Apresenta as personagens principais (pessoas reais!), o cenário da história (o tempo e o local relacionados com a sua organização) e o ambiente (a urgência é um bom ponto de partida)
+    A partir desta  transcrição, em linguagem Português de Portugal, crie a história da entrevista de uma perspectiva externa, sem inventar dados que não estejam na transcrição e adicionando citações do entrevistador a ser entrevistado para dar mais visibilidade. Seguindo estes passos de como contar uma boa história:    
+    - Exposição - Apresenta as personagens principais (pessoas reais!), o cenário da história (o tempo e o local relacionados, se houver) e o ambiente (a urgência é um bom ponto de partida)
     - Conflito - Este é o problema da sua história, o principal fator que impulsiona o enredo. O problema é frequentemente resolvido por algo que a sua organização sem fins lucrativos fez. A exposição e o conflito podem ocorrer quase simultaneamente, especialmente em textos mais curtos.
     - Ação ascendente - Todos os acontecimentos que conduzem ao clímax da sua história são considerados ação ascendente. Este é um bom local para mostrar como funciona a sua organização sem fins lucrativos e os passos que levam ao impacto que a sua equipa causa.
     - Clímax - Este é o ponto de viragem da história, o pico da ação e o ponto em que o caminho para a resolução é concretizado. Este é o nível emocional mais elevado da sua história e a parte que realmente o liga ao seu público.
     - Resolução - O fim. Não tem necessariamente de deixar o leitor com uma sensação de calor, mas deve pelo menos fazê-lo pensar e deve definitivamente deixar o seu público com uma ligação entre as suas emoções e a sua organização sem fins lucrativos.
     O texto deve ter 5 parágrafos.
 
-    Além disso, em uma secção chamada Quotes Importantes, crie 2 quotes que sejam muito importantes, que dão mais visibilidade ao que é feito no Balcão, a forma como os fazem sentir e como os ajudam.
+    Além disso, em uma secção chamada Quotes Importantes, crie 2 quotes que sejam muito importantes, que dão mais visibilidade ao tema que foi abordado.
 
+	E para finalizar, partindo da história criada, crie um título para esta história.
 
     O formato deverá ser:
     # História:
     <história criada>
     # Quotes importantes:
     <quotes importantes criados>
+	# Título:
+    <Título criado>
     `;
 
-	let community_text = `
+	let introduction_text = `
     Eu tenho uma transcrição de uma atendente de uma ONG e um cliente. A atendente faz as seguintes perguntas:
     
     - Fale-nos de si (o seu nome, idade, bairro onde vive)
@@ -123,14 +117,14 @@
 		selectedQuote = quotes[currentQuote];
 		apiQuote.on('select', () => {
 			currentQuote = currentQuote === 0 ? 1 : 0;
-			console.log(currentQuote);
 			selectedQuote = quotes[currentQuote];
 		});
 	}
 
-	async function organizeText(text) {
-		let paragraphsText = [];
-		let quotesText = [];
+	async function organizeText(text: string): Promise<[string[], string[], string]> {
+		let paragraphsText: string[] = [];
+		let quotesText: string[] = [];
+		let titleText: string = '';
 
 		// Separate the story from the quotes
 		let parts = text.split('# Quotes importantes:');
@@ -142,21 +136,36 @@
 
 		// Extract quotes from the second part, if it exists
 		if (parts[1]) {
-			quotesText = parts[1]
-				.trim()
-				.split('\n')
-				.map((line) =>
-					line
-						.replace(/^\d+\.\s*/, '')
-						.replace(/^"|"$/g, '')
-						.trim()
-				);
+			// Split quotes and title (if present)
+			let [quotesPart, titlePart] = parts[1].split('# Título:');
+
+			// Process quotes
+			if (quotesPart) {
+				quotesText = quotesPart
+					.trim()
+					.split('\n')
+					.map((line) =>
+						line
+							.replace(/^\d+\.\s*/, '')
+							.replace(/^"|"$/g, '')
+							.trim()
+					)
+					.filter((line) => line.length > 0);
+			}
+
+			if (titlePart) {
+				titleText = titlePart.trim();
+			}
 		}
-		return [paragraphsText, quotesText];
+
+		console.log(paragraphsText);
+		console.log(quotesText);
+		console.log(titleText);
+
+		return [paragraphsText, quotesText, titleText];
 	}
 
-	/*
-	async function transcribe(audioFile) {
+	async function transcribe(audioFile: File) {
 		try {
 			const transcription = await openai.audio.transcriptions.create({
 				file: audioFile,
@@ -171,14 +180,14 @@
 		}
 	}
 
-	async function generate_story(role, transcription: string) {
+	async function generate_story(role: string, transcription: string) {
 		try {
 			const response = await openai.chat.completions.create({
 				model: 'gpt-4o',
 				messages: [
 					{
 						role: 'system',
-						content: role === 'technician' ? `${technician_text}` : `${community_text}`,
+						content: role === 'interview' ? `${interview_text}` : `${introduction_text}`,
 					},
 					{
 						role: 'user',
@@ -198,7 +207,6 @@
 			return null;
 		}
 	}
-	*/
 
 	const getIdentifier = (url: string) => {
 		const regex = /\/([^/]+)\.(mov|mp3|mp4|3gp|avi|mkv|flv|wmv|wav|ogg|aac)$/i;
@@ -214,12 +222,14 @@
 	const getBlobFromUrl = async (url: string) => {
 		const response = await fetch(url);
 		const arrayBuffer = await response.arrayBuffer();
-		const blob = new Blob([arrayBuffer], { type: response.headers.get('content-type') });
+		const contentType = response.headers.get('content-type') || 'application/octet-stream';
+		const blob = new Blob([arrayBuffer], { type: contentType });
 		return blob;
 	};
 
-	/*onMount(async () => {
+	onMount(async () => {
 		const formData = $formData;
+
 		user_id = formData.user_id;
 
 		const transcribeRecording = async (recordingLink: string) => {
@@ -245,10 +255,17 @@
 
 		if (!formData.transcription) {
 			try {
-				const transcriptionResult = await transcribeRecording(formData.recording_link);
-				transcription = transcriptionResult;
-				story = await generate_story(formData.role, transcription);
-				organizeText(formData.storyteller, story);
+				if (formData.recording_link !== undefined){
+					const transcriptionResult = await transcribeRecording(formData.recording_link);
+					transcription = transcriptionResult ?? "";
+					let storyResult = await generate_story(formData.role, transcription);
+					if(storyResult && storyResult.choices[0].message.content){
+						let [paragraphsResult, quotesResult, titleResult] = await organizeText(storyResult.choices[0].message.content);				
+						paragraphs = paragraphsResult;
+						quotes = quotesResult;
+						title = titleResult;
+					}
+				}
 			} catch (error) {
 				console.error('Failed to transcribe recording:', error);
 			}
@@ -256,26 +273,31 @@
 			if (formData.pub_story_text) {
 				paragraphs = formData.pub_story_text;
 				quotes = formData.pub_quotes;
+				if (formData.title){
+					title = formData.title;
+				}
 			} else {
 				let storyResult = await generate_story(formData.role, formData.transcription);
-				let [paragraphsResult, quotesResult] = await organizeText(
-					storyResult.choices[0].message.content
-				);
-				paragraphs = paragraphsResult;
-				quotes = quotesResult;
+				if(storyResult && storyResult.choices[0].message.content){
+					let [paragraphsResult, quotesResult, titleResult] = await organizeText(storyResult.choices[0].message.content);				
+					paragraphs = paragraphsResult;
+					quotes = quotesResult;
+					title = titleResult;
+				}
 			}
 		}
 	});
-	*/
+
 	function submit(field: string) {
-		return ({ detail: newValue }) => {
-			// IRL: POST value to server here
+		return ({ detail: newValue }: CustomEvent<string>) => {
 			console.log(`updated ${field}, new value is: "${newValue}"`);
 		};
 	}
 
-	async function submitUpdateStoryForm(event) {
-		if (event.submitter.value === 'save') {
+	async function submitUpdateStoryForm(event: SubmitEvent) {
+		const submitter = event.submitter as HTMLButtonElement;
+
+		if (submitter && submitter.value === 'save') {
 			submittingSave = true;
 		} else {
 			submittingPublish = true;
@@ -283,24 +305,24 @@
 
 		event.preventDefault();
 
-		const newFormData = new FormData(event.currentTarget);
+		const form = event.currentTarget as HTMLFormElement;
+		
+		const newFormData = new FormData(form);
 
 		if (event.submitter) {
-			newFormData.append(event.submitter.name, event.submitter.value);
+			newFormData.append(submitter.name, submitter.value);
 		}
-
-		console.log('current quote', currentQuote);
-		console.log('quotes', quotes);
 
 		paragraphs.forEach((p) => newFormData.append('pub_story_text', p));
 		newFormData.append('pub_quotes', quotes[currentQuote]);
 		newFormData.append('pub_quotes', currentQuote == 0 ? quotes[1] : quotes[0]);
 		newFormData.append('pub_selected_images', selectedImage);
+		newFormData.append('title', title);
 		newFormData.append(
 			'pub_selected_images',
 			currentFirstImage == 0 ? imageOptions[1].src : imageOptions[0].src
 		);
-		newFormData.append('id', $formData.id);
+		newFormData.append('id', $formData.id.toString());
 		newFormData.append('template', currentTab);
 
 		const response = await fetch('?/updateStory', {
@@ -313,7 +335,7 @@
 
 		const result = deserialize(await response.text());
 		if (result.type === 'success') {
-			if (event.submitter.value === 'save') {
+			if (submitter.value === 'save') {
 				submittingSave = false;
 			} else {
 				submittingPublish = false;
@@ -349,6 +371,11 @@
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-2">
+							<div class="mb-6 text-center">
+								<h2 class="text-5xl font-bold">
+									<InPlaceEdit bind:value={title} on:submit={submit('title')} />
+								</h2>
+							</div>
 							<div
 								class="auto mb-4 w-auto flex-shrink-0 sm:max-w-sm md:float-left md:max-w-md lg:float-left lg:mb-0 lg:mr-4 lg:max-w-xs"
 							>
@@ -394,6 +421,11 @@
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-2">
+							<div class="mb-6 text-center">
+								<h2 class="text-5xl font-bold">
+									<InPlaceEdit bind:value={title} on:submit={submit('title')} />
+								</h2>
+							</div>
 							<div
 								class="mb-4 w-full flex-shrink-0 sm:max-w-sm md:float-left md:max-w-md lg:float-left lg:mb-0 lg:mr-4 lg:max-w-xs"
 							>
@@ -437,9 +469,9 @@
 							</div>
 
 							<div class="pt-4">
-								{#each paragraphs as element, i (element)}
+								{#each paragraphs as p}
 									<p class="pt-2 text-justify">
-										<InPlaceEdit bind:value={element} on:submit={submit('text')} />
+										<InPlaceEdit bind:value={p} on:submit={submit('text')} />
 									</p>
 								{/each}
 							</div>
@@ -457,6 +489,11 @@
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-2">
+							<div class="mb-6 text-center">
+								<h2 class="text-5xl font-bold">
+									<InPlaceEdit bind:value={title} on:submit={submit('title')} />
+								</h2>
+							</div>
 							<div
 								class="mb-4 w-full flex-shrink-0 sm:max-w-sm md:float-left md:max-w-md lg:float-left lg:mb-0 lg:mr-4 lg:max-w-xs"
 							>
@@ -483,9 +520,9 @@
 								</Carousel.Root>
 							</div>
 
-							{#each paragraphs as element, i (element)}
+							{#each paragraphs as p, i }
 								<p class="text-justify">
-									<InPlaceEdit bind:value={element} on:submit={submit('text')} />
+									<InPlaceEdit bind:value={p} on:submit={submit('text')} />
 								</p>
 								{#if i === paragraphs.length - 3}
 									<div class="mt-6 w-full lg:w-full">

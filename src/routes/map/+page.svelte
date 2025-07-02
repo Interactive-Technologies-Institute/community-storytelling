@@ -17,13 +17,13 @@
 	$: if (allStories) {
 		storyLookup = {};
 		for (const story of allStories) {
-		storyLookup[story.id] = story.storyteller;
+		storyLookup[story.id] = story.title;
 		}
 	}
 
 	$: enrichedPins = filteredPins.map(pin => ({
 		...pin,
-		storyteller: storyLookup[pin.story_id] ?? 'Unknown storyteller'
+		title: storyLookup[pin.story_id] ?? 'TBD'
 	}));
 
 
@@ -62,7 +62,7 @@
 					lng={pin.lng}
 					story_id={pin.story_id}
 					year={pin.year}
-					title={pin.storyteller}
+					title={pin.title}
 					on:navigate={handleNavigate}
 				/>
 			{/each}
