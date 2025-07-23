@@ -40,7 +40,8 @@ export const actions = {
 					user_id: userId,
 					lat: form.data.lat,
 					lng: form.data.lng,
-					year: form.data.tags[0]
+					year: form.data.tags[0],
+					pin_color: form.data.pinColor
 				});
 			
 				if (locationError) {

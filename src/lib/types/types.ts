@@ -50,6 +50,7 @@ export type MapPin = {
 	moderation_status: ModerationStatus;
 	story_id: number;
 	year: number;
+	pin_color: string;
 };
 
 export type MapPinWithModeration = MapPin & { moderation: ModerationInfo[] };

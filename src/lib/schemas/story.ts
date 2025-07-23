@@ -8,6 +8,7 @@ export const createStorySchema = z.object({
 	image: z.array(z.string()).min(2, { message: 'At least two images are required' }),
 	lat: z.number().min(-90).max(90).optional(),
 	lng: z.number().min(-180).max(180).optional(),
+	pinColor: z.string().optional(),
 });
 
 export type CreateStorySchema = typeof createStorySchema;

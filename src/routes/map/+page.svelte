@@ -121,6 +121,7 @@
 					story_id={pin.story_id}
 					year={pin.year}
 					title={pin.title}
+					marker_color={pin.pin_color}
 					on:navigate={handleNavigate}
 				/>
 			{/each}

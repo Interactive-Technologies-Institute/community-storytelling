@@ -50,6 +50,7 @@
 
 	$formData.role = 'interview';
 	$formData.tags[0] = 'Interview';
+	$formData.pinColor = $formData.pinColor ?? '#ff0000';
 
 	let recordingType = ''; // 'video' or 'audio'
 
@@ -526,22 +527,33 @@
 					on:mapClick={handleMapClick}>
 
 					{#if markerPosition}
-						<Marker lng={markerPosition.lng} lat={markerPosition.lat} disableClick={true} />
+						<Marker lng={markerPosition.lng} lat={markerPosition.lat} disableClick={true} marker_color={$formData.pinColor} />
 					{/if}
 				</Map>
 			</div>
 
+			<div class="mt-4 flex flex-col items-center gap-2">
+				<label for="pinColor" class="text-lg font-medium">Escolhe a cor do marcador:</label>
+				<input
+					type="color"
+					id="pinColor"
+					bind:value={$formData.pinColor}
+					class="w-12 h-12 rounded-full border p-0"
+				/>
+			</div>
+
+			<input type="hidden" name="pinColor" value={$formData.pinColor} />
 			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
 
 			<div class="flex justify-center pt-6">
 				<Button
-							class="p-2 bg-green-600 text-white hover:bg-green-700"
-							on:click={() => (page = 5)}
-							disabled={recorded === false}
-						>
-							<ArrowRight />
-						</Button>
+					class="p-2 bg-green-600 text-white hover:bg-green-700"
+					on:click={() => (page = 5)}
+						disabled={recorded === false}
+					>
+					<ArrowRight />
+				</Button>
 			</div>
 		</div>
 		<div class="page" class:show={page === 5}>

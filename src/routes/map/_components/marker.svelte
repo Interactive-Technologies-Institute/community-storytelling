@@ -11,13 +11,13 @@
 	export let disableClick = false;
 	export let year: number;
 	export let title: string;
+	export let marker_color: string = '#ff0000';
 
 	let marker: mapboxgl.Marker | undefined;
 	let popup: mapboxgl.Popup | undefined;
 	let el: HTMLElement;
 
 	function onNavigate() {
-		// Dispatch custom event to notify parent to navigate
 		dispatch('navigate', { story_id });
 	}
 
@@ -41,7 +41,9 @@
 			</div>
 			`);
 
-			marker = new mapboxgl.Marker(el)
+			marker = new mapboxgl.Marker(el, {
+				anchor: 'bottom',
+			})
 			.setLngLat([lng, lat])
 			.addTo(map);
 
@@ -73,10 +75,19 @@
 	$: if (marker) {
 		marker.setLngLat([lng, lat]);
 	}
+
+	$: pinStyle = `
+		background: ${marker_color};
+		border: 2px solid white;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+	`;
 </script>
 
-<div use:initialize class="pin">
-	<slot />
+<div use:initialize class="pin-wrapper">
+	<div class="pin">
+		<div class="pin-head" style={pinStyle}></div>
+		<div class="pin-tail" style={pinStyle}></div>
+	</div>
 </div>
 
 <style>
@@ -85,37 +96,41 @@
 		width: 30px;
 		height: 42px;
 		cursor: pointer;
-		transform: translate(-50%, -100%);
 	}
-	.pin::before {
-		content: "";
+
+	.pin-wrapper {
+		position: relative;
+		width: 0;
+		height: 0;
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+		transform: translateY(-100%);
+	}
+
+	.pin-head {
 		position: absolute;
 		top: 0;
 		left: 50%;
 		transform: translateX(-50%);
 		width: 30px;
 		height: 30px;
-		background: #d93025;
 		border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-		border: 2px solid white;
 		z-index: 2;
 	}
-	.pin::after {
-		content: "";
+
+	.pin-tail {
 		position: absolute;
 		bottom: 0;
 		left: 50%;
 		transform: translateX(-50%);
 		width: 14px;
 		height: 14px;
-		background: #d93025;
 		border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
 		clip-path: polygon(50% 100%, 0 0, 100% 0);
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-		border: 2px solid white;
 		z-index: 1;
 	}
+
 	:global(.mapboxgl-popup-content) {
 		background: black !important;
 		padding: 0 !important;

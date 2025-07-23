@@ -118,6 +118,7 @@ export type Database = MergeDeep<
 						user_id: string;
 						story_id: number;
 						year: number;
+						pin_color: string;
 					};
 				};
 				profiles_view: {

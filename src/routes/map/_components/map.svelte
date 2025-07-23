@@ -30,7 +30,7 @@
 			style: 'mapbox://styles/mapbox/streets-v12',
 			center: [lng, lat],
 			zoom: zoom,
-			minZoom: 1,
+			minZoom: 12,
 			maxZoom: 25,
 		});
 		map.dragRotate.disable();
