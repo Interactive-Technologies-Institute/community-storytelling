@@ -12,7 +12,7 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { onMount, tick } from 'svelte';
 
-	import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
+	import { ArrowLeft, ArrowRight, ArrowUp, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
 
 	import Map from '../../../../map/_components/map.svelte';
 	import Marker from '../../../../map/_components/marker.svelte';
@@ -178,6 +178,9 @@
 		try {
 			if(type === 'video'){
 				stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+				recording = true;
+				recordingType = 'video';
+				
 				await tick();
 				if (videoElement) {
 					videoElement.srcObject = stream;
@@ -187,13 +190,15 @@
 
 			else{
 				stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				recordingType = 'audio';
+				recording = true;
 			}
 
 			mediaRecorder = new MediaRecorder(stream);
 			recordedChunks = [];
 
-			mediaRecorder.ondataavailable = (e) => {
-				if (e.data.size > 0) {
+		mediaRecorder.ondataavailable = (e) => {
+			if (e.data.size > 0) {
 				recordedChunks.push(e.data);
 			}
 		};
@@ -202,10 +207,11 @@
 			videoBlob = new Blob(recordedChunks, { type: 'video' });
 			videoUrl = URL.createObjectURL(videoBlob);
 			recorded = true;
+			recording = false;
 		};
 
 		mediaRecorder.start();
-		recording = true;
+
 		} catch (err) {
 			console.error('Camera and/or audio access error:', err);
 		}
@@ -229,6 +235,19 @@
 		videoUrl = null;
 		const id = recordingType === 'video' ? 'videoFile' : 'audioFile';
 		(document.getElementById(id) as HTMLInputElement).value = '';
+	}
+
+	function resetPhotos() {
+		imageFiles = [];
+		firstImageTaken = false;
+		secondImageTaken = false;
+
+		
+		const firstInput = document.getElementById('firstImageFile') as HTMLInputElement;
+		const secondInput = document.getElementById('secondImageFile') as HTMLInputElement;
+
+		if (firstInput) firstInput.value = '';
+		if (secondInput) secondInput.value = '';
 	}
 
 	async function uploadVideo(video: File | Blob, type: string) {
@@ -375,18 +394,16 @@
 			</div>
 			<div class="mt-4 text-center">
 				<div class="flex flex-col items-center gap-2">
-					<!-- Camera Preview
-					{#if recording}
+					{#if recording && recordingType === 'video'}
 					<video
 						bind:this={videoElement}
 						autoplay
 						muted
 						playsinline
 						class="rounded border border-gray-300"
-						style="width: 320px; height: 240px;"
+						style="width: 640px; height: 480px;"
 					></video>
 					{/if}
-					-->
 					<div class="flex items-center gap-2">
 						{#if !recording && !recorded}
 							<Button
@@ -394,30 +411,32 @@
 								class="cursor-pointer bg-black p-2 text-sm text-white"
 								on:click={() => startRecording('video')}
 							>
-								Gravar Vídeo
+								<Video />
+								<span>Gravar Vídeo</span>
 							</Button>
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white"
 								on:click={() => startRecording('audio')}
 							>
-								Gravar Áudio
+								<Mic />
+								<span>Gravar Áudio</span>
 							</Button>
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white gap-2"
 								on:click={() => upload('video')}
 							>
-								<span>Upload</span> 
-								<Video />
+								<ArrowUp />
+								<span>Upload Vídeo</span> 
 							</Button>
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white gap-2"
 								on:click={() => upload('audio')}
 							>
-								<span>Upload</span>
-								<Mic />
+								<ArrowUp />
+								<span>Upload Áudio</span>
 							</Button>
 						{:else if recording && !recorded}
 							<Button
@@ -437,9 +456,9 @@
 							</Button>
 						{/if}
 						<Button
-							class="p-2"
+							class="p-2 bg-green-600 text-white hover:bg-green-700"
 							on:click={() => (page = 2)}
-							disabled={recorded === false}
+							disabled={!recorded}
 						>
 							<ArrowRight />
 						</Button>
@@ -458,7 +477,7 @@
 						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} required />
 						<Form.FieldErrors />
 						<span
-							><Button class="p-2" type="button" on:click={() => (page = 3)}><ArrowRight /></Button
+							><Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 3)}><ArrowRight /></Button
 							></span
 						>
 					</span>
@@ -476,7 +495,7 @@
 						<Input class="w-auto" {...attrs} bind:value={$formData.tags[1]} />
 						<Form.FieldErrors />
 						<span
-							><Button class="p-2" type="button" on:click={() => (page = 4)}><ArrowRight /></Button
+							><Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 4)}><ArrowRight /></Button
 							></span
 						>
 					</span>
@@ -516,10 +535,13 @@
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
 
 			<div class="flex justify-center pt-6">
-				<Button on:click={() => (page = 5)}>
-					<ArrowRight class="mr-2 h-4 w-4" />
-					Continuar
-				</Button>
+				<Button
+							class="p-2 bg-green-600 text-white hover:bg-green-700"
+							on:click={() => (page = 5)}
+							disabled={recorded === false}
+						>
+							<ArrowRight />
+						</Button>
 			</div>
 		</div>
 		<div class="page" class:show={page === 5}>
@@ -530,7 +552,6 @@
 						>Tire duas fotografias da pessoa.</Form.Label
 					>
 					<div class="flex flex-col gap-4">
-						<!-- Upload Buttons -->
 						<div class="flex items-center gap-2 justify-center">
 							{#if !firstImageTaken}
 								<Button
@@ -538,15 +559,16 @@
 									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('firstImageFile')}
 								>
-									<Camera class="mr-2 h-4 w-4" />
-									Tirar Primeira Fotografia
+									<ArrowUp/>
+									<span>Upload Primeira Fotografia</span>
 								</Button>
 								<Button
 									type="button"
 									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => startPhotoCapture('first')}
 								>
-									Tirar com Câmara
+									<Camera class="mr-2 h-4 w-4" />
+									<span>Tirar Primeira Fotografia</span>
 								</Button>
 							{:else if !secondImageTaken}
 								<Button
@@ -554,20 +576,19 @@
 									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('secondImageFile')}
 								>
-									<Camera class="mr-2 h-4 w-4" />
-									Tirar Segunda Fotografia
+									<ArrowUp/>
+									<span>Upload Segunda Fotografia</span>
 								</Button>
 								<Button
 									type="button"
 									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => startPhotoCapture('second')}
 								>
-									Tirar com Câmara
+									<Camera class="mr-2 h-4 w-4" />
+									<span>Tirar Segunda Fotografia</span>
 								</Button>
 							{/if}
 						</div>
-
-						<!-- Hidden File Inputs for Upload -->
 						<input
 							id="firstImageFile"
 							type="file"
@@ -589,8 +610,6 @@
 								<p class="text-green-600">Fotografias guardadas ({imageFiles.length})</p>
 							</div>
 						{/if}
-
-						<!-- Camera Preview & Capture -->
 						<div class="flex flex-col items-center justify-center gap-4">
 							{#if takingPhoto}
 							<video bind:this={photoVideoEl} autoplay playsinline class="w-full max-w-md rounded-lg" />
@@ -600,8 +619,6 @@
 							</div>
 							{/if}
 						</div>
-
-						<!-- Retake / Confirm -->
 						 <div class="flex flex-col items-center justify-center gap-4">
 							{#if retakeMode}
 								<img
@@ -620,7 +637,16 @@
 			</Form.Field>
 
 			<div class="mt-28 text-center">
-				<Button type="submit" disabled={submitting}>
+				{#if secondImageTaken}
+					<Button
+						type="button"
+						class="bg-red-600 text-white mt-2"
+						on:click={resetPhotos}
+					>
+						Apagar Fotografias
+					</Button>
+				{/if}
+				<Button type="submit" disabled={!secondImageTaken}>
 					{#if submitting}
 						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 					{/if}
