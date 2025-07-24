@@ -70,13 +70,14 @@ export const load = async (event) => {
 		return events;
 	}
 
-	async function getStories(): Promise<{ id: number; storyteller: string }[]> {
+	async function getStories(): Promise<{ id: number; storyteller: string; title: string }[]> {
 		let query = event.locals.supabase
 			.from('story_view')
 			.select('*')
 			.order('moderation_status', { ascending: true })
 			.order('inserted_at', { ascending: false })
-			.eq('user_id', id);
+			.eq('user_id', id)
+			.eq('moderation_status', 'approved');
 		
 		const { data: stories, error: storiesError } = await query;
 		

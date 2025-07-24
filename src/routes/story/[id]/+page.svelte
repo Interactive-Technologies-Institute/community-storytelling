@@ -8,6 +8,8 @@
 	import StoryUnpublishDialog from './_components/story-unpublish-dialog.svelte';
 	import Story from './_components/story.svelte';
 	import StoryLikeButton from './_components/story-like-button.svelte';
+	import * as Avatar from '../../../lib/components/ui/avatar';
+	import { firstAndLastInitials } from '../../../lib/utils';
 
 	export let data;
 
@@ -23,6 +25,16 @@
 	{#if data.moderation[0].status !== 'approved'}
 		<ModerationBanner moderation={data.moderation} />
 	{:else}
+		<div class="flex justify-center items-center gap-4 my-6">
+			<span class="text-xl font-semibold">Author:</span>
+			<a href={`/users/${data.profile.id}`} class="flex items-center gap-2 hover:underline">
+				<Avatar.Root class="h-8 w-8">
+					<Avatar.Image src={data.profile.avatarUrl} alt={data.profile.display_name} />
+					<Avatar.Fallback>{firstAndLastInitials(data.profile.display_name)}</Avatar.Fallback>
+				</Avatar.Root>
+				<span class="text-base text-foreground">{data.profile.display_name}</span>
+			</a>
+		</div>
 		<div class="flex justify-center my-6">
 			<StoryLikeButton count={data.likeCount} data={data.toggleLikeForm} />
 		</div>

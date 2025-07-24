@@ -1,6 +1,6 @@
 //import { deleteStorychema } from '@/schemas/story';
 import { deleteStorySchema, unpublishStorySchema, toggleStoryLikeSchema } from '@/schemas/story';
-import type { ModerationInfo, Story } from '@/types/types';
+import type { ModerationInfo, Story, UserProfile } from '@/types/types';
 import { handleFormAction } from '@/utils';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -41,6 +41,45 @@ export const load = async (event) => {
 		return moderation;
 	}
 
+	async function getUserProfile(id: string) {
+		const { data: story, error: storyError } = await event.locals.supabase
+			.from('story_view')
+			.select('*')
+			.eq('id', id)
+			.single();
+
+		if (storyError) {
+			const errorMessage = `Error fetching story ${id}, please try again later.`;
+			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			return error(500, errorMessage);
+		}
+
+		const { data: userProfile, error: profileError } = await event.locals.supabase
+			.from('profiles_view')
+			.select('*')
+			.eq('id', story.user_id)
+			.single();
+
+		if (profileError) {
+			const errorMessage = `Error fetching profile, please try again later.`;
+			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			return error(500, errorMessage);
+		}
+
+		let avatarUrl = '';
+		if (userProfile.avatar) {
+			avatarUrl = event.locals.supabase.storage.from('users').getPublicUrl(userProfile.avatar).data.publicUrl ?? '';
+		}
+
+		if(user){
+			if(userProfile.id === user.id){
+				userProfile.id = "me";
+			}
+		}
+
+		return { ...userProfile, avatarUrl};
+	}
+
 	function getUserPermission() {
 		return user ? user.role !== 'user' : false;
 	}
@@ -66,6 +105,7 @@ export const load = async (event) => {
 	return {
 		story: await getStory(event.params.id),
 		moderation: await getStoryModeration(event.params.id),
+		profile: await getUserProfile(event.params.id),
 		permission: await getUserPermission(),
 		likeCount: likeCount.count,
 		deleteForm: await superValidate(zod(deleteStorySchema), {

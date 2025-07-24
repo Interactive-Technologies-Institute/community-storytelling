@@ -44,54 +44,56 @@
 			{/if}
 		</Card.Content>
 	</Card.Root>
-	<FeatureWrapper feature="howtos">
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>How Tos ({data.howTos.length})</Card.Title>
-				<Card.Description>List of How To guides created</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				{#if data.howTos && data.howTos.length > 0}
-					<div class="flex flex-wrap gap-4">
-						{#each data.howTos as howTo}
-							<Button href="/how-to/{howTo.id}" variant="outline" class="max-w-full">
-								<span class="truncate">{howTo.label}</span>
-								<SquareArrowOutUpRight class="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
-							</Button>
-						{/each}
-					</div>
-				{:else}
-					<p class="text-sm text-muted-foreground">User has not created any How Tos</p>
-				{/if}
-			</Card.Content>
-		</Card.Root>
-	</FeatureWrapper>
-	<FeatureWrapper feature="events">
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Events ({data.events.length})</Card.Title>
-				<Card.Description>List of Events created</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				{#if data.events && data.events.length > 0}
-					<div class="flex flex-wrap gap-4">
-						{#each data.events as event}
-							<Button href="/events/{event.id}" variant="outline" class="max-w-full">
-								<span class="truncate">{event.label}</span>
-								<SquareArrowOutUpRight class="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
-							</Button>
-						{/each}
-					</div>
-				{:else}
-					<p class="text-sm text-muted-foreground">User has not created any Events</p>
-				{/if}
-			</Card.Content>
-		</Card.Root>
-	</FeatureWrapper>
+	{#if $page.url.pathname === '/users/me'}
+		<FeatureWrapper feature="howtos">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>How Tos ({data.howTos.length})</Card.Title>
+					<Card.Description>List of How To guides created</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					{#if data.howTos && data.howTos.length > 0}
+						<div class="flex flex-wrap gap-4">
+							{#each data.howTos as howTo}
+								<Button href="/how-to/{howTo.id}" variant="outline" class="max-w-full">
+									<span class="truncate">{howTo.label}</span>
+									<SquareArrowOutUpRight class="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
+								</Button>
+							{/each}
+						</div>
+					{:else}
+						<p class="text-sm text-muted-foreground">User has not created any How Tos</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+		</FeatureWrapper>
+		<FeatureWrapper feature="events">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Events ({data.events.length})</Card.Title>
+					<Card.Description>List of Events created</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					{#if data.events && data.events.length > 0}
+						<div class="flex flex-wrap gap-4">
+							{#each data.events as event}
+								<Button href="/events/{event.id}" variant="outline" class="max-w-full">
+									<span class="truncate">{event.label}</span>
+									<SquareArrowOutUpRight class="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
+								</Button>
+							{/each}
+						</div>
+					{:else}
+						<p class="text-sm text-muted-foreground">User has not created any Events</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+		</FeatureWrapper>
+	{/if}
 	<FeatureWrapper feature="stories">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Stories ({data.stories.length})</Card.Title>
+				<Card.Title>Published Stories ({data.stories.length})</Card.Title>
 				<Card.Description>List of Stories created</Card.Description>
 			</Card.Header>
 			<Card.Content>
@@ -99,7 +101,7 @@
 					<div class="flex flex-wrap gap-4">
 						{#each data.stories as story}
 							<Button href="/story/{story.id}" variant="outline" class="max-w-full">
-								<span class="truncate">{story.storyteller}</span>
+								<span class="truncate">{story.title}</span>
 								<SquareArrowOutUpRight class="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
 							</Button>
 						{/each}
