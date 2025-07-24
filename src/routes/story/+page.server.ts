@@ -17,9 +17,7 @@ export const load = async (event) => {
 			.order('inserted_at', { ascending: false });
 
 		if (search) {
-			//query = query.textSearch('fts', search, { config: 'simple', type: 'websearch' });
-			query = query.textSearch('storyteller', `${search}:*`, { config: 'simple', type: 'plain' });
-			// alterar o storyteller para fts quando mudar a tabela
+			query = query.textSearch('fts', search, { config: 'simple', type: 'websearch' });
 		}
 
 		if (tags && tags.length) {

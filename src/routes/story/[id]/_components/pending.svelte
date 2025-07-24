@@ -6,7 +6,7 @@
 </script>
 
 {#if data.moderation_status === 'approved'}
-	<PageHeader title="Mais detalhes" subtitle="" />
+	<PageHeader title="Vídeo / Áudio + Fotografias" subtitle="" />
 {/if}
 <div class="flex w-full flex-col items-center gap-y-2">
 	<video src={data.recording_link} controls class="h-120 w-80 object-contain" />

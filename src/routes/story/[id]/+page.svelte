@@ -25,10 +25,10 @@
 	{#if data.moderation[0].status !== 'approved'}
 		<ModerationBanner moderation={data.moderation} />
 	{:else}
-		<div class="flex justify-center items-center gap-4 my-6">
-			<span class="text-xl font-semibold">Author:</span>
+		<div class="flex justify-center items-center gap-4 mb-6 mt-0">
+			<span class="text-xl font-semibold">Autor:</span>
 			<a href={`/users/${data.profile.id}`} class="flex items-center gap-2 hover:underline">
-				<Avatar.Root class="h-8 w-8">
+				<Avatar.Root class="h-12 w-12">
 					<Avatar.Image src={data.profile.avatarUrl} alt={data.profile.display_name} />
 					<Avatar.Fallback>{firstAndLastInitials(data.profile.display_name)}</Avatar.Fallback>
 				</Avatar.Root>
