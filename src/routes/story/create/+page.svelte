@@ -16,6 +16,7 @@
 			Está na altura de criar a tua história.
 		</h2>
 		<span class="flex justify-center gap-2 pb-3 pt-3">
+			<span><Button class="p-10" href="/story/create/documentary">Documentário</Button></span>
 			<span><Button class="p-10" href="/story/create/interview">Entrevista</Button></span>
 		</span>
 	</div>
