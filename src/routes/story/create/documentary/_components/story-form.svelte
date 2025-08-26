@@ -22,10 +22,10 @@
 
 	const questions = [
 		'Apresentação : Fale para a câmera sobre quem você é e por que este lugar é importante para você. **Dica de filmagem**: Segura a câmera de forma a que apareças e também parte do local escolhido.',
-		'Recorda o passado : Simbolismo / História deste local, qual é a importância do mesmo. **Dica de filmagem**: Mantém a câmera firme em ti; se possível, mostre partes antigas ou marcantes do local.',
-		'Mudanças ao Longo do Tempo : Como o lugar mudou, seja fisicamente, socialmente ou na forma como as pessoas o utilizam. **Dica de filmagem**: Movimente a câmera devagar pelo espaço para ilustrar o que está descrevendo.',
-		'Experiência Atual : Explique como o lugar é hoje e por que ele é importante para você agora. **Dica de filmagem**: Filme-se falando e inclua pequenos trechos do entorno para mostrar a vida atual do lugar.',
-		'Esperanças / Visão para o Futuro : Compartilhe suas esperanças ou visão para o futuro desse lugar. **Dica de filmagem**: Foque no seu rosto enquanto fala; opcionalmente, inclua imagens de áreas que representem potencial ou mudanças.',
+		'Recorda o passado : Simbolismo / História deste local, qual é a importância do mesmo. **Dica de filmagem**: Fixa a câmara no ponto central do local',
+		'Mudanças ao Longo do Tempo : Como o lugar mudou, seja fisicamente, socialmente ou na forma como as pessoas o utilizam. **Dica de filmagem**: Movimenta a câmera devagar pelo espaço para ilustrar o que está a descrever.',
+		'Experiência Atual : Como as pessoas observam e falam sobre este local. **Dica de filmagem**: Focar a câmara num ponto importante do local',
+		'Conclusão : Opinião sobre o futuro, focando em como este local será representado nos próximos anos. **Dica de filmagem**: Foca no seu rosto enquanto falas',
 	];
 
 	let altImg = 'Taking notes';
