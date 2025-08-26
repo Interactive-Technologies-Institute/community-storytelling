@@ -16,22 +16,16 @@
 
 	import Map from '../../../../map/_components/map.svelte';
 	import Marker from '../../../../map/_components/marker.svelte';
-
+	
 	let mapCenter = { lat: 38.7382, lng: -9.1212 };
 	let markerPosition: { lat: number; lng: number } | null = null;
 
-	/*const questions = [
-		'Fale-nos de si (o seu nome, idade e uma característica sobre si)',
-		'Se pudesse resumir o que o bairro Horizonte significa para si, o que diria? (Se não tiver quaisquer relação com o bairro Horizonte, fale do seu próprio bairro)',
-		'Que lugar do dia a dia ou pessoa faz o bairro, mencionado por si, ter um sentimento de casa?',
-		'Descreva uma memória importante que tenha do seu bairro escolhido',
-		'Como vê o bairro daqui a cinco ou dez anos?',
-	];*/
-
 	const questions = [
-		'Placeholder 1',
-		'Placeholder 2',
-		'Placeholder 3',
+		'Apresentação : Fale para a câmera sobre quem você é e por que este lugar é importante para você. **Dica de filmagem**: Segura a câmera de forma a que apareças e também parte do local escolhido.',
+		'Recorda o passado : Simbolismo / História deste local, qual é a importância do mesmo. **Dica de filmagem**: Mantém a câmera firme em ti; se possível, mostre partes antigas ou marcantes do local.',
+		'Mudanças ao Longo do Tempo : Como o lugar mudou, seja fisicamente, socialmente ou na forma como as pessoas o utilizam. **Dica de filmagem**: Movimente a câmera devagar pelo espaço para ilustrar o que está descrevendo.',
+		'Experiência Atual : Explique como o lugar é hoje e por que ele é importante para você agora. **Dica de filmagem**: Filme-se falando e inclua pequenos trechos do entorno para mostrar a vida atual do lugar.',
+		'Esperanças / Visão para o Futuro : Compartilhe suas esperanças ou visão para o futuro desse lugar. **Dica de filmagem**: Foque no seu rosto enquanto fala; opcionalmente, inclua imagens de áreas que representem potencial ou mudanças.',
 	];
 
 	let altImg = 'Taking notes';
@@ -47,12 +41,11 @@
 	});
 
 	const { form: formData, errors } = form;
-
-	$formData.role = 'interview';
-	$formData.tags[0] = 'Interview';
+	$formData.role = 'documentary';
+	$formData.tags[0] = 'Documentary';
 	$formData.pinColor = $formData.pinColor ?? '#ff0000';
 
-	let recordingType = ''; // 'video' or 'audio'
+	let recordingType = '';
 
 	let createStoryForm: HTMLFormElement;
 
@@ -76,6 +69,30 @@
 	$: submitting = false;
 
 	let currentCaptureSlot: 'first' | 'second' | null = null;
+
+	let search = '';
+	let results: { id: string; display_name: string }[] = [];
+	let selectedMembers: { id: string; display_name: string }[] = [];
+
+	$: results = search.trim()
+		? (data.data.extra?.users ?? []).filter(u =>
+			u.display_name.toLowerCase().includes(search.toLowerCase())
+		)
+		: [];
+
+  	$: $formData.coauthors = selectedMembers.map(m => m.id);
+
+	function addMember(user: { id: string; display_name: string }) {
+		if (!selectedMembers.find(m => m.id === user.id)) {
+		selectedMembers = [...selectedMembers, user];
+		}
+		search = '';
+		results = [];
+	}
+
+	function removeMember(id: string) {
+		selectedMembers = selectedMembers.filter(m => m.id !== id);
+	}
 
 	function handleMapClick(event: CustomEvent<{ lat: number; lng: number }>) {
 		console.log('Map clicked at:', event.detail);
@@ -298,13 +315,24 @@
 			urls.push(url);
 		}
 
-		// formData to send to server
-
 		let newFormData = new FormData();
 
-		// Iterate over the entries of the original FormData
+		let coauthorsArray: string[] = [];
+
+		const rawCoauthors = $formData.coauthors as unknown;
+
+		if (Array.isArray(rawCoauthors)) {
+			coauthorsArray = rawCoauthors as string[];
+		}
+	
+		else if (typeof rawCoauthors === 'string') {
+			coauthorsArray = (rawCoauthors as string).split(',').map(s => s.trim()).filter(Boolean);
+		}
+
+		coauthorsArray.forEach(id => newFormData.append('coauthors', id));
+
 		for (let [key, value] of formData.entries()) {
-			if (key !== 'image' && key !== 'recording_link') {
+			if (key !== 'image' && key !== 'recording_link' && key !== 'coauthors') {
 				newFormData.append(key, value);
 			}
 		}
@@ -314,7 +342,7 @@
 		newFormData.append('recording_link', mp4Url);
 		urls.forEach((url) => newFormData.append('image', url));
 
-		const response = await fetch('?/createStory', {
+		const response = await fetch('?/createDocumentary', {
 			method: 'POST',
 			body: newFormData,
 			headers: {
@@ -338,7 +366,7 @@
 <div class="container mx-auto space-y-10 pb-10">
 	<form
 		method="POST"
-		action="?/createStory"
+		action="?/createDocumentary"
 		bind:this={createStoryForm}
 		on:submit|preventDefault={submitCreateStoryForm}
 		enctype="multipart/form-data"
@@ -388,6 +416,7 @@
 					<Carousel.Next />
 				</Carousel.Root>
 			</div>
+			<div class="h-8"></div>
 			<div class="flex justify-center mt-4">
 				{#if videoUrl && !recording}
 					<video src={videoUrl} controls class="rounded shadow-lg w-[640px] max-w-full"></video>
@@ -472,7 +501,7 @@
 			<Form.Field {form} name="storyteller" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Qual é o nome da pessoa ou local que vais falar sobre?</Form.Label
+						>Qual é o nome do local que é o foco desta história?</Form.Label
 					>
 					<span class="inline-block flex justify-center gap-2 pt-3">
 						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} required />
@@ -486,17 +515,70 @@
 			</Form.Field>
 		</div>
 		<div class="page" class:show={page === 3}>
+			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
+				Quem desenvolveu esta história contigo?
+			</h2>
+			<input
+				type="text"
+				placeholder="Search users..."
+				bind:value={search}
+				class="w-full p-2 border rounded mt-4"
+			/>
+
+			{#if results.length > 0}
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+				<ul class="results-list">
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					{#each results as user}
+						<li
+							class="results-item"
+							on:click={() => addMember(user)}
+						>
+							{user.display_name}
+						</li>
+					{/each}
+				</ul>
+			{/if}
+
+			{#if selectedMembers.length > 0}
+				<h3 class="mt-4 font-semibold">Co-Autores:</h3>
+				<ul class="mt-2 space-y-2">
+					{#each selectedMembers as member}
+						<li class="flex justify-between items-center border p-2 rounded">
+							<span>{member.display_name}</span>
+							<button type="button" on:click={() => removeMember(member.id)}>✕</button>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+
+			<input
+				type="hidden"
+				name="coauthors"
+				value={selectedMembers.map(m => m.id).join(',')}
+			/>
+			<div class="flex justify-center pt-6">
+				<Button
+					class="p-2 bg-green-600 text-white hover:bg-green-700"
+					on:click={() => (page = 4)}
+					disabled={recorded === false}
+				>
+					<ArrowRight />
+				</Button>
+			</div>
+		</div>
+		<div class="page" class:show={page === 4}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 			<Form.Field {form} name="tags" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Se existe, em que período é que esta entrevista se foca?</Form.Label
+						>Se existe, em que período é que esta história se foca?</Form.Label
 					>
 					<span class="inline-block flex justify-center gap-2 pt-3">
 						<Input class="w-auto" {...attrs} bind:value={$formData.tags[1]} />
 						<Form.FieldErrors />
 						<span
-							><Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 4)}><ArrowRight /></Button
+							><Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 5)}><ArrowRight /></Button
 							></span
 						>
 					</span>
@@ -515,7 +597,7 @@
 				</Form.Control>
 			</Form.Field>
 		</div>
-		<div class="page" class:show={page === 4}>
+		<div class="page" class:show={page === 5}>
 			<h2 class="pb-4 text-center text-3xl font-semibold">
 				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
 			</h2>
@@ -549,19 +631,19 @@
 			<div class="flex justify-center pt-6">
 				<Button
 					class="p-2 bg-green-600 text-white hover:bg-green-700"
-					on:click={() => (page = 5)}
+					on:click={() => (page = 6)}
 						disabled={recorded === false}
 					>
 					<ArrowRight />
 				</Button>
 			</div>
 		</div>
-		<div class="page" class:show={page === 5}>
+		<div class="page" class:show={page === 6}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
 			<Form.Field {form} name="image" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Guarde duas fotografias da local / pessoa.</Form.Label
+						>Submete duas fotografias do local que é o foco da história.</Form.Label
 					>
 					<div class="flex flex-col gap-4">
 						<div class="flex items-center gap-2 justify-center">
@@ -692,5 +774,30 @@
 	}
 	.no-pointer {
 		pointer-events: none;
+	}
+	.results-list {
+		background-color: black;
+		color: white;
+		border-radius: 0.25rem;
+		padding: 0.25rem 0;
+		margin-top: 0.5rem;
+		max-height: 200px;
+		overflow-y: auto;
+		list-style: none;
+		box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+		z-index: 50;
+		border: 1px solid white;
+	}
+
+	.results-item {
+		padding: 0.5rem 1rem;
+		cursor: pointer;
+		white-space: nowrap;        
+		overflow: hidden;           
+		text-overflow: ellipsis;   
+	}
+
+	.results-item:hover {
+		background-color: #333;
 	}
 </style>

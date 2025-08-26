@@ -4,31 +4,55 @@ import { fail, redirect } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { superValidate, withFiles } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
+import type { UserProfile } from '../../../../lib/types/types';
 
 export const load = async (event) => {
 	const { session } = await event.locals.safeGetSession();
+
+	async function getUsers(): Promise<{ id: string; display_name: string }[]> {
+		const { data: users, error: usersError } = await event.locals.supabase
+		.from('profiles_view')
+		.select('id, display_name');
+
+		if (usersError) {
+			const errorMessage = 'Error fetching users, please try again later.';
+			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			return error(500, errorMessage);
+		}
+
+		return users || [];
+	}
+
 	if (!session) {
 		return redirect(302, handleSignInRedirect(event));
 	}
 
+	const form = await superValidate(zod(createStorySchema), { id: 'create-documentary' });
+
+	form.data.extra = { users: await getUsers() };
+
 	return {
-		createForm: await superValidate(zod(createStorySchema), {
-			id: 'create-story',
-		}),
+		createForm: form
 	};
 };
 
 export const actions = {
-	createStory: async (event) =>
-		handleFormAction(event, createStorySchema, 'create-story', async (event, userId, form) => {
+	createDocumentary: async (event) =>
+		handleFormAction(event, createStorySchema, 'create-documentary', async (event, userId, form) => {
 			const { data: storyInsert, error: supabaseError } = await event.locals.supabase
 				.from('story')
-				.insert({ storyteller: form.data.storyteller, tags: form.data.tags, role: form.data.role, image: form.data.image, user_id: userId, recording_link: form.data.recording_link ?? '' })
+				.insert({ 
+					storyteller: form.data.storyteller, 
+					tags: form.data.tags, role: form.data.role, 
+					image: form.data.image, 
+					user_id: userId, 
+					recording_link: form.data.recording_link ?? '', 
+					coauthors: form.data.coauthors,
+				})
 				.select('id')
 				.single();
 
 			if (supabaseError) {
-				console.log('B');
 				setFlash({ type: 'error', message: supabaseError.message }, event.cookies);
 				return fail(500, withFiles({ message: supabaseError.message, form }));
 			}

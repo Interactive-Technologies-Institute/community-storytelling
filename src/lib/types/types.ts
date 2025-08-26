@@ -138,7 +138,7 @@ export type Notification = {
 	read: boolean;
 };
 
-export type CommunityRole = 'introduction' | 'interview';
+export type CommunityRole = 'documentary' | 'interview';
 
 export type Story = {
 	id: number;
@@ -157,6 +157,7 @@ export type Story = {
 	title: string;
 	template: string;
 	moderation_status: ModerationStatus;
+	coauthors: string[];
 };
 
 export type StoryWithTranscription = {

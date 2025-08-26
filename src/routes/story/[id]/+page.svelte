@@ -19,7 +19,7 @@
 
 <PageHeader
 	title={data.story.storyteller}
-	subtitle={data.story.role === 'interview' ? 'Interview' : 'Introduction'}
+	subtitle={data.story.role === 'interview' ? 'Interview' : 'Documentary'}
 />
 	<div class="container mx-auto space-y-10 pb-10">
 	{#if data.moderation[0].status !== 'approved'}
@@ -34,6 +34,33 @@
 				</Avatar.Root>
 				<span class="text-base text-foreground">{data.profile.display_name}</span>
 			</a>
+		</div>
+		<div>
+			{#if data.story.coauthors && data.story.coauthors.length > 0}
+		<div class="flex flex-col items-center gap-4 mb-6">
+			<span class="text-xl font-semibold">Co-autores:</span>
+				<div class="flex flex-wrap justify-center gap-4">
+					{#each data.story.coauthors as coauthorId}
+						{#if data.coauthors?.[coauthorId]}
+							<a href={`/users/${coauthorId}`} class="flex items-center gap-2 hover:underline">
+								<Avatar.Root class="h-10 w-10">
+									<Avatar.Image
+										src={data.coauthors[coauthorId].avatarUrl}
+										alt={data.coauthors[coauthorId].display_name}
+									/>
+									<Avatar.Fallback>
+										{firstAndLastInitials(data.coauthors[coauthorId].display_name)}
+									</Avatar.Fallback>
+								</Avatar.Root>
+								<span class="text-base text-foreground">
+									{data.coauthors[coauthorId].display_name}
+								</span>
+							</a>
+						{/if}
+					{/each}
+				</div>
+			</div>
+		{/if}
 		</div>
 		<div class="flex justify-center my-6">
 			<StoryLikeButton count={data.likeCount} data={data.toggleLikeForm} />

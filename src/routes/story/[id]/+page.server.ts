@@ -41,17 +41,32 @@ export const load = async (event) => {
 		return moderation;
 	}
 
-	async function getUserProfile(id: string) {
+	async function normalizeProfile(profile: any, userId?: string) {
+		let avatarUrl = '';
+		if (profile.avatar) {
+			avatarUrl =
+				event.locals.supabase.storage.from('users').getPublicUrl(profile.avatar).data
+					.publicUrl ?? '';
+		}
+
+		if (userId && profile.id === userId) {
+			profile.id = 'me';
+		}
+
+		return { ...profile, avatarUrl };
+	}
+
+	async function getUserProfile(storyId: string) {
 		const { data: story, error: storyError } = await event.locals.supabase
 			.from('story_view')
 			.select('*')
-			.eq('id', id)
+			.eq('id', storyId)
 			.single();
 
 		if (storyError) {
-			const errorMessage = `Error fetching story ${id}, please try again later.`;
+			const errorMessage = `Error fetching story ${storyId}, please try again later.`;
 			setFlash({ type: 'error', message: errorMessage }, event.cookies);
-			return error(500, errorMessage);
+			throw error(500, errorMessage);
 		}
 
 		const { data: userProfile, error: profileError } = await event.locals.supabase
@@ -63,21 +78,31 @@ export const load = async (event) => {
 		if (profileError) {
 			const errorMessage = `Error fetching profile, please try again later.`;
 			setFlash({ type: 'error', message: errorMessage }, event.cookies);
-			return error(500, errorMessage);
+			throw error(500, errorMessage);
 		}
 
-		let avatarUrl = '';
-		if (userProfile.avatar) {
-			avatarUrl = event.locals.supabase.storage.from('users').getPublicUrl(userProfile.avatar).data.publicUrl ?? '';
+		return normalizeProfile(userProfile, user?.id);
+	}
+
+	async function getCoauthorProfiles(ids: string[], currentUserId?: string) {
+		if (!ids || ids.length === 0) return {};
+
+		const { data: profiles, error: profilesError } = await event.locals.supabase
+			.from('profiles_view')
+			.select('*')
+			.in('id', ids);
+
+		if (profilesError) {
+			const errorMessage = 'Error fetching coauthor profiles, please try again later.';
+			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			throw error(500, errorMessage);
 		}
 
-		if(user){
-			if(userProfile.id === user.id){
-				userProfile.id = "me";
-			}
-		}
+		const withAvatars = await Promise.all(
+			profiles.map((profile) => normalizeProfile(profile, currentUserId))
+		);
 
-		return { ...userProfile, avatarUrl};
+		return Object.fromEntries(withAvatars.map((p) => [p.id, p]));
 	}
 
 	function getUserPermission() {
@@ -102,10 +127,14 @@ export const load = async (event) => {
 	
 		const likeCount = await getLikeCount(event.params.id);
 
+		const story = await getStory(event.params.id);
+		const coauthors = await getCoauthorProfiles(story.coauthors ?? [], user?.id);
+
 	return {
-		story: await getStory(event.params.id),
+		story,
 		moderation: await getStoryModeration(event.params.id),
 		profile: await getUserProfile(event.params.id),
+		coauthors,
 		permission: await getUserPermission(),
 		likeCount: likeCount.count,
 		deleteForm: await superValidate(zod(deleteStorySchema), {
