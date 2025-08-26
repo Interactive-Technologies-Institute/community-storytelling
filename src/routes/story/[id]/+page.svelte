@@ -2,7 +2,7 @@
 	import ModerationBanner from '@/components/moderation-banner.svelte';
 	import PageHeader from '@/components/page-header.svelte';
 	import { Button } from '@/components/ui/button';
-	import { Eye, LayoutPanelTop, Tag, Trash, Wand } from 'lucide-svelte';
+	import { Eye, LayoutPanelTop, Tag, Network, Trash, Wand } from 'lucide-svelte';
 	import Pending from './_components/pending.svelte';
 	import StoryDeleteDialog from './_components/story-delete-dialog.svelte';
 	import StoryUnpublishDialog from './_components/story-unpublish-dialog.svelte';
@@ -36,7 +36,7 @@
 			</a>
 		</div>
 		<div>
-			{#if data.story.coauthors && data.story.coauthors.length > 0}
+		{#if data.story.coauthors && data.story.coauthors.length > 0}
 		<div class="flex flex-col items-center gap-4 mb-6">
 			<span class="text-xl font-semibold">Co-autores:</span>
 				<div class="flex flex-wrap justify-center gap-4">
@@ -93,10 +93,16 @@
 					<Eye class="mr-2 h-4 w-4" />
 					Abrir Transcrição
 				</Button>
-			{:else}
+				{:else}
 				<Button href="/story/{data.story.id}/edit-transcription" class="w-full sm:w-auto">
 					<Wand class="mr-2 h-4 w-4" />
 					Gerar Transcrição
+				</Button>
+			{/if}
+			{#if data.story.user_id !== data.user?.id && data.moderation[0].status === 'approved'}
+				<Button href="/story/{data.story.id}/colinking" class="w-full sm:w-auto">
+					<Network class="mr-2 h-4 w-4" />
+					Colinking
 				</Button>
 			{/if}
 			{#if data.moderation[0].status === 'pending'}
@@ -127,6 +133,8 @@
 			{/if}
 		</div>
 	{/if}
+
+
 </div>
 
 <StoryDeleteDialog storyId={data.story.id} data={data.deleteForm} bind:open={openDeleteDialog} />

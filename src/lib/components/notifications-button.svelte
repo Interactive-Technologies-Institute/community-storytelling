@@ -30,6 +30,7 @@
 		map_pin_changes_requested: 'Your map pin needs changes',
 		map_pin_approved: 'Your map pin has been approved',
 		map_pin_rejected: 'Your map pin has been rejected',
+		colinking_pending: 'Pedido de ligação de histórias',
 	};
 
 	function getNotificationHref(notification: Notification): string {
