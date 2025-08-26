@@ -38,7 +38,11 @@
 				</h2>
 			</div>
 			<div class="mb-5">
-				<h2 class="text-medium font-medium">Storyteller: {story.storyteller}</h2>
+				{#if story.role === 'interview'}
+					<h2 class="text-medium font-medium">Narrador: {story.storyteller}</h2>
+				{:else}
+					<h2 class="text-medium font-medium">Local: {story.storyteller}</h2>
+				{/if}
 			</div>
 			<div class="flex gap-x-1">
 				{#each story.tags as tag}
