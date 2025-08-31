@@ -27,7 +27,7 @@ export const load = async (event) => {
 		return redirect(302, handleSignInRedirect(event));
 	}
 
-	const form = await superValidate(zod(createStorySchema), { id: 'create-documentary' });
+	const form = await superValidate(zod(createStorySchema), { id: 'create-monologue' });
 
 	form.data.extra = { users: await getUsers() };
 
@@ -38,7 +38,7 @@ export const load = async (event) => {
 
 export const actions = {
 	createDocumentary: async (event) =>
-		handleFormAction(event, createStorySchema, 'create-documentary', async (event, userId, form) => {
+		handleFormAction(event, createStorySchema, 'create-monologue', async (event, userId, form) => {
 			const { data: storyInsert, error: supabaseError } = await event.locals.supabase
 				.from('story')
 				.insert({ 

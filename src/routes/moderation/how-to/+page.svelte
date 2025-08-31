@@ -16,7 +16,7 @@
 
 <Tabs.Content value="how-to" class="mt-8 flex flex-col gap-y-4">
 	<div class="flex flex-1 flex-row gap-x-2 sm:gap-x-4 md:flex-auto">
-		<Input placeholder="Search..." class="flex-1 sm:max-w-64" bind:value={$search}></Input>
+		<Input placeholder="Pesquisa..." class="flex-1 sm:max-w-64" bind:value={$search}></Input>
 		<TagFilterButton tags={data.tags} bind:filterValues={$tags} />
 	</div>
 	<HowToModerationTable howTos={data.howTos} updateModerationForm={data.updateModerationForm} />

@@ -139,7 +139,7 @@ export type Notification = {
 	read: boolean;
 };
 
-export type CommunityRole = 'documentary' | 'interview';
+export type CommunityRole = 'monologue' | 'interview';
 
 export type Story = {
 	id: number;

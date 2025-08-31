@@ -18,18 +18,18 @@
 	});
 
 	const notificationTypeToLabel: Record<NotificationType, string> = {
-		howto_pending: 'Your how to is pending moderation',
-		howto_changes_requested: 'Your how to needs changes',
-		howto_approved: 'Your how to has been approved',
-		howto_rejected: 'Your how to has been rejected',
-		event_pending: 'Your event is pending moderation',
-		event_changes_requested: 'Your event needs changes',
-		event_approved: 'Your event has been approved',
-		event_rejected: 'Your event has been rejected',
-		map_pin_pending: 'Your map pin is pending moderation',
-		map_pin_changes_requested: 'Your map pin needs changes',
-		map_pin_approved: 'Your map pin has been approved',
-		map_pin_rejected: 'Your map pin has been rejected',
+		howto_pending: 'O seu guia está pendente de moderação',
+		howto_changes_requested: 'O seu guia precisa de alterações',
+		howto_approved: 'O seu guia foi aprovado',
+		howto_rejected: 'O seu guia foi rejeitado',
+		event_pending: 'O seu evento está pendente de moderação',
+		event_changes_requested: 'O seu evento precisa de alterações',
+		event_approved: 'O seu evento foi aprovado',
+		event_rejected: 'O seu evento foi rejeitado',
+		map_pin_pending: 'O seu marcador está pendente de moderação',
+		map_pin_changes_requested: 'O seu marcador precisa de alterações',
+		map_pin_approved: 'O seu marcador foi aprovado',
+		map_pin_rejected: 'O seu marcador foi rejeitado',
 		colinking_pending: 'Pedido de ligação de histórias',
 	};
 
@@ -69,12 +69,12 @@
 	</Popover.Trigger>
 	<Popover.Content class="w-80 p-0" align="end">
 		<div class="flex flex-col gap-y-1 p-4">
-			<p class="font-medium leading-none">Notifications</p>
+			<p class="font-medium leading-none">Notificações</p>
 			<p class="text-sm text-muted-foreground">
 				{#if unreadCount > 0}
-					You have {unreadCount} unread {unreadCount === 1 ? 'notification' : 'notifications'}
+					Tens {unreadCount} {unreadCount === 1 ? 'notification' : 'notifications'} não lidas
 				{:else}
-					No unread notifications
+					Sem notificações por ler
 				{/if}
 			</p>
 		</div>
@@ -114,7 +114,7 @@
 			<form method="POST" action="/?/readAllNotifications" use:enhance>
 				<Button type="submit" class="w-full">
 					<Check class="mr-2 h-4 w-4" />
-					Mark all as read
+					Marcar todas como lidas
 				</Button>
 			</form>
 		</div>

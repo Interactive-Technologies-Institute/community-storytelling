@@ -17,16 +17,16 @@
 	<Info class="mr-2 h-4 w-4" />
 	<Alert.Title>
 		{#if latestModeration.status === 'rejected'}
-			Rejected (marked for deletetion)
+			Rejeitado (marcado para apagar)
 		{:else if latestModeration.status === 'pending'}
-			Pending Moderation
+			Moderação pendente
 		{:else if latestModeration.status === 'changes_requested'}
-			Changes Requested
+			Mudanças pedidas
 		{/if}
 	</Alert.Title>
 	<Alert.Description>{latestModeration.comment}</Alert.Description>
 	<Button size="sm" variant="outline" class="mt-2" on:click={() => (openSheet = true)}>
-		More Details
+		Mais Detalhes
 	</Button>
 </Alert.Root>
 

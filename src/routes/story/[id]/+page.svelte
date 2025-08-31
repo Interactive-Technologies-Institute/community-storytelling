@@ -19,7 +19,7 @@
 
 <PageHeader
 	title={data.story.storyteller}
-	subtitle={data.story.role === 'interview' ? 'Interview' : 'Documentary'}
+	subtitle={data.story.role === 'interview' ? 'Interview' : 'Monologue'}
 />
 	<div class="container mx-auto space-y-10 pb-10">
 	{#if data.moderation[0].status !== 'approved'}

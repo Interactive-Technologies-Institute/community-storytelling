@@ -41,8 +41,8 @@
 	});
 
 	const { form: formData, errors } = form;
-	$formData.role = 'documentary';
-	$formData.tags[0] = 'Documentary';
+	$formData.role = 'monologue';
+	$formData.tags[0] = 'Monologue';
 	$formData.pinColor = $formData.pinColor ?? '#ff0000';
 
 	let recordingType = '';

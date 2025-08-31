@@ -29,11 +29,11 @@
 						<Info class="mr-2 h-4 w-4" />
 						<Alert.Title>
 							{#if item.status === 'rejected'}
-								Rejected (marked for deletetion)
+								Rejeitado (marcado para apagar)
 							{:else if item.status === 'pending'}
-								Pending Moderation
+								Moderação pendente
 							{:else if item.status === 'changes_requested'}
-								Changes Requested
+								Mudanças pedidas
 							{/if}
 						</Alert.Title>
 						<Alert.Description>{item.comment}</Alert.Description>

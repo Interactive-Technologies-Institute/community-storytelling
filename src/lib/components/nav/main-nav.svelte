@@ -21,7 +21,7 @@
 					$page.url.pathname.startsWith('/academy') ? 'text-foreground' : 'text-foreground/60'
 				)}
 			>
-				Academy
+				Associação
 			</a>
 		</FeatureWrapper>
 		<FeatureWrapper feature="howtos">
@@ -43,7 +43,7 @@
 					$page.url.pathname.startsWith('/events') ? 'text-foreground' : 'text-foreground/60'
 				)}
 			>
-				Events
+				Eventos
 			</a>
 		</FeatureWrapper>
 		<FeatureWrapper feature="map">
@@ -54,7 +54,7 @@
 					$page.url.pathname.startsWith('/map') ? 'text-foreground' : 'text-foreground/60'
 				)}
 			>
-				Map
+				Mapa
 			</a>
 		</FeatureWrapper>
 		<FeatureWrapper feature="stories">
@@ -65,7 +65,7 @@
 					$page.url.pathname.startsWith('/story') ? 'text-foreground' : 'text-foreground/60'
 				)}
 			>
-				Story
+				Histórias
 			</a>
 		</FeatureWrapper>
 	</nav>

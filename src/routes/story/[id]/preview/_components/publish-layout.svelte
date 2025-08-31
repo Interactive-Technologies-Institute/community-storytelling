@@ -65,8 +65,8 @@
     <Título criado>
     `;
 
-	let documentary_text = `
-    Eu tenho uma transcrição de um documentário com o tema (X). O entrevistador falará sobre um local relacionado ao tema, de forma a seguir um certo modelo de perguntas a atingir o passado, presente e futuro:
+	let monologue_text = `
+    Eu tenho uma transcrição de um monólogo com o tema (X). A pessoa falará sobre um local relacionado ao tema, de forma a seguir um certo modelo de perguntas a atingir o passado, presente e futuro:
     
     A partir desta  transcrição, em linguagem Português de Portugal, crie a história da entrevista de uma perspectiva externa, sem inventar dados que não estejam na transcrição e adicionando citações do entrevistador a ser entrevistado para dar mais visibilidade. Seguindo estes passos de como contar uma boa história:    
     - Exposição - Apresenta as personagens principais (pessoas reais!), o cenário da história (o tempo e o local relacionados, se houver) e o ambiente (a urgência é um bom ponto de partida)
@@ -185,7 +185,7 @@
 				messages: [
 					{
 						role: 'system',
-						content: role === 'interview' ? `${interview_text}` : `${documentary_text}`,
+						content: role === 'interview' ? `${interview_text}` : `${monologue_text}`,
 					},
 					{
 						role: 'user',

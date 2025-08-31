@@ -36,7 +36,7 @@ export const load = loadFlash(async ({ locals: { supabase, safeGetSession }, coo
 
 	let branding: Branding = {
 		name: 'Curraleira Out Loud!',
-		slogan: 'Share your story',
+		slogan: 'Partilha a tua história',
 		color_theme: 'neutral',
 		radius: 0.5,
 	};

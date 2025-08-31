@@ -30,10 +30,10 @@
 		</DropdownMenu.Label>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item href="/users/me">Profile</DropdownMenu.Item>
-			<DropdownMenu.Item href="/settings">Settings</DropdownMenu.Item>
+			<DropdownMenu.Item href="/users/me">Perfil</DropdownMenu.Item>
+			<DropdownMenu.Item href="/settings">Definições</DropdownMenu.Item>
 			{#if role === 'moderator' || role === 'admin'}
-				<DropdownMenu.Item href="/moderation/users">Moderation</DropdownMenu.Item>
+				<DropdownMenu.Item href="/moderation/users">Moderação</DropdownMenu.Item>
 			{/if}
 			{#if role === 'admin'}
 				<DropdownMenu.Item href="/admin">Admin</DropdownMenu.Item>
@@ -41,7 +41,7 @@
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<form method="post" action="/?/signout" use:enhance bind:this={signOutForm}>
-			<DropdownMenu.Item on:click={() => signOutForm.requestSubmit()}>Log out</DropdownMenu.Item>
+			<DropdownMenu.Item on:click={() => signOutForm.requestSubmit()}>Terminar Sessão</DropdownMenu.Item>
 		</form>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

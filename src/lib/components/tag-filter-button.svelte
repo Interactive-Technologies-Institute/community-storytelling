@@ -28,14 +28,14 @@
 					<div class="absolute -right-1 -top-1 flex h-2 w-2 rounded-full bg-primary md:mr-2"></div>
 				{/if}
 			</div>
-			<span class="sr-only md:not-sr-only">Filter by Tag</span>
+			<span class="sr-only md:not-sr-only">Filtrar por Etiqueta</span>
 		</Button>
 	</Popover.Trigger>
 	<Popover.Content class="mt-2 w-[200px] p-0" align="start" side="bottom">
 		<Command.Root>
-			<Command.Input placeholder="Filter by" />
+			<Command.Input placeholder="Filtrar por" />
 			<Command.List>
-				<Command.Empty>No tags found.</Command.Empty>
+				<Command.Empty>Nenhuma tag encontrada.</Command.Empty>
 				<Command.Group>
 					{#each tags as tag}
 						<Command.Item

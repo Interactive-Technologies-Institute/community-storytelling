@@ -7,10 +7,10 @@
 
 <svelte:head>
 	<title>Criar história</title>
-	<meta name="description" content="Create your documentary!" />
+	<meta name="description" content="Create your monologue!" />
 </svelte:head>
 
-<PageHeader title={'Documentário'} subtitle="" />
+<PageHeader title={'Monólogo'} subtitle="" />
 <div class="container mx-auto space-y-10 pb-10">
 	<StoryForm data={data.createForm} />
 </div>

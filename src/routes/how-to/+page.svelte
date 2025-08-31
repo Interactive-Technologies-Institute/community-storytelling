@@ -23,7 +23,7 @@
 <PageHeader title="How to" subtitle="Learn & share how to guides" />
 <div class="container mx-auto flex flex-row justify-between gap-x-2">
 	<div class="flex flex-1 flex-row gap-x-2 sm:gap-x-4 md:flex-auto">
-		<Input placeholder="Search..." class="flex-1 sm:max-w-64" bind:value={$search}></Input>
+		<Input placeholder="Pesquisa..." class="flex-1 sm:max-w-64" bind:value={$search}></Input>
 		<TagFilterButton tags={data.tags} bind:filterValues={$tags} />
 		<SortButton />
 	</div>

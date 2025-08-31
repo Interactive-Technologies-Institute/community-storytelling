@@ -42,12 +42,12 @@
 		</Button>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content>
-		<DropdownMenu.Item href="/users/{id}">Profile</DropdownMenu.Item>
+		<DropdownMenu.Item href="/users/{id}">Perfil</DropdownMenu.Item>
 		<DropdownMenu.Separator />
 		<DropdownMenu.RadioGroup value={currentRole} onValueChange={handleRoleChange}>
 			<DropdownMenu.Label>Roles</DropdownMenu.Label>
 			<DropdownMenu.RadioItem value="user">User</DropdownMenu.RadioItem>
-			<DropdownMenu.RadioItem value="moderator">Moderator</DropdownMenu.RadioItem>
+			<DropdownMenu.RadioItem value="moderator">Moderador</DropdownMenu.RadioItem>
 			<DropdownMenu.RadioItem value="admin">Admin</DropdownMenu.RadioItem>
 		</DropdownMenu.RadioGroup>
 	</DropdownMenu.Content>

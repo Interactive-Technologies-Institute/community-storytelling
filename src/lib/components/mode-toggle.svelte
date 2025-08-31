@@ -18,8 +18,8 @@
 		</Button>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end">
-		<DropdownMenu.Item on:click={() => setMode('light')}>Light</DropdownMenu.Item>
-		<DropdownMenu.Item on:click={() => setMode('dark')}>Dark</DropdownMenu.Item>
-		<DropdownMenu.Item on:click={() => resetMode()}>System</DropdownMenu.Item>
+		<DropdownMenu.Item on:click={() => setMode('light')}>Modo Claro</DropdownMenu.Item>
+		<DropdownMenu.Item on:click={() => setMode('dark')}>Modo Escuro</DropdownMenu.Item>
+		<DropdownMenu.Item on:click={() => resetMode()}>Sistema</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

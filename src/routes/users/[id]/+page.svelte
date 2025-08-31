@@ -12,9 +12,9 @@
 	export let data;
 </script>
 
-<MetaTags title="User Details" description="" />
+<MetaTags title="Detalhes do utilizador" description="" />
 
-<PageHeader title="User Details" subtitle="View user details and their contributions" />
+<PageHeader title="Detalhes do utilizador" subtitle="Ver detalhes do utilizador e as suas contribuições" />
 <div class="container mx-auto mb-20 flex max-w-3xl flex-col gap-y-8 md:gap-y-10">
 	<Card.Root>
 		<Card.Header>
@@ -32,7 +32,7 @@
 			</div>
 		</Card.Header>
 		<Card.Content class="space-y-4">
-			<p>{data.userProfile.description ?? 'No description provided'}</p>
+			<p>{data.userProfile.description ?? 'Nenhuma descrição foi adicionada'}</p>
 			<div class="flex flex-row gap-x-4">
 				<Button href="mailto:{data.userProfile.email}" variant="outline">
 					<Mail class="mr-2 h-4 w-4" />
@@ -40,38 +40,16 @@
 				</Button>
 			</div>
 			{#if $page.url.pathname === '/users/me'}
-				<Button href="/users/me/edit">Edit Profile</Button>
+				<Button href="/users/me/edit">Editar Perfil</Button>
 			{/if}
 		</Card.Content>
 	</Card.Root>
 	{#if $page.url.pathname === '/users/me'}
-		<FeatureWrapper feature="howtos">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>How Tos ({data.howTos.length})</Card.Title>
-					<Card.Description>List of How To guides created</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					{#if data.howTos && data.howTos.length > 0}
-						<div class="flex flex-wrap gap-4">
-							{#each data.howTos as howTo}
-								<Button href="/how-to/{howTo.id}" variant="outline" class="max-w-full">
-									<span class="truncate">{howTo.label}</span>
-									<SquareArrowOutUpRight class="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
-								</Button>
-							{/each}
-						</div>
-					{:else}
-						<p class="text-sm text-muted-foreground">User has not created any How Tos</p>
-					{/if}
-				</Card.Content>
-			</Card.Root>
-		</FeatureWrapper>
 		<FeatureWrapper feature="events">
 			<Card.Root>
 				<Card.Header>
-					<Card.Title>Events ({data.events.length})</Card.Title>
-					<Card.Description>List of Events created</Card.Description>
+					<Card.Title>Eventos ({data.events.length})</Card.Title>
+					<Card.Description>Lista of Eventos criados</Card.Description>
 				</Card.Header>
 				<Card.Content>
 					{#if data.events && data.events.length > 0}
@@ -84,7 +62,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="text-sm text-muted-foreground">User has not created any Events</p>
+						<p class="text-sm text-muted-foreground">Utilizador não criou Eventos</p>
 					{/if}
 				</Card.Content>
 			</Card.Root>
@@ -93,8 +71,8 @@
 	<FeatureWrapper feature="stories">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Published Stories ({data.stories.length})</Card.Title>
-				<Card.Description>List of Stories created</Card.Description>
+				<Card.Title>Histórias Publicadas ({data.stories.length})</Card.Title>
+				<Card.Description>Lista de Histórias Criadas</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				{#if data.stories && data.stories.length > 0}
@@ -107,7 +85,7 @@
 						{/each}
 					</div>
 				{:else}
-					<p class="text-sm text-muted-foreground">User has not created any Stories</p>
+					<p class="text-sm text-muted-foreground">Utilizador não criou Histórias</p>
 				{/if}
 			</Card.Content>
 		</Card.Root>
