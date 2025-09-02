@@ -20,12 +20,20 @@
 	let mapCenter = { lat: 38.7382, lng: -9.1212 };
 	let markerPosition: { lat: number; lng: number } | null = null;
 
-	const questions = [
-		'Apresentação : Fale para a câmera sobre quem você é e por que este lugar é importante para você. **Dica de filmagem**: Segura a câmera de forma a que apareças e também parte do local escolhido.',
-		'Recorda o passado : Simbolismo / História deste local, qual é a importância do mesmo. **Dica de filmagem**: Fixa a câmara no ponto central do local',
-		'Mudanças ao Longo do Tempo : Como o lugar mudou, seja fisicamente, socialmente ou na forma como as pessoas o utilizam. **Dica de filmagem**: Movimenta a câmera devagar pelo espaço para ilustrar o que está a descrever.',
-		'Experiência Atual : Como as pessoas observam e falam sobre este local. **Dica de filmagem**: Focar a câmara num ponto importante do local',
-		'Conclusão : Opinião sobre o futuro, focando em como este local será representado nos próximos anos. **Dica de filmagem**: Foca no seu rosto enquanto falas',
+	const prompts = [
+		'Apresentação : Fale para a câmera sobre quem você é e por que este lugar é importante para você.',
+		'Recorda o passado : Simbolismo / História deste local, qual é a importância do mesmo.',
+		'Mudanças ao Longo do Tempo : Como o lugar mudou, seja fisicamente, socialmente ou na forma como as pessoas o utilizam.',
+		'Experiência Atual : Como as pessoas observam e falam sobre este local.',
+		'Conclusão : Opinião sobre o futuro, focando em como este local será representado nos próximos anos.',
+	];
+
+	const filming_tips = [
+		'Segura a câmera de forma a que apareças e também parte do local escolhido.',
+		'Fixa a câmara no ponto central do local',
+		'Movimenta a câmera devagar pelo espaço para ilustrar o que está a descrever.',
+		'Focar a câmara num ponto importante do local',
+		'Foca no seu rosto enquanto falas'
 	];
 
 	let altImg = 'Taking notes';
@@ -401,20 +409,40 @@
 				</Form.Control>
 			</Form.Field>
 
-			<div class="mx-auto mt-6 h-[150px] w-[280px] px-4">
-				<Carousel.Root>
-					<Carousel.Content>
-						{#each questions as question}
-							<Carousel.Item class="w-full">
-								<div class="p-2 text-center">
-									<span class="text-sm font-semibold">{question}</span>
-								</div>
-							</Carousel.Item>
-						{/each}
-					</Carousel.Content>
-					<Carousel.Previous />
-					<Carousel.Next />
-				</Carousel.Root>
+			<div class="mx-auto mt-6 flex justify-center gap-64 max-w-[640px] px-4">
+				<div class="w-1/2">
+					<h3 class="text-center font-semibold mb-2">Dicas de Conteúdo</h3>
+					<Carousel.Root>
+						<Carousel.Content>
+							{#each prompts as prompt}
+								<Carousel.Item class="w-full">
+									<div class="p-2 text-center">
+										<span class="text-sm font-semibold">{prompt}</span>
+									</div>
+								</Carousel.Item>
+							{/each}
+						</Carousel.Content>
+						<Carousel.Previous />
+						<Carousel.Next />
+					</Carousel.Root>
+				</div>
+
+				<div class="w-1/2">
+					<h3 class="text-center font-semibold mb-2">Dicas de Filmagem</h3>
+					<Carousel.Root>
+						<Carousel.Content>
+							{#each filming_tips as tip}
+								<Carousel.Item class="w-full">
+									<div class="p-2 text-center">
+										<span class="text-sm font-semibold">{tip}</span>
+									</div>
+								</Carousel.Item>
+							{/each}
+						</Carousel.Content>
+						<Carousel.Previous />
+						<Carousel.Next />
+					</Carousel.Root>
+				</div>
 			</div>
 			<div class="h-8"></div>
 			<div class="flex justify-center mt-4">
