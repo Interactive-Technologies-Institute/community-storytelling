@@ -3,6 +3,8 @@
 	import Marker from './_components/marker.svelte';
 	import { goto } from '$app/navigation';
 	import { fly } from 'svelte/transition';
+	import { PlusCircle } from 'lucide-svelte';
+	import { Button } from '@/components/ui/button';
 
 	export let data;
 	let allPins = data.pins;
@@ -93,7 +95,7 @@
 		<p class="range-label">De {minYear} até {maxYear}</p>
 	</div>
 
-	<div class="map-container">
+	<div class="map-container relative">
 		<Map bind:map lng={mapCenter.lng} lat={mapCenter.lat} zoom={14}>
 			{#each enrichedPins as pin (pin.story_id)}
 				<Marker
@@ -108,6 +110,11 @@
 				/>
 			{/each}
 		</Map>
+
+		<Button href="/story/create" class="absolute bottom-8 right-4 rounded-full shadow-lg p-3 sm:px-4 sm:py-2">
+			<PlusCircle class="h-6 w-6 sm:mr-2" />
+			<span class="sr-only sm:not-sr-only">Criar História</span>
+		</Button>
 	</div>
 </div>
 
