@@ -45,7 +45,7 @@
 				{/if}
 			</div>
 			<div class="flex gap-x-1">
-				{#each story.tags as tag}
+				{#each story.tags.filter(tag => isNaN(Number(tag))) as tag}
 					<span>#{tag}</span>
 				{/each}
 			</div>

@@ -8,6 +8,7 @@
 	import StoryItem from './_components/story-item.svelte';
 	import { queryParam } from 'sveltekit-search-params';
 	import { arrayQueryParam, stringQueryParam } from '@/utils';
+	import { sortField, sortDirection } from "@/stores/sortStore";
 
 	export let data;
 
@@ -33,7 +34,22 @@
 <div
 	class="container mx-auto grid grid-cols-1 gap-6 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
 >
-	{#each data.stories as story}
+	{#each [...data.stories]
+		.sort((a, b) => {
+			if (a.moderation_status === "pending" && b.moderation_status !== "pending") {
+				return -1;
+			}
+			if (a.moderation_status !== "pending" && b.moderation_status === "pending") {
+				return 1;
+			}
+
+			const field = $sortField;
+			const dir = $sortDirection === "asc" ? 1 : -1;
+
+			if (a[field] < b[field]) return -1 * dir;
+			if (a[field] > b[field]) return 1 * dir;
+			return 0;
+		}) as story}
 		<StoryItem {story} />
 	{/each}
 </div>

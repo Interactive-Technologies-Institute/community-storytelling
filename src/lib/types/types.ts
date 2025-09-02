@@ -159,6 +159,7 @@ export type Story = {
 	template: string;
 	moderation_status: ModerationStatus;
 	coauthors: string[];
+	likeCount: number;
 };
 
 export type StoryWithTranscription = {

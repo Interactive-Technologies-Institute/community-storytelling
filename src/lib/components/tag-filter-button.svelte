@@ -37,7 +37,7 @@
 			<Command.List>
 				<Command.Empty>Nenhuma tag encontrada.</Command.Empty>
 				<Command.Group>
-					{#each tags as tag}
+					{#each Array.from(tags).filter(([tagName]) => isNaN(Number(tagName))) as tag}
 						<Command.Item
 							value={tag[0]}
 							onSelect={(currentValue) => {
@@ -54,9 +54,7 @@
 							>
 								<Check class="h-4 w-4" />
 							</div>
-							<span>
-								{tag[0]}
-							</span>
+							<span>{tag[0]}</span>
 							<span class="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
 								{tag[1]}
 							</span>

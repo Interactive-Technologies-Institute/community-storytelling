@@ -9,30 +9,57 @@ export const load = async (event) => {
 	const search = stringQueryParam().decode(event.url.searchParams.get('s'));
 	const tags = arrayQueryParam().decode(event.url.searchParams.get('tags'));
 
+	async function getLikeCount(id: string): Promise<{ count: number; userLiked: boolean }> {
+		const { data: liked, error: interestedError } = await event.locals.supabase
+			.rpc('get_story_like_count', {
+				story_id: parseInt(id),
+				user_id: user?.id,
+			})
+			.single();
+	
+		if (interestedError) {
+			const errorMessage = 'Error fetching interest count, please try again later.';
+			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			return error(500, errorMessage);
+		}
+		return { count: liked.count, userLiked: liked.has_liked };
+	}
+
 	async function getStories(): Promise<Story[]> {
 		let query = event.locals.supabase
-			.from('story_view')
-			.select('*')
-			.order('moderation_status', { ascending: true })
-			.order('inserted_at', { ascending: false });
+			.from("story_view")
+			.select("*")
+			.order("moderation_status", { ascending: true })
+			.order("inserted_at", { ascending: false });
 
 		if (search) {
-			query = query.textSearch('fts', search, { config: 'simple', type: 'websearch' });
+			query = query.textSearch("fts", search, { config: "simple", type: "websearch" });
 		}
 
 		if (tags && tags.length) {
-			query = query.contains('tags', tags);
+			query = query.contains("tags", tags);
 		}
 
 		const { data: stories, error: storiesError } = await query;
 
 		if (storiesError) {
 			console.log(storiesError);
-			const errorMessage = 'Error fetching stories, please try again later.';
-			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			const errorMessage = "Error fetching stories, please try again later.";
+			setFlash({ type: "error", message: errorMessage }, event.cookies);
 			return error(500, errorMessage);
 		}
-		return stories as Story[];
+
+		const storiesWithLikes = await Promise.all(
+			(stories ?? []).map(async (story) => {
+				const { count, userLiked } = await getLikeCount(String(story.id));
+				return {
+					...story,
+					likeCount: count
+				};
+			})
+		);
+
+		return storiesWithLikes as Story[];
 	}
 
 	async function getTags(): Promise<Map<string, number>> {
