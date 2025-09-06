@@ -68,5 +68,16 @@
 				Histórias
 			</a>
 		</FeatureWrapper>
+		<FeatureWrapper feature="members">
+			<a
+				href="/members"
+				class={cn(
+					'transition-colors hover:text-foreground/80',
+					$page.url.pathname.startsWith('/story') ? 'text-foreground' : 'text-foreground/60'
+				)}
+			>
+				Membros
+			</a>
+		</FeatureWrapper>
 	</nav>
 </div>

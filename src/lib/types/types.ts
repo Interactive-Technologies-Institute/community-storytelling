@@ -1,6 +1,6 @@
 import type { User } from '@supabase/supabase-js';
 
-export type Feature = 'map' | 'howtos' | 'events' | 'academy' | 'stories';
+export type Feature = 'map' | 'howtos' | 'events' | 'academy' | 'stories' | 'members';
 
 export type UserRole = 'user' | 'moderator' | 'admin';
 

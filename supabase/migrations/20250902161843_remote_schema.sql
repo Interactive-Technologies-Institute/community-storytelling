@@ -120,7 +120,8 @@ CREATE TYPE "public"."notification_type" AS ENUM (
     'map_pin_pending',
     'map_pin_changes_requested',
     'map_pin_approved',
-    'map_pin_rejected'
+    'map_pin_rejected',
+    'colinking_pending'
 );
 
 
@@ -129,7 +130,7 @@ ALTER TYPE "public"."notification_type" OWNER TO "postgres";
 
 CREATE TYPE "public"."story_role" AS ENUM (
     'community',
-    'introduction',
+    'monologue',
     'interview'
 );
 
@@ -819,7 +820,8 @@ CREATE TABLE IF NOT EXISTS "public"."map_pins" (
     "lat" double precision NOT NULL,
     "user_id" "uuid" NOT NULL,
     "story_id" bigint NOT NULL,
-    "year" bigint
+    "year" bigint,
+    "pin_color" "text" DEFAULT '#ff0000'::"text" NOT NULL
 );
 
 
@@ -857,7 +859,8 @@ CREATE OR REPLACE VIEW "public"."map_pins_view" WITH ("security_invoker"='on') A
     "mp"."user_id",
     "m"."status" AS "moderation_status",
     "mp"."story_id",
-    "mp"."year"
+    "mp"."year",
+    "mp"."pin_color"
    FROM ("public"."map_pins" "mp"
      JOIN "public"."latest_map_pins_moderation" "m" ON (("mp"."id" = "m"."map_pin_id")));
 
@@ -967,7 +970,8 @@ CREATE TABLE IF NOT EXISTS "public"."story" (
     "pub_quotes" "text"[],
     "pub_selected_images" "text"[],
     "title" "text",
-    "fts" "tsvector" GENERATED ALWAYS AS ("to_tsvector"('"simple"'::"regconfig", ("storyteller" || ' '::"text"))) STORED
+    "fts" "tsvector" GENERATED ALWAYS AS ("to_tsvector"('"simple"'::"regconfig", COALESCE("title", ''::"text"))) STORED,
+    "coauthors" "uuid"[]
 );
 
 
@@ -1037,6 +1041,7 @@ CREATE OR REPLACE VIEW "public"."story_view" WITH ("security_invoker"='on') AS
     "h"."pub_selected_images",
     "h"."title",
     "h"."fts",
+    "h"."coauthors",
     "m"."status" AS "moderation_status"
    FROM ("public"."story" "h"
      JOIN "public"."story_moderation" "m" ON (("h"."id" = "m"."story_id")));
@@ -1170,10 +1175,6 @@ CREATE INDEX "events_fts" ON "public"."events" USING "gin" ("fts");
 
 
 CREATE INDEX "howtos_fts" ON "public"."howtos" USING "gin" ("fts");
-
-
-
-CREATE INDEX "story_fts" ON "public"."story" USING "gin" ("fts");
 
 
 
@@ -1438,10 +1439,6 @@ CREATE POLICY "Allow moderators read all stories" ON "public"."story" FOR SELECT
 
 
 
-CREATE POLICY "Allow moderators to create their own stories" ON "public"."story" FOR INSERT WITH CHECK ((( SELECT "public"."authorize"('story.create'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id")));
-
-
-
 CREATE POLICY "Allow moderators to insert all events moderation" ON "public"."events_moderation" FOR INSERT WITH CHECK (( SELECT "public"."authorize"('events.moderate'::"public"."user_permission") AS "authorize"));
 
 
@@ -1515,6 +1512,10 @@ CREATE POLICY "Allow users to create their own liked stories" ON "public"."liked
 
 
 CREATE POLICY "Allow users to create their own map pins" ON "public"."map_pins" FOR INSERT WITH CHECK ((( SELECT "public"."authorize"('map.create'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id")));
+
+
+
+CREATE POLICY "Allow users to create their own stories" ON "public"."story" FOR INSERT WITH CHECK ((( SELECT "public"."authorize"('story.create'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id")));
 
 
 
@@ -1642,6 +1643,10 @@ CREATE POLICY "Allow users to update their own profiles" ON "public"."profiles" 
 
 
 
+CREATE POLICY "Allow users to update their own stories" ON "public"."story" FOR UPDATE USING ((( SELECT "public"."authorize"('story.update'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id"))) WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
 ALTER TABLE "public"."branding" ENABLE ROW LEVEL SECURITY;
 
 
@@ -1703,6 +1708,179 @@ GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
 GRANT USAGE ON SCHEMA "public" TO "supabase_auth_admin";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 GRANT ALL ON FUNCTION "public"."authorize"("requested_permission" "public"."user_permission") TO "anon";
 GRANT ALL ON FUNCTION "public"."authorize"("requested_permission" "public"."user_permission") TO "authenticated";

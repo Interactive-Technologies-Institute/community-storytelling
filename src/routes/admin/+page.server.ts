@@ -45,6 +45,8 @@ export const load = async (event) => {
 				events: features.includes('events'),
 				map: features.includes('map'),
 				academy: features.includes('academy'),
+				stories: features.includes('stories'),
+				members: features.includes('members'),
 			},
 			zod(updateFeaturesSchema),
 			{
@@ -79,6 +81,8 @@ export const actions = {
 					{ id: 'events', enabled: form.data.events },
 					{ id: 'map', enabled: form.data.map },
 					{ id: 'academy', enabled: form.data.academy },
+					{ id: 'stories', enabled: form.data.stories },
+					{ id: 'members', enabled: form.data.members },
 				]);
 
 				if (supabaseError) {
