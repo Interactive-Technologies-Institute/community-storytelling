@@ -50,6 +50,13 @@
 			case 'map_pin_approved':
 			case 'map_pin_rejected':
 				return `/map?id=${notification.data.map_pin_id ?? 'error'}`;
+			case 'colinking_pending':
+			return `/accepting_colinking?data=${encodeURIComponent(
+				JSON.stringify({
+					requested_story_id: notification.data.requested_story_id,
+					requester_story_id: notification.data.requester_story_id
+				})
+			)}`;
 			default:
 				return 'error';
 		}

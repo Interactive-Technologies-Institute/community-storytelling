@@ -21,11 +21,11 @@
 	let markerPosition: { lat: number; lng: number } | null = null;
 
 	const questions = [
-		'Quem é a pessoa? : Atividades ou funções que possui no bairro / Como começou a fazer parte deste bairro',
-		'Experiência da pessoa no bairro : Memórias ou histórias marcantes / Envolvimento com a comunidade no passado, seja trabalho, projetos ou atividades',
-		'Transformações do bairro ao longo do tempo: Ponto de vista do entrevistado sobre as mudanças que aconteceram no bairro ',
-		'Participação no dia a dia do bairro: Influência das suas atividades e do seu papel na sua vida pessoal e na comunidade',
-		'Futuro do bairro : Sonhos ou expectativas para o bairro nos próximos anos / Contribuição do entrevistado para o futuro do bairro através do seu papel',
+		'Pode apresentar-se e falar um pouco sobre si? Que atividades ou funções exerce atualmente no bairro?',
+		'Que memórias ou histórias marcantes possui do bairro? De que forma já esteve envolvido(a) com a comunidade no passado (trabalho, projetos ou atividades)?',
+		'Na sua perspetiva, que mudanças mais importantes aconteceram no bairro ao longo dos anos?',
+		'Como é que as suas atividades e o seu papel no bairro influenciam a sua vida pessoal e a comunidade em geral?',
+		'Quais são os seus sonhos ou expectativas para o bairro nos próximos anos? De que forma gostaria de contribuir para o futuro do bairro através do seu papel?',
 	];
 
 	let altImg = 'Taking notes';
@@ -42,7 +42,7 @@
 
 	const { form: formData, errors } = form;
 	$formData.role = 'interview';
-	$formData.tags[0] = 'Interview';
+	$formData.tags[0] = 'Entrevista';
 	$formData.pinColor = $formData.pinColor ?? '#ff0000';
 
 	let recordingType = '';
@@ -514,6 +514,10 @@
 			</Form.Field>
 		</div>
 		<div class="page" class:show={page === 3}>
+			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
+				Quem desenvolveu esta história contigo?
+			</h2>
+
 			<input
 				type="text"
 				placeholder="Search users..."

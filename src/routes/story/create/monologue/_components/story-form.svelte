@@ -50,7 +50,7 @@
 
 	const { form: formData, errors } = form;
 	$formData.role = 'monologue';
-	$formData.tags[0] = 'Monologue';
+	$formData.tags[0] = 'Monólogo';
 	$formData.pinColor = $formData.pinColor ?? '#ff0000';
 
 	let recordingType = '';

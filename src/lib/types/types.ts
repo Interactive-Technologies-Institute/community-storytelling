@@ -160,6 +160,7 @@ export type Story = {
 	moderation_status: ModerationStatus;
 	coauthors: string[];
 	likeCount: number;
+	colinked_stories: number[];
 };
 
 export type StoryWithTranscription = {

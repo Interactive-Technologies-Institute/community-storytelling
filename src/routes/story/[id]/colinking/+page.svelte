@@ -1,12 +1,16 @@
 <script lang="ts">
-	import { applyAction, deserialize, enhance } from '$app/forms';
+	import { applyAction, deserialize } from '$app/forms';
 	export let data;
 
 	let altImg = 'Logic and Emotion';
 	let selectedStory: string = "";
 	let userStoryId: number = data.story.id; 
 
-    async function submitColinkRequest(event: Event) {
+	const linkedStoryIds: number[] = data.story.colinked_stories ?? [];
+
+	const selectableStories = data.myStories.filter(s => !linkedStoryIds.includes(s.id));
+
+	async function submitColinkRequest(event: Event) {
 		event.preventDefault();
 
         let newFormData = new FormData();
@@ -23,7 +27,6 @@
 		});
 
 		const result = deserialize(await response.text());
-
 		applyAction(result);
 	}
 </script>
@@ -49,7 +52,7 @@
 			class="w-full sm:w-[300px] border rounded-lg px-3 py-2 text-center mx-auto"
 		>
 			<option value="">Escolhe uma história</option>
-			{#each data.myStories as story}
+			{#each selectableStories as story}
 				<option value={story.id}>{story.title}</option>
 			{/each}
 		</select>
@@ -57,10 +60,9 @@
 		{#if selectedStory}
 			<div class="flex flex-col items-center gap-2 mt-2">
 				<p class="text-lg text-center">
-					<strong>Selecionado:</strong> {data.myStories.find(s => s.id === Number(selectedStory))?.title}
+					<strong>Selecionado:</strong> {selectableStories.find(s => s.id === Number(selectedStory))?.title}
 				</p>
 
-				<!-- Submit button triggers the named action -->
 				<button
 					type="submit"
 					name="intent"

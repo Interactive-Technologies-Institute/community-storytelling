@@ -80,7 +80,30 @@
 		{/if}
 
 		{#if data.permission}
-			<Pending data={data.story} />
+			<div class="mb-12">
+				<Pending data={data.story} />
+			</div>
+		{/if}
+
+		{#if data.moderation[0].status === 'approved'}
+			{#if data.story.colinked_stories && data.story.colinked_stories.length > 0}
+				<div class="flex flex-col items-center gap-4 mb-10">
+					<h1 class="text-4xl font-bold text-center">Histórias Ligadas</h1>
+
+					<div class="flex flex-wrap justify-center gap-6 mt-4">
+						{#each data.story.colinked_stories as storyId}
+							{#if data.colinkedStories[storyId]}
+								<a
+									href={`/story/${storyId}`}
+									class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+								>
+								{data.colinkedStories[storyId].title}
+								</a>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			{/if}
 		{/if}
 	</div>
 
@@ -111,7 +134,7 @@
 					Pré-visualizar história
 				</Button>
 			{/if}
-			{#if data.story.user_id === data.user?.id && data.moderation[0].status === 'approved'}
+			{#if (data.story.user_id === data.user?.id || data.user?.role == 'moderator' || data.user?.role == 'admin') && data.moderation[0].status === 'approved'}
 				<Button
 					variant="destructive"
 					on:click={() => (openUnpublishDialog = true)}
@@ -121,7 +144,7 @@
 					Remover Publicação
 				</Button>
 			{/if}
-			{#if data.story.user_id === data.user?.id}
+			{#if data.story.user_id === data.user?.id || data.user?.role == 'moderator' || data.user?.role == 'admin'}
 				<Button
 					variant="destructive"
 					on:click={() => (openDeleteDialog = true)}

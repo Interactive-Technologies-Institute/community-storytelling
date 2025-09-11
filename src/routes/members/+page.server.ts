@@ -1,4 +1,3 @@
-import { setFlash } from 'sveltekit-flash-message/server';
 import type { UserProfile } from '$lib/types/types';
 import { error } from '@sveltejs/kit';
 

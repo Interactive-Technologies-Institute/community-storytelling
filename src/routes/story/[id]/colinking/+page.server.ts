@@ -24,11 +24,12 @@ export const load = async (event) => {
     }
 
     async function getMyStories(): Promise<Story[]> {
-        if(user){
+        if (user) {
             const { data: allStories, error: allStoriesError } = await event.locals.supabase
                 .from('story_view')
                 .select('id, title')
-                .eq('user_id', user.id);
+                .eq('user_id', user.id)
+                .eq('moderation_status', 'approved');
 
             if (allStoriesError) {
                 const errorMessage = 'Erro ao buscar suas histórias. Tente novamente mais tarde.';

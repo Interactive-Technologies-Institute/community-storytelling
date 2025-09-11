@@ -1,4 +1,3 @@
-//import { deleteStorychema } from '@/schemas/story';
 import { deleteStorySchema, unpublishStorySchema, toggleStoryLikeSchema } from '@/schemas/story';
 import type { ModerationInfo, Story, UserProfile } from '@/types/types';
 import { handleFormAction } from '@/utils';
@@ -17,10 +16,10 @@ export const load = async (event) => {
 			.eq('id', id)
 			.single();
 
-		if (storyError) {
+		if (storyError || !story) {
 			const errorMessage = `Error fetching story ${id}, please try again later.`;
 			setFlash({ type: 'error', message: errorMessage }, event.cookies);
-			return error(500, errorMessage);
+			throw error(500, errorMessage);
 		}
 
 		return story as Story;
@@ -35,7 +34,7 @@ export const load = async (event) => {
 		if (moderationError) {
 			const errorMessage = 'Error fetching moderation, please try again later.';
 			setFlash({ type: 'error', message: errorMessage }, event.cookies);
-			return error(500, errorMessage);
+			throw error(500, errorMessage);
 		}
 
 		return moderation;
@@ -57,17 +56,7 @@ export const load = async (event) => {
 	}
 
 	async function getUserProfile(storyId: string) {
-		const { data: story, error: storyError } = await event.locals.supabase
-			.from('story_view')
-			.select('*')
-			.eq('id', storyId)
-			.single();
-
-		if (storyError) {
-			const errorMessage = `Error fetching story ${storyId}, please try again later.`;
-			setFlash({ type: 'error', message: errorMessage }, event.cookies);
-			throw error(500, errorMessage);
-		}
+		const story = await getStory(storyId);
 
 		const { data: userProfile, error: profileError } = await event.locals.supabase
 			.from('profiles_view')
@@ -75,7 +64,7 @@ export const load = async (event) => {
 			.eq('id', story.user_id)
 			.single();
 
-		if (profileError) {
+		if (profileError || !userProfile) {
 			const errorMessage = `Error fetching profile, please try again later.`;
 			setFlash({ type: 'error', message: errorMessage }, event.cookies);
 			throw error(500, errorMessage);
@@ -110,46 +99,58 @@ export const load = async (event) => {
 	}
 
 	async function getLikeCount(id: string): Promise<{ count: number; userLiked: boolean }> {
-			const { data: liked, error: interestedError } = await event.locals.supabase
-				.rpc('get_story_like_count', {
-					story_id: parseInt(id),
-					user_id: user?.id,
-				})
-				.single();
-	
-			if (interestedError) {
-				const errorMessage = 'Error fetching interest count, please try again later.';
-				setFlash({ type: 'error', message: errorMessage }, event.cookies);
-				return error(500, errorMessage);
-			}
-			return { count: liked.count, userLiked: liked.has_liked };
-		}
-	
-		const likeCount = await getLikeCount(event.params.id);
+		const { data: liked, error: interestedError } = await event.locals.supabase
+			.rpc('get_story_like_count', {
+				story_id: parseInt(id),
+				user_id: user?.id,
+			})
+			.single();
 
-		const story = await getStory(event.params.id);
-		const coauthors = await getCoauthorProfiles(story.coauthors ?? [], user?.id);
+		if (interestedError) {
+			const errorMessage = 'Error fetching interest count, please try again later.';
+			setFlash({ type: 'error', message: errorMessage }, event.cookies);
+			throw error(500, errorMessage);
+		}
+
+		return { count: liked.count, userLiked: liked.has_liked };
+	}
+
+	const story = await getStory(event.params.id);
+
+	let colinkedStories: Record<number, { id: number; title: string }> = {};
+	if (story.colinked_stories && story.colinked_stories.length > 0) {
+		const { data: colinkedData, error: colinkedError } = await event.locals.supabase
+			.from('story_view')
+			.select('id, title')
+			.in('id', story.colinked_stories);
+
+		if (!colinkedError && colinkedData) {
+			colinkedData.forEach((s) => {
+				if (s.id !== null && s.title !== null) {
+					colinkedStories[s.id] = { id: s.id, title: s.title };
+				}
+			});
+		}
+	}
+
+	const coauthors = await getCoauthorProfiles(story.coauthors ?? [], user?.id);
+	const likeCount = await getLikeCount(event.params.id);
 
 	return {
 		story,
 		moderation: await getStoryModeration(event.params.id),
 		profile: await getUserProfile(event.params.id),
 		coauthors,
-		permission: await getUserPermission(),
+		colinkedStories,
+		permission: getUserPermission(),
 		likeCount: likeCount.count,
-		deleteForm: await superValidate(zod(deleteStorySchema), {
-			id: 'delete-story',
-		}),
-		unpublishForm: await superValidate(zod(unpublishStorySchema), {
-			id: 'unpublish-story',
-		}),
+		deleteForm: await superValidate(zod(deleteStorySchema), { id: 'delete-story' }),
+		unpublishForm: await superValidate(zod(unpublishStorySchema), { id: 'unpublish-story' }),
 		toggleLikeForm: await superValidate(
-					{ value: likeCount.userLiked },
-					zod(toggleStoryLikeSchema),
-					{
-						id: 'toggle-story-like',
-					}
-				),
+			{ value: likeCount.userLiked },
+			zod(toggleStoryLikeSchema),
+			{ id: 'toggle-story-like' }
+		),
 	};
 };
 
