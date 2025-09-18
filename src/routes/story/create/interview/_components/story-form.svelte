@@ -95,7 +95,6 @@
 	}
 
 	function handleMapClick(event: CustomEvent<{ lat: number; lng: number }>) {
-		console.log('Map clicked at:', event.detail);
 		markerPosition = event.detail;
 		$formData.lat = event.detail.lat;
 		$formData.lng = event.detail.lng;
@@ -561,7 +560,6 @@
 				<Button
 					class="p-2 bg-green-600 text-white hover:bg-green-700"
 					on:click={() => (page = 4)}
-					disabled={recorded === false}
 				>
 					<ArrowRight />
 				</Button>

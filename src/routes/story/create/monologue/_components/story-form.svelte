@@ -589,7 +589,6 @@
 				<Button
 					class="p-2 bg-green-600 text-white hover:bg-green-700"
 					on:click={() => (page = 4)}
-					disabled={recorded === false}
 				>
 					<ArrowRight />
 				</Button>

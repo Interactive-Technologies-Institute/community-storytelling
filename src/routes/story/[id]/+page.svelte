@@ -2,7 +2,7 @@
 	import ModerationBanner from '@/components/moderation-banner.svelte';
 	import PageHeader from '@/components/page-header.svelte';
 	import { Button } from '@/components/ui/button';
-	import { Eye, LayoutPanelTop, Tag, Network, Trash, Wand } from 'lucide-svelte';
+	import { Eye, LayoutPanelTop, Tag, Network, Trash, Wand, Pencil } from 'lucide-svelte';
 	import Pending from './_components/pending.svelte';
 	import StoryDeleteDialog from './_components/story-delete-dialog.svelte';
 	import StoryUnpublishDialog from './_components/story-unpublish-dialog.svelte';
@@ -15,6 +15,12 @@
 
 	let openDeleteDialog = false;
 	let openUnpublishDialog = false;
+
+	const isOwner = data.story.user_id === data.user?.id;
+	const isModerator = data.user?.role === 'moderator' || data.user?.role === 'admin';
+	const isApproved = data.moderation[0].status === 'approved';
+	const isPending = data.moderation[0].status === 'pending';
+	const canManage = isOwner || isModerator;
 </script>
 
 <PageHeader
@@ -22,7 +28,7 @@
 	subtitle={data.story.role === 'interview' ? 'Interview' : 'Monologue'}
 />
 	<div class="container mx-auto space-y-10 pb-10">
-	{#if data.moderation[0].status !== 'approved'}
+	{#if !isApproved}
 		<ModerationBanner moderation={data.moderation} />
 	{:else}
 		<div class="flex justify-center items-center gap-4 mb-6 mt-0">
@@ -75,17 +81,17 @@
 				</Button>
 			{/each}
 		</div>
-		{#if data.moderation[0].status == 'approved'}
+		{#if isApproved}
 			<Story data={data.story} />
 		{/if}
 
-		{#if data.permission}
+		{#if data.permission || isOwner}
 			<div class="mb-12">
 				<Pending data={data.story} />
 			</div>
 		{/if}
 
-		{#if data.moderation[0].status === 'approved'}
+		{#if isApproved}
 			{#if data.story.colinked_stories && data.story.colinked_stories.length > 0}
 				<div class="flex flex-col items-center gap-4 mb-10">
 					<h1 class="text-4xl font-bold text-center">Histórias Ligadas</h1>
@@ -107,34 +113,46 @@
 		{/if}
 	</div>
 
-	{#if data.permission}
+	{#if data.permission || isOwner}
 		<div
 			class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
 		>
-			{#if data.story.transcription}
-				<Button href="/story/{data.story.id}/transcription" class="w-full sm:w-auto">
+			{#if isOwner}
+				{#if data.story.transcription}
+					<Button href={`/story/${data.story.id}/transcription`} class="w-full sm:w-auto">
 					<Eye class="mr-2 h-4 w-4" />
 					Abrir Transcrição
-				</Button>
+					</Button>
 				{:else}
-				<Button href="/story/{data.story.id}/edit-transcription" class="w-full sm:w-auto">
+					<Button href={`/story/${data.story.id}/edit-transcription`} class="w-full sm:w-auto">
 					<Wand class="mr-2 h-4 w-4" />
 					Gerar Transcrição
-				</Button>
+					</Button>
+				{/if}
 			{/if}
-			{#if data.story.user_id !== data.user?.id && data.moderation[0].status === 'approved'}
-				<Button href="/story/{data.story.id}/colinking" class="w-full sm:w-auto">
+
+			{#if !isOwner && isApproved}
+				<Button href={`/story/${data.story.id}/colinking`} class="w-full sm:w-auto">
 					<Network class="mr-2 h-4 w-4" />
 					Colinking
 				</Button>
 			{/if}
-			{#if data.moderation[0].status === 'pending'}
-				<Button href="/story/{data.story.id}/preview" class="w-full sm:w-auto">
+
+			{#if isPending}
+				<Button href={`/story/${data.story.id}/preview`} class="w-full sm:w-auto">
 					<LayoutPanelTop class="mr-2 h-4 w-4" />
 					Pré-visualizar história
 				</Button>
 			{/if}
-			{#if (data.story.user_id === data.user?.id || data.user?.role == 'moderator' || data.user?.role == 'admin') && data.moderation[0].status === 'approved'}
+
+			{#if isOwner}
+				<Button href={`/story/${data.story.id}/edit`} class="w-full sm:w-auto">
+					<Pencil class="mr-2 h-4 w-4" />
+					Editar História
+				</Button>
+			{/if}
+
+			{#if canManage && isApproved}
 				<Button
 					variant="destructive"
 					on:click={() => (openUnpublishDialog = true)}
@@ -144,7 +162,8 @@
 					Remover Publicação
 				</Button>
 			{/if}
-			{#if data.story.user_id === data.user?.id || data.user?.role == 'moderator' || data.user?.role == 'admin'}
+
+			{#if canManage}
 				<Button
 					variant="destructive"
 					on:click={() => (openDeleteDialog = true)}
@@ -156,8 +175,6 @@
 			{/if}
 		</div>
 	{/if}
-
-
 </div>
 
 <StoryDeleteDialog storyId={data.story.id} data={data.deleteForm} bind:open={openDeleteDialog} />

@@ -30,7 +30,7 @@ export const actions = {
 						data: {
 							display_name: form.data.displayName,
 						},
-						emailRedirectTo: `${event.url.origin}/auth/callback`,
+						emailRedirectTo: `${event.url.origin}`,
 					},
 				});
 
