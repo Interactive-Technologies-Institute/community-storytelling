@@ -12,10 +12,9 @@
 <Sheet.Root bind:open>
 	<Sheet.Content>
 		<Sheet.Header>
-			<Sheet.Title>Moderation Details</Sheet.Title>
+			<Sheet.Title>Detalhes de moderação</Sheet.Title>
 			<Sheet.Description>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-				labore et dolore magna aliqua.
+				Ações efetuadas pelos moderadores
 			</Sheet.Description>
 		</Sheet.Header>
 		<div class="flex flex-col gap-y-4 py-6">
@@ -31,9 +30,11 @@
 							{#if item.status === 'rejected'}
 								Rejeitado (marcado para apagar)
 							{:else if item.status === 'pending'}
-								Moderação pendente
+								Preparação para submissão
 							{:else if item.status === 'changes_requested'}
 								Mudanças pedidas
+							{:else if item.status === 'story_for_review'}
+								Submetido para revisão
 							{/if}
 						</Alert.Title>
 						<Alert.Description>{item.comment}</Alert.Description>

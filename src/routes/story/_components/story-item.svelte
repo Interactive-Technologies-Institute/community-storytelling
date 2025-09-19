@@ -9,10 +9,11 @@
 	$: imageUrl = story.image[0];
 
 	const moderationStatusLabels = {
-		pending: 'Pending',
-		approved: 'Approved',
-		changes_requested: 'Changes Requested',
-		rejected: 'Rejected',
+		pending: 'Pendente',
+		approved: 'Aprovado',
+		changes_requested: 'Mudanças Pedidas',
+		rejected: 'Rejeitado',
+		story_for_review: 'Submetido para Revisão'
 	};
 </script>
 

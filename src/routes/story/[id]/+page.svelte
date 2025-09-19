@@ -2,8 +2,9 @@
 	import ModerationBanner from '@/components/moderation-banner.svelte';
 	import PageHeader from '@/components/page-header.svelte';
 	import { Button } from '@/components/ui/button';
-	import { Eye, LayoutPanelTop, Tag, Network, Trash, Wand, Pencil } from 'lucide-svelte';
+	import { Eye, LayoutPanelTop, Tag, Network, Trash, Wand, Pencil, Check, MessageCircleCode } from 'lucide-svelte';
 	import Pending from './_components/pending.svelte';
+	import StoryApproveDialog from './_components/story-approve-dialog.svelte';
 	import StoryDeleteDialog from './_components/story-delete-dialog.svelte';
 	import StoryUnpublishDialog from './_components/story-unpublish-dialog.svelte';
 	import Story from './_components/story.svelte';
@@ -13,6 +14,7 @@
 
 	export let data;
 
+	let openApproveDialog = false;
 	let openDeleteDialog = false;
 	let openUnpublishDialog = false;
 
@@ -20,6 +22,7 @@
 	const isModerator = data.user?.role === 'moderator' || data.user?.role === 'admin';
 	const isApproved = data.moderation[0].status === 'approved';
 	const isPending = data.moderation[0].status === 'pending';
+	const isBeingReviewed = data.moderation[0].status === 'story_for_review';
 	const canManage = isOwner || isModerator;
 </script>
 
@@ -30,7 +33,8 @@
 	<div class="container mx-auto space-y-10 pb-10">
 	{#if !isApproved}
 		<ModerationBanner moderation={data.moderation} />
-	{:else}
+	{/if}
+	{#if isBeingReviewed || isApproved}
 		<div class="flex justify-center items-center gap-4 mb-6 mt-0">
 			<span class="text-xl font-semibold">Autor:</span>
 			<a href={`/users/${data.profile.id}`} class="flex items-center gap-2 hover:underline">
@@ -81,7 +85,7 @@
 				</Button>
 			{/each}
 		</div>
-		{#if isApproved}
+		{#if isApproved || isBeingReviewed}
 			<Story data={data.story} />
 		{/if}
 
@@ -117,7 +121,7 @@
 		<div
 			class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
 		>
-			{#if isOwner}
+			{#if isOwner && isPending}
 				{#if data.story.transcription}
 					<Button href={`/story/${data.story.id}/transcription`} class="w-full sm:w-auto">
 					<Eye class="mr-2 h-4 w-4" />
@@ -129,6 +133,10 @@
 					Gerar Transcrição
 					</Button>
 				{/if}
+				<Button href={`/story/${data.story.id}/edit`} class="w-full sm:w-auto">
+					<Pencil class="mr-2 h-4 w-4" />
+					Editar História
+				</Button>
 			{/if}
 
 			{#if !isOwner && isApproved}
@@ -138,28 +146,29 @@
 				</Button>
 			{/if}
 
-			{#if isPending}
+			{#if isPending && data.story.transcription.length}
 				<Button href={`/story/${data.story.id}/preview`} class="w-full sm:w-auto">
 					<LayoutPanelTop class="mr-2 h-4 w-4" />
 					Pré-visualizar história
 				</Button>
 			{/if}
 
-			{#if isOwner}
-				<Button href={`/story/${data.story.id}/edit`} class="w-full sm:w-auto">
-					<Pencil class="mr-2 h-4 w-4" />
-					Editar História
+			{#if isModerator && isBeingReviewed}
+				<Button 
+					on:click={() => (openApproveDialog = true)} class="w-full sm:w-auto">
+					<Check class="mr-2 h-4 w-4" />
+					Aprovar
 				</Button>
 			{/if}
 
-			{#if canManage && isApproved}
+			{#if canManage && (isBeingReviewed || isApproved)}
 				<Button
 					variant="destructive"
 					on:click={() => (openUnpublishDialog = true)}
 					class="w-full sm:w-auto"
 				>
-					<Trash class="mr-2 h-4 w-4" />
-					Remover Publicação
+					<MessageCircleCode class="mr-2 h-4 w-4" />
+					Pedir Alterações
 				</Button>
 			{/if}
 
@@ -177,9 +186,6 @@
 	{/if}
 </div>
 
+<StoryApproveDialog storyId={data.story.id} data={data.deleteForm} bind:open={openApproveDialog} />
 <StoryDeleteDialog storyId={data.story.id} data={data.deleteForm} bind:open={openDeleteDialog} />
-<StoryUnpublishDialog
-	storyId={data.story.id}
-	data={data.unpublishForm}
-	bind:open={openUnpublishDialog}
-/>
+<StoryUnpublishDialog storyId={data.story.id} data={data.unpublishForm} bind:open={openUnpublishDialog}/>

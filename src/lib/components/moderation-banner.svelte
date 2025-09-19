@@ -19,16 +19,18 @@
 		{#if latestModeration.status === 'rejected'}
 			Rejeitado (marcado para apagar)
 		{:else if latestModeration.status === 'pending'}
-			Moderação pendente
+			Preparação para submissão
 		{:else if latestModeration.status === 'changes_requested'}
 			Mudanças pedidas
+		{:else if latestModeration.status === 'story_for_review'}
+			Submetido para revisão
 		{/if}
 	</Alert.Title>
 	<Alert.Description>{latestModeration.comment}</Alert.Description>
-	<Button size="sm" variant="outline" class="mt-2" on:click={() => (openSheet = true)}>
+	<!--<Button size="sm" variant="outline" class="mt-2" on:click={() => (openSheet = true)}>
 		Mais Detalhes
-	</Button>
+	</Button>-->
 </Alert.Root>
 
-<ModerationDetails {moderation} bind:open={openSheet} />
+<!-- <ModerationDetails {moderation} bind:open={openSheet} /> -->
 

@@ -32,7 +32,7 @@ export type Branding = {
 	radius: number;
 };
 
-export type ModerationStatus = 'pending' | 'approved' | 'changes_requested' | 'rejected';
+export type ModerationStatus = 'pending' | 'approved' | 'changes_requested' | 'rejected' | 'story_for_review';
 
 export type ModerationInfo = {
 	status: ModerationStatus;

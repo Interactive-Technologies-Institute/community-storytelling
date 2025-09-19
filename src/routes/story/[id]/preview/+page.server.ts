@@ -123,7 +123,7 @@ export const actions = {
 
 					const { error: supabaseModerationError } = await locals.supabase
 						.from('story_moderation')
-						.update({ status: 'approved', comment: '' })
+						.update({ status: 'story_for_review', comment: 'Revisão a ser efetuada pelo moderador' })
 						.eq('story_id', id);
 
 					if (supabaseStoryError) {

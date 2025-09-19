@@ -732,7 +732,7 @@
 				{#if secondImageTaken}
 					<Button
 						type="button"
-						class="bg-red-600 text-white mt-2"
+						variant="destructive"
 						on:click={resetPhotos}
 					>
 						Apagar Fotografias

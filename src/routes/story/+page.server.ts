@@ -94,5 +94,7 @@ export const load = async (event) => {
 		stories: await getStories(),
 		permission: await getUserPermission(),
 		tags: await getTags(),
+		userId: user?.id,
+		userRole: user?.role,
 	};
 };

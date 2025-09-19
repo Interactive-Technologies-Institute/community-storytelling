@@ -1,4 +1,4 @@
-import { deleteStorySchema, unpublishStorySchema, toggleStoryLikeSchema } from '@/schemas/story';
+import { deleteStorySchema, unpublishStorySchema, toggleStoryLikeSchema, approveStorySchema } from '@/schemas/story';
 import type { ModerationInfo, Story, UserProfile } from '@/types/types';
 import { handleFormAction } from '@/utils';
 import { error, fail, redirect } from '@sveltejs/kit';
@@ -155,6 +155,15 @@ export const load = async (event) => {
 };
 
 export const actions = {
+	approve: async (event) =>
+		handleFormAction(event, approveStorySchema, 'approve-story', async (event, userId, form) => {
+			const { error: supabaseModerationError } = await event.locals.supabase
+				.from('story_moderation')
+				.update({ status: 'approved', comment: '' })
+				.eq('story_id', form.data.id);
+
+			return redirect(303, '/story');
+		}),
 	delete: async (event) =>
 		handleFormAction(event, deleteStorySchema, 'delete-story', async (event, userId, form) => {
 			const { error: supabaseError2 } = await event.locals.supabase
@@ -187,7 +196,7 @@ export const actions = {
 			async (event, userId, form) => {
 				const { error: supabaseModerationError } = await event.locals.supabase
 					.from('story_moderation')
-					.update({ status: 'pending', comment: 'Pending moderation' })
+					.update({ status: 'pending', comment: form.data.comment })
 					.eq('story_id', form.data.id);
 
 				if (supabaseModerationError) {
