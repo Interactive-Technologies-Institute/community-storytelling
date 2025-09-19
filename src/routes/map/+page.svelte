@@ -163,7 +163,7 @@
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	background-color: rgba(114, 0, 0, 0.4);
+	background-color: #629cf8;
 	pointer-events: none;
 	border-radius: 8px;
 }
@@ -174,7 +174,7 @@
 	transform: translate(-50%, -50%);
 	width: 20px;
 	height: 20px;
-	background-color: #720000;
+	background-color: #003b9b;
 	cursor: ew-resize;
 	border-radius: 50%;
 	box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);

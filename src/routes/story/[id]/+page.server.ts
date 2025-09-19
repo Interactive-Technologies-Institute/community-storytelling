@@ -162,6 +162,30 @@ export const actions = {
 				.update({ status: 'approved', comment: '' })
 				.eq('story_id', form.data.id);
 
+			const { data: storyPin, error: pinsError } = await event.locals.supabase
+				.from('map_pins_view')
+				.select('id')
+				.eq('story_id', form.data.id)
+				.maybeSingle();
+					
+			if (pinsError) {
+				console.log(pinsError.message);
+
+				return fail(500, { message: pinsError.message });
+			}
+
+			if(storyPin){
+				const { error: supabaseModerationError2 } = await event.locals.supabase
+					.from('map_pins_moderation')
+					.update({ status: 'approved', comment: '' })
+					.eq('map_pin_id', storyPin.id);
+
+				if (supabaseModerationError2) {
+					console.log(supabaseModerationError2.message);
+					return fail(500, { message: supabaseModerationError2.message });
+				}
+			}
+
 			return redirect(303, '/story');
 		}),
 	delete: async (event) =>

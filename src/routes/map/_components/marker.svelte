@@ -34,13 +34,34 @@
 				anchor: 'bottom',
 				maxWidth: '200px',
 			}).setHTML(`
-				<div style="text-align:center; font-family: Arial, sans-serif; background-color: black; color: white; padding: 10px;">
-					${title} (${year})
-					<button id="navigate-btn" style="padding: 6px 12px; background:#d93025; color:white; border:none; border-radius:4px; cursor:pointer;">
+				<div style="
+					font-family: Arial, sans-serif; 
+					background-color: black; 
+					color: white; 
+					padding: 10px 12px 12px 12px; 
+					position: relative;
+					display: flex; 
+					flex-direction: column; 
+					align-items: center;
+					gap: 8px;
+					text-align: center;
+				">
+					<div style="font-weight: bold; font-size: 14px; padding-right: 20px;">
+						${title} (${year})
+					</div>
+					<button id="navigate-btn" style="
+						padding: 6px 12px; 
+						background:#3b82f6; 
+						color:white; 
+						border:none; 
+						border-radius:4px; 
+						cursor:pointer;
+					">
 						Ver História
 					</button>
 				</div>
 			`);
+
 
 			marker = new mapboxgl.Marker(el, { anchor: 'bottom' })
 				.setLngLat([lng, lat])
