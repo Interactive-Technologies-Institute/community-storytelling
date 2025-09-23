@@ -105,6 +105,8 @@ export const actions = {
 						return fail(500, { message: supabaseError.message });
 					}
 
+					return redirect(303, `/story/${id}`);
+
 					return { success: true };
 				}
 

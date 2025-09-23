@@ -42,51 +42,69 @@
 	$: transcription = '';
 
 	let interview_text = `
-    Eu tenho uma transcrição de uma entrevista entre duas pessoas com o tema (X). O entrevistador fará as perguntas relacionadas ao tema, de forma a seguir um certo modelo de perguntas a atingir o passado, presente e futuro:
-    
-    A partir desta  transcrição, em linguagem Português de Portugal, crie a história da entrevista de uma perspectiva externa, sem inventar dados que não estejam na transcrição e adicionando citações do entrevistador a ser entrevistado para dar mais visibilidade. Seguindo estes passos de como contar uma boa história:    
-    - Exposição - Apresenta as personagens principais (pessoas reais!), o cenário da história (o tempo e o local relacionados, se houver) e o ambiente (a urgência é um bom ponto de partida)
-    - Conflito - Este é o problema da sua história, o principal fator que impulsiona o enredo. A exposição e o conflito podem ocorrer quase simultaneamente, especialmente em textos mais curtos.
-    - Ação ascendente - Todos os acontecimentos que conduzem ao clímax da sua história são considerados ação ascendente, o que irá levar ao clímax.
-    - Clímax - Este é o ponto de viragem da história, o pico da ação e o ponto em que o caminho para a resolução é concretizado. Este é o nível emocional mais elevado da sua história e a parte que realmente o liga ao seu público.
-    - Resolução - O fim. Não tem necessariamente de deixar o leitor com uma sensação de calor, mas deve pelo menos fazê-lo pensar e deve definitivamente deixar o seu público com uma ligação entre as suas emoções e a história contada.
-    O texto deve ter 5 parágrafos.
+    Eu tenho uma transcrição de uma entrevista sobre o tema (X). O entrevistador fez perguntas para explorar passado, presente e futuro, seguindo este modelo como base:  
 
-    Além disso, em uma secção chamada Quotes Importantes, crie 2 quotes que sejam muito importantes, que dão mais visibilidade ao tema que foi abordado.
+	1. "Pode apresentar-se e falar um pouco sobre si? Que atividades ou funções exerce atualmente no bairro?"  
+	2. "Que memórias ou histórias marcantes possui do bairro? De que forma já esteve envolvido(a) com a comunidade no passado (trabalho, projetos ou atividades)?"  
+	3. "Na sua perspetiva, que mudanças mais importantes aconteceram no bairro ao longo dos anos?"  
+	4. "Como é que as suas atividades e o seu papel no bairro influenciam a sua vida pessoal e a comunidade em geral?"  
+	5. "Quais são os seus sonhos ou expectativas para o bairro nos próximos anos? De que forma gostaria de contribuir para o futuro do bairro através do seu papel?"  
 
-	E para finalizar, partindo da história criada, crie um título para esta história.
+	A partir da transcrição, em Português de Portugal:  
+	- Crie a história da entrevista de uma perspectiva externa.  
+	- Inclua citações do entrevistado e do entrevistador, sem inventar informações.  
+	- Estruture a narrativa em 5 parágrafos, seguindo:  
+	- **Exposição** - personagens, cenário e ambiente.  
+	- **Conflito** - problema central.  
+	- **Ação ascendente** - acontecimentos que levam ao clímax.  
+	- **Clímax** - ponto alto da história.  
+	- **Resolução** - conclusão que conecte emocionalmente com o leitor.  
 
-    O formato deverá ser:
-    # História:
-    <história criada>
-    # Quotes importantes:
-    <quotes importantes criados>
+	Depois, crie uma secção "Quotes Importantes" com 2 citações que destaquem o tema da entrevista.  
+
+	Por fim, sugira um "título" para a história.  
+
+	Formato de saída:  
+
+	# História:
+	<história criada>
+	# Quotes importantes:
+	<quotes importantes criados>
 	# Título:
-    <Título criado>
+	<título criado>
     `;
 
 	let monologue_text = `
-    Eu tenho uma transcrição de um monólogo com o tema (X). A pessoa falará sobre um local relacionado ao tema, de forma a seguir um certo modelo de perguntas a atingir o passado, presente e futuro:
-    
-    A partir desta  transcrição, em linguagem Português de Portugal, crie a história da entrevista de uma perspectiva externa, sem inventar dados que não estejam na transcrição e adicionando citações do entrevistador a ser entrevistado para dar mais visibilidade. Seguindo estes passos de como contar uma boa história:    
-    - Exposição - Apresenta as personagens principais (pessoas reais!), o cenário da história (o tempo e o local relacionados, se houver) e o ambiente (a urgência é um bom ponto de partida)
-    - Conflito - Este é o problema da sua história, o principal fator que impulsiona o enredo. A exposição e o conflito podem ocorrer quase simultaneamente, especialmente em textos mais curtos.
-    - Ação ascendente - Todos os acontecimentos que conduzem ao clímax da sua história são considerados ação ascendente, o que irá levar ao clímax.
-    - Clímax - Este é o ponto de viragem da história, o pico da ação e o ponto em que o caminho para a resolução é concretizado. Este é o nível emocional mais elevado da sua história e a parte que realmente o liga ao seu público.
-    - Resolução - O fim. Não tem necessariamente de deixar o leitor com uma sensação de calor, mas deve pelo menos fazê-lo pensar e deve definitivamente deixar o seu público com uma ligação entre as suas emoções e a história contada.
-    O texto deve ter 5 parágrafos.
+    Eu tenho uma transcrição de um monólogo sobre o tema (X). A pessoa fala sobre um local relacionado ao tema, seguindo este modelo:  
 
-    Além disso, em uma secção chamada Quotes Importantes, crie 2 quotes que sejam muito importantes, que dão mais visibilidade ao tema que foi abordado.
+	1. "Apresentação: Fale para a câmera sobre quem você é e por que este lugar é importante para você."  
+	2. "Recorda o passado: Simbolismo / História deste local, qual é a importância do mesmo."  
+	3. "Mudanças ao Longo do Tempo: Como o lugar mudou, seja fisicamente, socialmente ou na forma como as pessoas o utilizam."  
+	4. "Experiência Atual: Como as pessoas observam e falam sobre este local."  
+	5. "Conclusão: Opinião sobre o futuro, focando em como este local será representado nos próximos anos."  
 
-	E para finalizar, partindo da história criada, crie um título para esta história.
+	A partir da transcrição, em Português de Portugal:  
+	- Crie a história do monólogo de uma perspectiva externa.  
+	- Inclua citações do orador, sem inventar informações.  
+	- Estruture a narrativa em 5 parágrafos, seguindo:  
+	- **Exposição** - personagens, cenário e ambiente.  
+	- **Conflito** - problema central.  
+	- **Ação ascendente** - acontecimentos que levam ao clímax.  
+	- **Clímax** - ponto alto da história.  
+	- **Resolução** - conclusão que conecte emocionalmente com o leitor.  
 
-    O formato deverá ser:
-    # História:
-    <história criada>
-    # Quotes importantes:
-    <quotes importantes criados>
+	Depois, crie uma secção "Quotes Importantes" com 2 citações que destaquem o tema do monólogo.  
+
+	Por fim, sugira um "título" para a história.  
+
+	Formato de saída:  
+
+	# História:
+	<história criada>
+	# Quotes importantes:
+	<quotes importantes criados>
 	# Título:
-    <Título criado>
+	<título criado>
     `;
 
 	$: submittingSave = false;

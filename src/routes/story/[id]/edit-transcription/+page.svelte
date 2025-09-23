@@ -72,8 +72,6 @@
 	onMount(async () => {
 		const formData = $formData;
 
-		console.log(formData);
-
 		const transcribeRecording = async (recordingLink: string) => {
 			const extension = getExtension(recordingLink);
 			let videoUrl = recordingLink;

@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { applyAction, deserialize } from '$app/forms';
-	import { PUBLIC_CLOUDINARY_CLOUD_NAME} from '$env/static/public';
 	import { Button } from '$lib/components/ui/button';
-	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	import * as Form from '$lib/components/ui/form';
 	import { editStorySchema, type EditStorySchema } from '$lib/schemas/edit-story';
 
