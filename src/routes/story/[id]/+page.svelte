@@ -14,8 +14,6 @@
 
 	export let data;
 
-	console.log(data);
-
 	let openApproveDialog = false;
 	let openDeleteDialog = false;
 	let openUnpublishDialog = false;
@@ -188,6 +186,6 @@
 	{/if}
 </div>
 
-<StoryApproveDialog storyId={data.story.id} data={data.deleteForm} bind:open={openApproveDialog} />
-<StoryDeleteDialog storyId={data.story.id} data={data.deleteForm} bind:open={openDeleteDialog} />
-<StoryUnpublishDialog storyId={data.story.id} data={data.unpublishForm} bind:open={openUnpublishDialog}/>
+<StoryApproveDialog storyId={data.story.id} storyOwner={data.story.user_id} data={data.approveForm} bind:open={openApproveDialog} />
+<StoryDeleteDialog storyId={data.story.id} storyOwner={data.story.user_id} data={data.deleteForm} bind:open={openDeleteDialog} />
+<StoryUnpublishDialog storyId={data.story.id} storyOwner={data.story.user_id} data={data.unpublishForm} bind:open={openUnpublishDialog}/>

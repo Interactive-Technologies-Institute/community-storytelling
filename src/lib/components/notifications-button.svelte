@@ -18,18 +18,21 @@
 	});
 
 	const notificationTypeToLabel: Record<NotificationType, string> = {
-		howto_pending: 'O seu guia está pendente de moderação',
-		howto_changes_requested: 'O seu guia precisa de alterações',
-		howto_approved: 'O seu guia foi aprovado',
-		howto_rejected: 'O seu guia foi rejeitado',
-		event_pending: 'O seu evento está pendente de moderação',
-		event_changes_requested: 'O seu evento precisa de alterações',
-		event_approved: 'O seu evento foi aprovado',
-		event_rejected: 'O seu evento foi rejeitado',
-		map_pin_pending: 'O seu marcador está pendente de moderação',
-		map_pin_changes_requested: 'O seu marcador precisa de alterações',
-		map_pin_approved: 'O seu marcador foi aprovado',
-		map_pin_rejected: 'O seu marcador foi rejeitado',
+		howto_pending: 'O teu guia está pendente de moderação',
+		howto_changes_requested: 'O teu guia precisa de alterações',
+		howto_approved: 'O teu guia foi aprovado',
+		howto_rejected: 'O teu guia foi rejeitado',
+		event_pending: 'O teu evento está pendente de moderação',
+		event_changes_requested: 'O teu evento precisa de alterações',
+		event_approved: 'O teu evento foi aprovado',
+		event_rejected: 'O teu evento foi rejeitado',
+		map_pin_pending: 'O teu marcador está pendente de moderação',
+		map_pin_changes_requested: 'O teu marcador precisa de alterações',
+		map_pin_approved: 'O teu marcador foi aprovado',
+		map_pin_rejected: 'O teu marcador foi rejeitado',
+		story_changes_requested: 'Foram pedidas mudanças na tua história',
+		story_approved: 'A tua história foi aprovada!',
+		story_rejected: 'A tua história foi rejeitada',
 		colinking_pending: 'Pedido de ligação de histórias',
 	};
 
@@ -50,12 +53,17 @@
 			case 'map_pin_approved':
 			case 'map_pin_rejected':
 				return `/map?id=${notification.data.map_pin_id ?? 'error'}`;
+			case 'story_changes_requested':
+			case 'story_approved':
+				return `/story/${notification.data.story_id ?? 'error'}`;
+			case 'story_rejected':
+				return `/story`;
 			case 'colinking_pending':
-			return `/accepting_colinking?data=${encodeURIComponent(
-				JSON.stringify({
-					requested_story_id: notification.data.requested_story_id,
-					requester_story_id: notification.data.requester_story_id
-				})
+				return `/accepting_colinking?data=${encodeURIComponent(
+					JSON.stringify({
+						requested_story_id: notification.data.requested_story_id,
+						requester_story_id: notification.data.requester_story_id
+					})
 			)}`;
 			default:
 				return 'error';

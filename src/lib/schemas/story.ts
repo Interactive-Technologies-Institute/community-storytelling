@@ -17,12 +17,14 @@ export type CreateStorySchema = typeof createStorySchema;
 
 export const approveStorySchema = z.object({
 	id: z.number(),
+	userId: z.string(),
 });
 
 export type ApproveStorySchema = typeof approveStorySchema;
 
 export const deleteStorySchema = z.object({
 	id: z.number(),
+	userId: z.string(),
 });
 
 export type DeleteStorySchema = typeof deleteStorySchema;
@@ -30,6 +32,7 @@ export type DeleteStorySchema = typeof deleteStorySchema;
 export const unpublishStorySchema = z.object({
 	id: z.number(),
 	comment: z.string().min(1, "O comentário é obrigatório"),
+	userId: z.string(),
 });
 
 export type UnpublishStorySchema = typeof unpublishStorySchema;

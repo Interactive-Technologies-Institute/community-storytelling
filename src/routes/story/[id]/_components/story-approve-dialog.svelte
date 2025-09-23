@@ -6,6 +6,7 @@
 
 	export let open = false;
 	export let storyId: number;
+	export let storyOwner: string;
 	export let data: SuperValidated<Infer<ApproveStorySchema>>;
 
 	const form = superForm(data, {
@@ -18,6 +19,7 @@
 <AlertDialog.Root bind:open>
 	<form method="POST" action="?/approve" use:enhance>
 		<input type="hidden" name="id" value={storyId} />
+		<input type="hidden" name="userId" value={storyOwner} />
 	</form>
 	<AlertDialog.Content>
 		<AlertDialog.Header>

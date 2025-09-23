@@ -128,7 +128,10 @@ export type NotificationType =
 	| 'map_pin_changes_requested'
 	| 'map_pin_approved'
 	| 'map_pin_rejected'
-	| "colinking_pending";
+	| "colinking_pending"
+	| "story_changes_requested"
+	| "story_approved"
+	| "story_rejected";
 
 export type Notification = {
 	id: number;

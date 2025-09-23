@@ -144,6 +144,7 @@ export const load = async (event) => {
 		colinkedStories,
 		permission: getUserPermission(),
 		likeCount: likeCount.count,
+		approveForm: await superValidate(zod(approveStorySchema), { id: 'approve-story' }),
 		deleteForm: await superValidate(zod(deleteStorySchema), { id: 'delete-story' }),
 		unpublishForm: await superValidate(zod(unpublishStorySchema), { id: 'unpublish-story' }),
 		toggleLikeForm: await superValidate(
@@ -186,6 +187,23 @@ export const actions = {
 				}
 			}
 
+			const { error: notifError } = await event.locals.supabase
+				.from('notifications')
+				.insert([
+					{
+						user_id: form.data.userId,
+						type: 'story_approved',
+						data: {
+							story_id: String(form.data.id),
+						},
+					}
+				]);
+
+			if (notifError) {
+				setFlash({ type: 'error', message: notifError.message }, event.cookies);
+				return fail(500, { message: notifError.message, form });
+			}
+
 			return redirect(303, '/story');
 		}),
 	delete: async (event) =>
@@ -208,6 +226,23 @@ export const actions = {
 			if (supabaseError) {
 				setFlash({ type: 'error', message: supabaseError.message }, event.cookies);
 				return fail(500, { message: supabaseError.message, form });
+			}
+
+			const { error: notifError } = await event.locals.supabase
+				.from('notifications')
+				.insert([
+					{
+						user_id: form.data.userId,
+						type: 'story_rejected',
+						data: {
+							story_id: String(form.data.id),
+						},
+					}
+				]);
+
+			if (notifError) {
+				setFlash({ type: 'error', message: notifError.message }, event.cookies);
+				return fail(500, { message: notifError.message, form });
 			}
 
 			return redirect(303, '/story');
@@ -251,6 +286,23 @@ export const actions = {
 							return fail(500, { message: supabaseModerationError2.message });
 						}
 					}
+				
+				const { error: notifError } = await event.locals.supabase
+				.from('notifications')
+				.insert([
+					{
+						user_id: form.data.userId,
+						type: 'story_changes_requested',
+						data: {
+							story_id: String(form.data.id),
+						},
+					}
+				]);
+
+				if (notifError) {
+					setFlash({ type: 'error', message: notifError.message }, event.cookies);
+					return fail(500, { message: notifError.message, form });
+				}
 
 				return redirect(303, '/story');
 			}

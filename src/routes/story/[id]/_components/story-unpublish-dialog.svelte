@@ -6,6 +6,7 @@
 
 	export let open = false;
 	export let storyId: number;
+  export let storyOwner: string;
 	export let data: SuperValidated<Infer<UnpublishStorySchema>>;
 
 	const form = superForm(data, {
@@ -26,6 +27,7 @@
       class="space-y-4"
     >
       <input type="hidden" name="id" value={storyId} />
+      <input type="hidden" name="userId" value={storyOwner} />
 
       <AlertDialog.Header>
         <AlertDialog.Title>Você tem certeza?</AlertDialog.Title>
