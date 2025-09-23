@@ -7,11 +7,13 @@ import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async (event) => {
 	const { session } = await event.locals.safeGetSession();
+	const { user } = await event.parent();
 
 	async function getUsers(): Promise<{ id: string; display_name: string }[]> {
 		const { data: users, error: usersError } = await event.locals.supabase
 			.from('profiles_view')
-			.select('id, display_name');
+			.select('id, display_name')
+			.neq('id', user?.id);
 
 		if (usersError) {
 			const errorMessage = 'Error fetching users, please try again later.';

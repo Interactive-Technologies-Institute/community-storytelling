@@ -1,18 +1,19 @@
 import { createStorySchema } from '$lib/schemas/story';
 import { handleFormAction, handleSignInRedirect } from '@/utils';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, error } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { superValidate, withFiles } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import type { UserProfile } from '../../../../lib/types/types';
 
 export const load = async (event) => {
 	const { session } = await event.locals.safeGetSession();
+	const { user } = await event.parent();
 
 	async function getUsers(): Promise<{ id: string; display_name: string }[]> {
 		const { data: users, error: usersError } = await event.locals.supabase
 		.from('profiles_view')
-		.select('id, display_name');
+		.select('id, display_name')
+		.neq('id', user?.id);
 
 		if (usersError) {
 			const errorMessage = 'Error fetching users, please try again later.';
