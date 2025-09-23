@@ -85,6 +85,11 @@
 		submitting = true;
 		event.preventDefault();
 
+		$formData.tags = [
+			$formData.year?.toString() ?? '',
+			$formData.tags[0]
+		]
+
 		const form = event.currentTarget as HTMLFormElement;
 
 		const formData = new FormData(form);
@@ -105,8 +110,13 @@
 
 		coauthorsArray.forEach(id => newFormData.append('coauthors', id));
 
+		$formData.tags.forEach(tag => {
+			if (tag) newFormData.append('tags', tag);
+		});
+
+
 		for (let [key, value] of formData.entries()) {
-			if (key !== 'coauthors') {
+			if (key !== 'coauthors' && key !== 'tags') {
 				newFormData.append(key, value);
 			}
 		}
@@ -148,14 +158,13 @@
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
 						>Qual é o nome da pessoa a ser entrevistada?</Form.Label
 					>
-					<span class="inline-block flex justify-center gap-2 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} required />
+					<div class="flex flex-col items-center gap-3 pt-3">
+						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} on:blur={() => form.validate('storyteller')} on:input={() => form.validate('storyteller')}/>
 						<Form.FieldErrors />
-						<span
-							><Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 2)}><ArrowRight /></Button
-							></span
-						>
-					</span>
+						<Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 3)} disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}>
+							<ArrowRight />
+						</Button>
+					</div>
 				</Form.Control>
 			</Form.Field>
 		</div>
@@ -214,19 +223,17 @@
 		</div>
 		<div class="page" class:show={page === 3}>
 			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
-			<Form.Field {form} name="tags" class="text-center">
+			<Form.Field {form} name="year" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
 						>Se existe, em que período é que esta história se foca?</Form.Label
 					>
-					<span class="inline-block flex justify-center gap-2 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.tags[0]} />
+					<div class="flex flex-col items-center gap-3 pt-3">
+						<Input class="w-auto" {...attrs} bind:value={$formData.year} on:blur={() => form.validate('year')} on:input={() => form.validate('year')} />
 						<Form.FieldErrors />
-						<span
-							><Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 4)}><ArrowRight /></Button
-							></span
-						>
-					</span>
+							<Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 4)} disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}><ArrowRight />
+							</Button>
+					</div>
 				</Form.Control>
 			</Form.Field>
 			<Form.Field {form} hidden name="tags" class="text-center">

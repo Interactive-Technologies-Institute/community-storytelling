@@ -9,7 +9,7 @@
 	let open = false;
 
 	const options: { label: string; value: SortField }[] = [
-		{ label: "ID", value: "id" },
+		{ label: "Data de Criação", value: "id" },
 		{ label: "Likes", value: "likeCount" }
 	];
 

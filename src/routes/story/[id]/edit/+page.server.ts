@@ -44,6 +44,7 @@ export const load = async (event) => {
 	form.data = {
         storyteller: story.storyteller ?? '',
 		tags: story.tags?.length === 2 ? story.tags : ['', ''],
+		year: story.tags?.[0],
         lat: story.map_pins?.[0]?.lat ?? null,
         lng: story.map_pins?.[0]?.lng ?? null,
         pinColor: story.map_pins?.[0]?.pin_color ?? '#ff0000',
