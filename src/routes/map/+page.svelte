@@ -9,10 +9,13 @@
 	export let data;
 	let allPins = data.pins;
 	let allStories = data.stories;
-
-	let allYears = Array.from({ length: 51 }, (_, i) => 1980 + i);
+	
+	let lowerBound = 1950;
+	let upperBound = 2030
 	let minYear = 1990;
 	let maxYear = 2005;
+	
+	let allYears = Array.from({ length: 81 }, (_, i) => lowerBound + i);
 
 	let timelineEl: HTMLDivElement;
 	let mapCenter = { lat: 38.7382, lng: -9.1212 };
@@ -24,6 +27,10 @@
 		const relativeX = x - rect.left;
 		const yearIndex = Math.round(relativeX / (rect.width / (allYears.length - 1)));
 		return allYears[Math.max(0, Math.min(yearIndex, allYears.length - 1))];
+	}
+
+	function yearMapping(year1: number, year2: number) {
+		return ((year1 - year2) / (upperBound - lowerBound)) * 100;
 	}
 
 	function startDragging(handle: 'min' | 'max') {
@@ -51,7 +58,7 @@
 	$: enrichedPins = filteredPins.map(pin => {
 		const story = allStories.find(s => s.id === pin.story_id);
 		const type = story?.role;
-		const initial = type === 'interview' ? 'I' : type === 'monologue' ? 'M' : '?';
+		const initial = type === 'interview' ? 'E' : type === 'monologue' ? 'M' : '?';
 		return {
 			...pin,
 			title: storyLookup[pin.story_id] ?? 'TBD',
@@ -79,18 +86,18 @@
 	<div class="timeline-wrapper">
 		<div bind:this={timelineEl} class="timeline">
 			{#each allYears as year}
-				<div class="tick" style="left: {((year - 1980) / 50) * 100}%">
+				<div class="tick" style="left: {yearMapping(year, lowerBound)}%">
 					<span>{year}</span>
 				</div>
 			{/each}
 
 			<div
 				class="selection"
-				style="left: {((minYear - 1980) / 50) * 100}%; width: {((maxYear - minYear) / 50) * 100}%"
+				style="left: {yearMapping(minYear, lowerBound)}%; width: {yearMapping(maxYear, minYear)}%"
 			></div>
 
-			<div class="handle" style="left: {((minYear - 1980) / 50) * 100}%" on:pointerdown={startDragging('min')}></div>
-			<div class="handle" style="left: {((maxYear - 1980) / 50) * 100}%" on:pointerdown={startDragging('max')}></div>
+			<div class="handle" style="left: {yearMapping(minYear, lowerBound)}%" on:pointerdown={startDragging('min')}></div>
+			<div class="handle" style="left: {yearMapping(maxYear, lowerBound)}%" on:pointerdown={startDragging('max')}></div>
 		</div>
 		<p class="range-label">De {minYear} até {maxYear}</p>
 	</div>
