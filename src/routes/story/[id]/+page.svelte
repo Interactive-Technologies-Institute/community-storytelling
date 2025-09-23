@@ -14,6 +14,8 @@
 
 	export let data;
 
+	console.log(data);
+
 	let openApproveDialog = false;
 	let openDeleteDialog = false;
 	let openUnpublishDialog = false;
@@ -146,7 +148,7 @@
 				</Button>
 			{/if}
 
-			{#if isPending && data.story.transcription.length}
+			{#if isPending && data.story.transcription}
 				<Button href={`/story/${data.story.id}/preview`} class="w-full sm:w-auto">
 					<LayoutPanelTop class="mr-2 h-4 w-4" />
 					Pré-visualizar história

@@ -9,8 +9,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const load = async (event) => {
 	const { session } = await event.locals.safeGetSession();
+	const { user } = await event.parent();
+
 	if (!session) {
 		return redirect(302, handleSignInRedirect(event));
+	}
+
+	if (user?.role == 'user'){
+		return redirect(303, '/');
 	}
 
 	return {

@@ -1,12 +1,18 @@
 import { updateModerationInfoSchema } from '@/schemas/moderation-info.js';
 import type { HowToWithModeration } from '@/types/types';
 import { arrayQueryParam, handleFormAction, stringQueryParam } from '@/utils';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async (event) => {
+	const { user } = await event.parent();
+	
+	if (user?.role == 'user'){
+		return redirect(303, '/');
+	}
+
 	const search = stringQueryParam().decode(event.url.searchParams.get('s'));
 	const tags = arrayQueryParam().decode(event.url.searchParams.get('tags'));
 

@@ -27,10 +27,12 @@
 		<TagFilterButton tags={data.tags} bind:filterValues={$tags} />
 		<SortButton />
 	</div>
-	<Button href="/events/create" class="w-10 p-0 sm:w-auto sm:px-4 sm:py-2">
-		<PlusCircle class="h-4 w-4 sm:mr-2" />
-		<span class="sr-only sm:not-sr-only">Cria Evento</span>
-	</Button>
+	{#if data.userRole !== 'user'}
+		<Button href="/events/create" class="w-10 p-0 sm:w-auto sm:px-4 sm:py-2">
+			<PlusCircle class="h-4 w-4 sm:mr-2" />
+			<span class="sr-only sm:not-sr-only">Criar Evento</span>
+		</Button>
+	{/if}
 </div>
 <div class="container mx-auto grid grid-cols-1 gap-6 py-10 md:grid-cols-2 lg:grid-cols-3">
 	{#each data.events as event}

@@ -12,9 +12,16 @@ import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async (event) => {
 	const { session } = await event.locals.safeGetSession();
+	const { user } = await event.parent();
+
 	if (!session) {
 		return redirect(302, handleSignInRedirect(event));
 	}
+
+	if (user?.role == 'user' || user?.role == 'moderator'){
+		return redirect(303, '/');
+	}
+
 
 	let features: Feature[] = [];
 	const { data } = await event.locals.supabase

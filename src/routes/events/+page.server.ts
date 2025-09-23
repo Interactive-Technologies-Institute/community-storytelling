@@ -4,6 +4,8 @@ import { error } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load = async (event) => {
+	const { user } = await event.parent();
+
 	const search = stringQueryParam().decode(event.url.searchParams.get('s'));
 	const tags = arrayQueryParam().decode(event.url.searchParams.get('tags'));
 
@@ -60,5 +62,6 @@ export const load = async (event) => {
 	return {
 		events: await getEvents(),
 		tags: await getTags(),
+		userRole: user?.role,
 	};
 };

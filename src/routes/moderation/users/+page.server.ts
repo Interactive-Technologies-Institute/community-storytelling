@@ -1,12 +1,18 @@
 import { updateUserRoleSchema } from '@/schemas/user-role';
 import type { UserProfile } from '@/types/types';
 import { handleFormAction } from '@/utils';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms/server';
 
 export const load = async (event) => {
+	const { user } = await event.parent();
+
+	if (user?.role == 'user'){
+		return redirect(303, '/');
+	}
+
 	async function getUsers(): Promise<UserProfile[]> {
 		const query = event.locals.supabase.from('profiles_view').select('*');
 
