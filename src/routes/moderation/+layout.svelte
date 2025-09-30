@@ -14,9 +14,9 @@
 	<Tabs.Root value={path}>
 		<Tabs.List>
 			<Tabs.TriggerLink href="/moderation/users" value="users">Utilizadores</Tabs.TriggerLink>
-			<Tabs.TriggerLink href="/moderation/how-to" value="how-to">How To</Tabs.TriggerLink>
+			<!--<Tabs.TriggerLink href="/moderation/how-to" value="how-to">How To</Tabs.TriggerLink>-->
 			<Tabs.TriggerLink href="/moderation/events" value="events">Eventos</Tabs.TriggerLink>
-			<Tabs.TriggerLink href="/moderation/map" value="map">Mapa</Tabs.TriggerLink>
+			<!--<Tabs.TriggerLink href="/moderation/map" value="map">Mapa</Tabs.TriggerLink>-->
 		</Tabs.List>
 		<slot />
 	</Tabs.Root>
