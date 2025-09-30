@@ -30,6 +30,7 @@
 				<FeatureWrapper feature="academy">
 					<a
 						href="/academy"
+						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
 							$page.url.pathname.startsWith('/academy') ? 'text-foreground' : 'text-foreground/60'
@@ -41,6 +42,7 @@
 				<FeatureWrapper feature="howtos">
 					<a
 						href="/how-to"
+						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
 							$page.url.pathname.startsWith('/how-to') ? 'text-foreground' : 'text-foreground/60'
@@ -52,6 +54,7 @@
 				<FeatureWrapper feature="events">
 					<a
 						href="/events"
+						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
 							$page.url.pathname.startsWith('/events') ? 'text-foreground' : 'text-foreground/60'
@@ -63,6 +66,7 @@
 				<FeatureWrapper feature="map">
 					<a
 						href="/map"
+						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
 							$page.url.pathname.startsWith('/map') ? 'text-foreground' : 'text-foreground/60'
@@ -74,6 +78,7 @@
 				<FeatureWrapper feature="stories">
 					<a
 						href="/story"
+						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
 							$page.url.pathname.startsWith('/story') ? 'text-foreground' : 'text-foreground/60'
@@ -85,9 +90,10 @@
 				<FeatureWrapper feature="members">
 					<a
 						href="/members"
+						on:click={() => (open = false)}
 						class={cn(
 							'transition-colors hover:text-foreground/80',
-							$page.url.pathname.startsWith('/story') ? 'text-foreground' : 'text-foreground/60'
+							$page.url.pathname.startsWith('/members') ? 'text-foreground' : 'text-foreground/60'
 						)}
 					>
 						Membros

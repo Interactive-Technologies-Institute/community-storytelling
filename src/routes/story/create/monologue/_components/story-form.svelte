@@ -380,7 +380,7 @@
 	}
 </script>
 
-<div class="container mx-auto space-y-10 pb-10">
+<div class="container mx-auto space-y-10 pb-10 px-4 sm:px-6">
 	<form
 		method="POST"
 		action="?/createDocumentary"
@@ -392,34 +392,25 @@
 		<div class="page" class:show={page === 1}>
 			<Form.Field hidden {form} name="recording_link" class="text-center">
 				<Form.Control let:attrs>
-					<div class="flex flex-col items-center gap-2">
-						<input
-							type="file"
-							accept="video/*"
-							id="videoFile"
-							on:change={handleMediaUpload}
-							class="hidden"
-						/>
-					</div>
+					<input
+						type="file"
+						accept="video/*"
+						id="videoFile"
+						on:change={handleMediaUpload}
+						class="hidden"
+					/>
+					<input
+						type="file"
+						accept="audio/*"
+						id="audioFile"
+						on:change={handleMediaUpload}
+						class="hidden"
+					/>
 				</Form.Control>
 			</Form.Field>
 
-			<Form.Field hidden {form} name="recording_link" class="text-center">
-				<Form.Control let:attrs>
-					<div class="flex flex-col items-center gap-2">
-						<input
-							type="file"
-							accept="audio/*"
-							id="audioFile"
-							on:change={handleMediaUpload}
-							class="hidden"
-						/>
-					</div>
-				</Form.Control>
-			</Form.Field>
-
-			<div class="mx-auto mt-6 flex justify-center gap-64 max-w-[640px] px-4">
-				<div class="w-1/2">
+			<div class="mx-auto mt-6 flex flex-col md:flex-row justify-center gap-y-6 md:gap-x-16 max-w-full">
+				<div class="w-full md:w-1/2">
 					<h3 class="text-center font-semibold mb-2">Dicas de Conteúdo</h3>
 					<Carousel.Root>
 						<Carousel.Content>
@@ -436,7 +427,7 @@
 					</Carousel.Root>
 				</div>
 
-				<div class="w-1/2">
+				<div class="w-full md:w-1/2">
 					<h3 class="text-center font-semibold mb-2">Dicas de Filmagem</h3>
 					<Carousel.Root>
 						<Carousel.Content>
@@ -453,29 +444,35 @@
 					</Carousel.Root>
 				</div>
 			</div>
+
 			<div class="h-8"></div>
 			<div class="flex justify-center mt-4">
+				<!-- svelte-ignore a11y-media-has-caption -->
 				{#if videoUrl && !recording}
-					<video src={videoUrl} controls class="rounded shadow-lg w-[640px] max-w-full"></video>
+					<video
+						src={videoUrl}
+						controls
+						class="rounded shadow-lg w-full max-w-md md:max-w-[640px]"
+					></video>
 				{/if}
 			</div>
+
 			<div class="mt-4 text-center">
 				<div class="flex flex-col items-center gap-2">
 					{#if recording && recordingType === 'video'}
-					<video
-						bind:this={videoElement}
-						autoplay
-						muted
-						playsinline
-						class="rounded border border-gray-300"
-						style="width: 640px; height: 480px;"
-					></video>
+						<video
+							bind:this={videoElement}
+							autoplay
+							muted
+							playsinline
+							class="rounded border border-gray-300 w-full max-w-md md:w-[640px] md:h-[480px]"
+						></video>
 					{/if}
-					<div class="flex items-center gap-2">
+					<div class="flex flex-wrap justify-center gap-2 mt-2">
 						{#if !recording && !recorded}
 							<Button
 								type="button"
-								class="cursor-pointer bg-black p-2 text-sm text-white"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => startRecording('video')}
 							>
 								<Video />
@@ -483,7 +480,7 @@
 							</Button>
 							<Button
 								type="button"
-								class="cursor-pointer bg-black p-2 text-sm text-white"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => startRecording('audio')}
 							>
 								<Mic />
@@ -491,15 +488,15 @@
 							</Button>
 							<Button
 								type="button"
-								class="cursor-pointer bg-black p-2 text-sm text-white gap-2"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => upload('video')}
 							>
 								<ArrowUp />
-								<span>Upload Vídeo</span> 
+								<span>Upload Vídeo</span>
 							</Button>
 							<Button
 								type="button"
-								class="cursor-pointer bg-black p-2 text-sm text-white gap-2"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => upload('audio')}
 							>
 								<ArrowUp />
@@ -508,22 +505,22 @@
 						{:else if recording && !recorded}
 							<Button
 								type="button"
-								class="cursor-pointer bg-black p-2 text-sm text-white"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => stopRecording()}
 							>
-							Stop Recording
+								Stop Recording
 							</Button>
-						{:else if recorded && !recording} 
+						{:else if recorded && !recording}
 							<Button
 								type="button"
-								class="cursor-pointer bg-red-500 p-2 text-sm text-white"
+								class="cursor-pointer bg-red-500 p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => deleteRecording()}
 							>
-							Refazer gravação
+								Refazer gravação
 							</Button>
 						{/if}
 						<Button
-							class="p-2 bg-green-600 text-white hover:bg-green-700"
+							class="p-2 bg-green-600 text-white hover:bg-green-700 flex-1 min-w-[120px]"
 							on:click={() => (page = 2)}
 							disabled={!recorded}
 						>
@@ -533,41 +530,42 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="page" class:show={page === 2}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<img class="mx-auto w-64 sm:w-72 md:w-80" src="/app_images/taking_notes.png" alt={altImg} />
 			<Form.Field {form} name="storyteller" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Qual é o nome do local que é o foco desta história?</Form.Label
-					>
+					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
+						Qual é o nome do local que é o foco desta história?
+					</Form.Label>
 					<div class="flex flex-col items-center gap-3 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} on:blur={() => form.validate('storyteller')} on:input={() => form.validate('storyteller')}/>
+						<Input class="w-full max-w-md" {...attrs} bind:value={$formData.storyteller} on:blur={() => form.validate('storyteller')} on:input={() => form.validate('storyteller')} />
 						<Form.FieldErrors />
-						<Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 3)} disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}>
+						<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs mt-2" type="button" on:click={() => (page = 3)} disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}>
 							<ArrowRight />
 						</Button>
 					</div>
 				</Form.Control>
 			</Form.Field>
 		</div>
+
 		<div class="page" class:show={page === 3}>
-			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
+			<h2 class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-center">
 				Quem desenvolveu esta história contigo?
 			</h2>
 			<input
 				type="text"
 				placeholder="Search users..."
 				bind:value={search}
-				class="w-full p-2 border rounded mt-4"
+				class="w-full max-w-md p-2 border rounded mt-4"
 			/>
-
 			{#if results.length > 0}
-				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				<ul class="results-list">
+				<ul class="results-list max-w-md mx-auto mt-2 w-full">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 					{#each results as user}
 						<li
-							class="results-item"
+							class="results-item p-2 border-b cursor-pointer"
 							on:click={() => addMember(user)}
 						>
 							{user.display_name}
@@ -575,10 +573,9 @@
 					{/each}
 				</ul>
 			{/if}
-
 			{#if selectedMembers.length > 0}
-				<h3 class="mt-4 font-semibold">Co-Autores:</h3>
-				<ul class="mt-2 space-y-2">
+				<h3 class="mt-4 font-semibold text-center">Co-Autores:</h3>
+				<ul class="mt-2 space-y-2 max-w-md mx-auto w-full">
 					{#each selectedMembers as member}
 						<li class="flex justify-between items-center border p-2 rounded">
 							<span>{member.display_name}</span>
@@ -587,216 +584,149 @@
 					{/each}
 				</ul>
 			{/if}
-
 			<input
 				type="hidden"
 				name="coauthors"
 				value={selectedMembers.map(m => m.id).join(',')}
 			/>
 			<div class="flex justify-center pt-6">
-				<Button
-					class="p-2 bg-green-600 text-white hover:bg-green-700"
-					on:click={() => (page = 4)}
-				>
+				<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs" on:click={() => (page = 4)}>
 					<ArrowRight />
 				</Button>
 			</div>
 		</div>
+
 		<div class="page" class:show={page === 4}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<img class="mx-auto w-64 sm:w-72 md:w-80" src="/app_images/taking_notes.png" alt={altImg} />
 			<Form.Field {form} name="year" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Se existe, em que período é que esta história se foca?</Form.Label
-					>
+					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
+						Se existe, em que período é que esta história se foca?
+					</Form.Label>
 					<div class="flex flex-col items-center gap-3 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.year} on:blur={() => form.validate('year')} on:input={() => form.validate('year')} />
+						<Input class="w-full max-w-md" {...attrs} bind:value={$formData.year} on:blur={() => form.validate('year')} on:input={() => form.validate('year')} />
 						<Form.FieldErrors />
-							<Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 5)} disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}><ArrowRight />
-							</Button>
+						<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs mt-2" type="button" on:click={() => (page = 5)} disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}>
+							<ArrowRight />
+						</Button>
 					</div>
 				</Form.Control>
 			</Form.Field>
 			<Form.Field {form} hidden name="role" class="text-center">
 				<Form.Control let:attrs>
 					<input hidden name="role" bind:value={$formData.role} />
-					<Form.FieldErrors />
 				</Form.Control>
 			</Form.Field>
 			<Form.Field {form} hidden name="tags" class="text-center">
 				<Form.Control let:attrs>
 					<input hidden name="tags" bind:value={$formData.tags[0]} />
-					<Form.FieldErrors />
 				</Form.Control>
 			</Form.Field>
 		</div>
+
 		<div class="page" class:show={page === 5}>
-			<h2 class="pb-4 text-center text-3xl font-semibold">
+			<h2 class="pb-4 text-2xl sm:text-3xl md:text-4xl text-center font-semibold">
 				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
 			</h2>
-
-			<div class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
-				<Map lng={mapCenter.lng}
-					lat={mapCenter.lat}
-					zoom={14}
-					on:mapClick={handleMapClick}>
-
+			<div class="h-[400px] sm:h-[500px] md:h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
+				<Map lng={mapCenter.lng} lat={mapCenter.lat} zoom={14} on:mapClick={handleMapClick}>
 					{#if markerPosition}
 						<Marker lng={markerPosition.lng} lat={markerPosition.lat} disableClick={true} marker_color={$formData.pinColor} />
 					{/if}
 				</Map>
 			</div>
-
 			<div class="mt-4 flex flex-col items-center gap-2">
 				<label for="pinColor" class="text-lg font-medium">Escolhe a cor do marcador:</label>
-				<input
-					type="color"
-					id="pinColor"
-					bind:value={$formData.pinColor}
-					class="w-12 h-12 rounded-full border p-0"
-				/>
+				<input type="color" id="pinColor" bind:value={$formData.pinColor} class="w-12 h-12 rounded-full border p-0" />
 			</div>
-
 			<input type="hidden" name="pinColor" value={$formData.pinColor} />
 			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
-
 			<div class="flex justify-center pt-6">
-				<Button
-					class="p-2 bg-green-600 text-white hover:bg-green-700"
-					on:click={() => (page = 6)}
-						disabled={recorded === false}
-					>
+				<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs" on:click={() => (page = 6)} disabled={recorded === false}>
 					<ArrowRight />
 				</Button>
 			</div>
 		</div>
+
 		<div class="page" class:show={page === 6}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<img class="mx-auto w-64 sm:w-72 md:w-80" src="/app_images/taking_notes.png" alt={altImg} />
 			<Form.Field {form} name="image" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Submete duas fotografias do local que é o foco da história.</Form.Label
-					>
-					<div class="flex flex-col gap-4">
-						<div class="flex items-center gap-2 justify-center">
+					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
+						Submete duas fotografias do local que é o foco da história.
+					</Form.Label>
+					<div class="flex flex-col gap-4 items-center justify-center">
+						<div class="flex flex-col sm:flex-row gap-2">
 							{#if !firstImageTaken}
-								<Button
-									type="button"
-									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => triggerFileInput('firstImageFile')}
-								>
-									<ArrowUp/>
-									<span>Upload Primeira Fotografia</span>
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => triggerFileInput('firstImageFile')}>
+									<ArrowUp/><span>Upload Primeira Fotografia</span>
 								</Button>
-								<Button
-									type="button"
-									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => startPhotoCapture('first')}
-								>
-									<Camera class="mr-2 h-4 w-4" />
-									<span>Tirar Primeira Fotografia</span>
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => startPhotoCapture('first')}>
+									<Camera class="mr-2 h-4 w-4"/><span>Tirar Primeira Fotografia</span>
 								</Button>
 							{:else if !secondImageTaken}
-								<Button
-									type="button"
-									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => triggerFileInput('secondImageFile')}
-								>
-									<ArrowUp/>
-									<span>Upload Segunda Fotografia</span>
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => triggerFileInput('secondImageFile')}>
+									<ArrowUp/><span>Upload Segunda Fotografia</span>
 								</Button>
-								<Button
-									type="button"
-									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => startPhotoCapture('second')}
-								>
-									<Camera class="mr-2 h-4 w-4" />
-									<span>Tirar Segunda Fotografia</span>
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => startPhotoCapture('second')}>
+									<Camera class="mr-2 h-4 w-4"/><span>Tirar Segunda Fotografia</span>
 								</Button>
 							{/if}
 						</div>
-						<input
-							id="firstImageFile"
-							type="file"
-							accept="image/*"
-							on:change={handleImageUpload}
-							class="hidden"
-						/>
-						<input
-							id="secondImageFile"
-							type="file"
-							accept="image/*"
-							on:change={handleImageUpload}
-							class="hidden"
-						/>
+						<input id="firstImageFile" type="file" accept="image/*" on:change={handleImageUpload} class="hidden"/>
+						<input id="secondImageFile" type="file" accept="image/*" on:change={handleImageUpload} class="hidden"/>
 
 						{#if imageFiles.length > 0}
 							<div class="flex items-center gap-2">
-								<Check class="h-4 w-4 text-green-600" />
+								<Check class="h-4 w-4 text-green-600"/>
 								<p class="text-green-600">Fotografias guardadas ({imageFiles.length})</p>
 							</div>
 						{/if}
-						<div class="flex flex-col items-center justify-center gap-4">
-							{#if takingPhoto}
+
+						{#if takingPhoto}
 							<video bind:this={photoVideoEl} autoplay playsinline class="w-full max-w-md rounded-lg" />
-							<div class="mt-2 flex gap-2">
+							<div class="mt-2 flex flex-wrap gap-2 justify-center">
 								<Button on:click={capturePhoto} class="bg-green-600 text-white p-2">Capturar Foto</Button>
 								<Button on:click={stopPhotoCapture} class="bg-red-500 text-white p-2">Cancelar</Button>
 							</div>
+						{/if}
+
+						{#if retakeMode}
+							<img src={URL.createObjectURL(currentCaptureSlot === 'first' ? imageFiles[0] : imageFiles[1])} alt="Foto capturada" class="w-full max-w-md rounded-lg mt-4"/>
+							<div class="flex flex-wrap gap-2 justify-center mt-2">
+								<Button on:click={confirmPhoto} class="bg-green-600 text-white p-2">Confirmar</Button>
+								<Button on:click={retakePhoto} class="bg-yellow-500 text-white p-2">Refazer</Button>
+							</div>
+						{/if}
+
+						<div class="mt-6 flex flex-col sm:flex-row gap-2 justify-center">
+							{#if secondImageTaken}
+								<Button type="button" variant="destructive" on:click={resetPhotos} class="w-full sm:w-auto">Apagar Fotografias</Button>
 							{/if}
-						</div>
-						 <div class="flex flex-col items-center justify-center gap-4">
-							{#if retakeMode}
-								<img
-									src={URL.createObjectURL(currentCaptureSlot === 'first' ? imageFiles[0] : imageFiles[1])}
-									alt="Foto capturada"
-									class="w-full max-w-md rounded-lg mt-4"
-								/>
-								<div class="flex gap-2 mt-2">
-									<Button on:click={confirmPhoto} class="bg-green-600 text-white p-2">Confirmar</Button>
-									<Button on:click={retakePhoto} class="bg-yellow-500 text-white p-2">Refazer</Button>
-								</div>
-							{/if}
+							<Button type="submit" disabled={!secondImageTaken} class="w-full sm:w-auto">
+								{#if submitting}
+									<Loader2 class="mr-2 h-4 w-4 animate-spin"/>
+								{/if}
+								Guardar História
+							</Button>
 						</div>
 					</div>
 				</Form.Control>
 			</Form.Field>
-
-			<div class="mt-28 text-center">
-				{#if secondImageTaken}
-					<Button
-						type="button"
-						variant="destructive"
-						on:click={resetPhotos}
-					>
-						Apagar Fotografias
-					</Button>
-				{/if}
-				<Button type="submit" disabled={!secondImageTaken}>
-					{#if submitting}
-						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-					{/if}
-					Guardar História
-				</Button>
-			</div>
 		</div>
 	</form>
+
 	{#if page !== 1}
-		<div
-			class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
-		>
-			<Button
-				variant="outline"
-				on:click={() => (page > 1 ? (page = page - 1) : page)}
-				class="w-full sm:w-auto"
-			>
-				<ArrowLeft class="mr-2 h-4 w-4" />
+		<div class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8 px-4">
+			<Button variant="outline" on:click={() => (page > 1 ? (page = page - 1) : page)} class="w-full sm:w-auto">
+				<ArrowLeft class="mr-2 h-4 w-4"/>
 				Voltar
 			</Button>
 		</div>
 	{/if}
 </div>
+
 
 <style>
 	.page {
