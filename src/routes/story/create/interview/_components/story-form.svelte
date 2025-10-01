@@ -12,7 +12,7 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { onMount, tick } from 'svelte';
 
-	import { ArrowLeft, ArrowRight, ArrowUp, Camera, Check, Loader2, Mic, Repeat, Video } from 'lucide-svelte';
+	import { ArrowLeft, ArrowRight, ArrowUp, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
 
 	import Map from '../../../../map/_components/map.svelte';
 	import Marker from '../../../../map/_components/marker.svelte';
@@ -57,7 +57,6 @@
 	let videoBlob: File | Blob;
 	let videoUrl: string | null = null;
 	let videoElement: HTMLVideoElement;
-	let currentCamera: 'user' | 'environment' = 'user';
 
 	let firstImageTaken = false;
 	let secondImageTaken = false;
@@ -66,6 +65,7 @@
 	let photoVideoEl: HTMLVideoElement;
 	let takingPhoto = false;
 	let retakeMode = false;
+	let currentCamera: 'user' | 'environment' = 'user';
 
 	$: submitting = false;
 
@@ -135,69 +135,51 @@
 	};
 
 	async function swapCamera() {
+		if (!stream && !photoStream) return;
+
+		const isRecording = recording;
+		const isPhoto = takingPhoto;
+
+		const tracks = isRecording ? stream?.getVideoTracks() : photoStream?.getVideoTracks();
+		tracks?.forEach(track => track.stop());
+
 		currentCamera = currentCamera === 'user' ? 'environment' : 'user';
 
-		async function switchCameraForStream(targetStream: MediaStream, videoEl?: HTMLVideoElement, hasAudio = false) {
-			const videoTrack = targetStream.getVideoTracks()[0];
-			if (!videoTrack) return;
+		const newStream = await navigator.mediaDevices.getUserMedia({
+			video: { facingMode: currentCamera },
+			audio: isRecording ? true : false
+		});
 
-			try {
-				await videoTrack.applyConstraints({ facingMode: currentCamera });
-			} catch (err) {
-				console.warn('applyConstraints failed, recreating stream', err);
+		if (isRecording) {
+			const audioTrack = stream?.getAudioTracks()[0];
+			if (audioTrack) newStream.addTrack(audioTrack);
 
-				const newStream = await navigator.mediaDevices.getUserMedia({
-					video: { facingMode: currentCamera },
-					audio: hasAudio
-				});
-
-				const newVideoTrack = newStream.getVideoTracks()[0];
-				const oldVideoTrack = targetStream.getVideoTracks()[0];
-
-				targetStream.removeTrack(oldVideoTrack);
-				targetStream.addTrack(newVideoTrack);
-
-				if (videoEl) {
-					videoEl.srcObject = targetStream;
-					await videoEl.play();
-				}
-
-				oldVideoTrack.stop();
-			}
-		}
-
-		if (recording && stream) {
-			await switchCameraForStream(stream, videoElement, recordingType === 'video');
-		}
-
-		if (takingPhoto && photoStream) {
-			await switchCameraForStream(photoStream, photoVideoEl, false);
+			stream = newStream;
+			videoElement.srcObject = stream;
+			await videoElement.play();
+		} else if (isPhoto) {
+			photoStream = newStream;
+			photoVideoEl.srcObject = photoStream;
+			await photoVideoEl.play();
 		}
 	}
 
-
 	async function startPhotoCapture(slot: 'first' | 'second') {
 		try {
-			if (photoStream) {
-				photoStream.getTracks().forEach(track => track.stop());
-				photoStream = null;
-			}
-
-			photoStream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: currentCamera }
-			});
-
+			currentCaptureSlot = slot;
 			takingPhoto = true;
 			retakeMode = false;
-			currentCaptureSlot = slot;
 
-			await tick();
-			if (photoVideoEl) {
-				photoVideoEl.srcObject = photoStream;
-				await photoVideoEl.play();
+			if (!photoStream) {
+				photoStream = await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: currentCamera }
+				});
 			}
-		} catch (error) {
-			console.error('Camera access denied:', error);
+
+			photoVideoEl.srcObject = photoStream;
+			await photoVideoEl.play();
+		} catch (err) {
+			console.error('Error accessing camera for photo', err);
 		}
 	}
 
@@ -246,8 +228,12 @@
 		currentCaptureSlot = null;
 	}
 
-	async function startRecording(type: 'video' | 'audio', resume = false) {
+	async function startRecording(type: 'video' | 'audio') {
 		try {
+			recordingType = type;
+			recording = true;
+			recordedChunks = [];
+
 			if (type === 'video') {
 				if (!stream) {
 					stream = await navigator.mediaDevices.getUserMedia({
@@ -255,35 +241,28 @@
 						audio: true
 					});
 				}
-				videoElement && (videoElement.srcObject = stream);
+				videoElement.srcObject = stream;
+				await videoElement.play();
 			} else {
 				if (!stream) {
 					stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 				}
 			}
 
-			recordingType = type;
-			recording = true;
-			if (!resume) recordedChunks = [];
-
 			mediaRecorder = new MediaRecorder(stream!);
-
-			mediaRecorder.ondataavailable = (e) => {
-				if (e.data.size > 0) recordedChunks.push(e.data);
-			};
-
+			mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
 			mediaRecorder.onstop = () => {
 				videoBlob = new Blob(recordedChunks, { type: 'video' });
 				videoUrl = URL.createObjectURL(videoBlob);
 				recorded = true;
 				recording = false;
 			};
-
 			mediaRecorder.start();
 		} catch (err) {
-			console.error('Camera/audio access error:', err);
+			console.error('Error accessing media devices', err);
 		}
 	}
+
 
 	function stopRecording() {
 		if (mediaRecorder && recording) {
@@ -515,12 +494,8 @@
 							</Button>
 						{:else if recording && !recorded}
 							{#if recordingType === 'video'}
-								<Button
-									type="button"
-									class="md:hidden flex items-center gap-2 mb-2"
-									on:click={swapCamera}
-								>
-									<Repeat class="h-4 w-4" /> Alternar Câmera
+								<Button type="button" on:click={swapCamera} class="bg-blue-600 text-white p-2">
+									Trocar Câmera
 								</Button>
 							{/if}
 							<Button
@@ -530,6 +505,7 @@
 							>
 								Stop Recording
 							</Button>
+
 						{:else if recorded && !recording}
 							<Button
 								type="button"
@@ -726,12 +702,8 @@
 							<video bind:this={photoVideoEl} autoplay playsinline class="w-full max-w-md rounded-lg" />
 							<div class="mt-2 flex flex-wrap gap-2 justify-center">
 								<Button on:click={capturePhoto} class="bg-green-600 text-white p-2">Capturar Foto</Button>
-								<Button
-									type="button"
-									class="md:hidden flex items-center gap-2 mb-2"
-									on:click={swapCamera}
-								>
-									<Repeat class="h-4 w-4" /> Alternar Câmera
+								<Button type="button" on:click={swapCamera} class="bg-blue-600 text-white p-2">
+									Trocar Câmara
 								</Button>
 								<Button on:click={stopPhotoCapture} class="bg-red-500 text-white p-2">Cancelar</Button>
 							</div>
