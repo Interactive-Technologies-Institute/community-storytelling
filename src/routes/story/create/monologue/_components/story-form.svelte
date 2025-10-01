@@ -410,45 +410,43 @@
 			</Form.Field>
 
 			<div class="mx-auto mt-6 flex flex-col md:flex-row justify-center gap-y-6 md:gap-x-16 max-w-full">
-				<div class="w-full md:w-1/2 flex justify-center relative">
-					<div class="w-full max-w-xs md:max-w-sm">
+				<div class="w-full md:w-1/2 max-w-[300px] mx-auto relative">
 					<h3 class="text-center font-semibold mb-2">Dicas de Conteúdo</h3>
 					<Carousel.Root>
-						<Carousel.Content>
+					<Carousel.Content>
 						{#each prompts as prompt}
-							<Carousel.Item class="w-full">
+						<Carousel.Item class="w-full">
 							<div class="p-2 text-center">
-								<span class="text-sm font-semibold">{prompt}</span>
+							<span class="text-sm font-semibold">{prompt}</span>
 							</div>
-							</Carousel.Item>
+						</Carousel.Item>
 						{/each}
-						</Carousel.Content>
+					</Carousel.Content>
 
-						<Carousel.Previous class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10" />
-						<Carousel.Next class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10" />
+					<Carousel.Previous class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
+					<Carousel.Next class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
 					</Carousel.Root>
-					</div>
 				</div>
 
-				<div class="w-full md:w-1/2 flex justify-center relative">
-					<div class="w-full max-w-xs md:max-w-sm">
+				<div class="w-full md:w-1/2 max-w-[300px] mx-auto relative">
 					<h3 class="text-center font-semibold mb-2">Dicas de Filmagem</h3>
 					<Carousel.Root>
-						<Carousel.Content>
+					<Carousel.Content>
 						{#each filming_tips as tip}
-							<Carousel.Item class="w-full">
+						<Carousel.Item class="w-full">
 							<div class="p-2 text-center">
-								<span class="text-sm font-semibold">{tip}</span>
+							<span class="text-sm font-semibold">{tip}</span>
 							</div>
-							</Carousel.Item>
+						</Carousel.Item>
 						{/each}
-						</Carousel.Content>
+					</Carousel.Content>
 
-						<Carousel.Previous class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10" />
-						<Carousel.Next class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10" />
+					<!-- Navigation arrows -->
+					<Carousel.Previous class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
+					<Carousel.Next class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
 					</Carousel.Root>
-					</div>
 				</div>
+			</div>
 
 			<div class="h-8"></div>
 
@@ -569,6 +567,7 @@
 				bind:value={search}
 				class="block w-full max-w-md mx-auto p-2 border rounded mt-4"
 			/>
+
 			{#if results.length > 0}
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 				<ul class="results-list">
