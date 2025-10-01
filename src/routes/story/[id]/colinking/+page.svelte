@@ -32,7 +32,7 @@
 </script>
 
 <div class="flex flex-col items-center justify-center p-6 sm:p-10 rounded-2xl shadow bg-background space-y-6 max-w-2xl mx-auto">
-	<img class="mx-auto" src="/static/app_images/logic-and-emotion-9.16.12 PM.png" alt={altImg} width={700} />
+	<img class="mx-auto" src="/app_images/logic-and-emotion.png" alt={altImg} width={700} />
 
 	<h2 class="text-2xl sm:text-4xl font-bold text-center">Conecta as tuas histórias</h2>
 	<h2 class="text-base sm:text-lg font-semibold text-center">Escolhe que história queres ligar com esta</h2>

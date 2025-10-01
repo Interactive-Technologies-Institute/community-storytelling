@@ -515,24 +515,24 @@
 		</div>
 
 		<div class="page" class:show={page === 3}>
-			<h2 class="pb-2 text-2xl sm:text-3xl font-semibold text-center">
+			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
 				Quem desenvolveu esta história contigo?
 			</h2>
 
-			<input 
-				type="text" 
-				placeholder="Procura por membros..." 
+			<input
+				type="text"
+				placeholder="Procura por membros..."
 				bind:value={search}
-				class="w-full p-2 border rounded mt-4 max-w-md mx-auto text-center" 
+				class="w-full max-w-md mx-auto p-2 border rounded mt-4"
 			/>
 
 			{#if results.length > 0}
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				<ul class="results-list mt-2 max-w-md mx-auto">
+				<ul class="results-list">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					{#each results as user}
-						<li 
-							class="results-item p-2 border rounded hover:bg-gray-100 cursor-pointer text-center"
+						<li
+							class="results-item"
 							on:click={() => addMember(user)}
 						>
 							{user.display_name}
@@ -542,8 +542,8 @@
 			{/if}
 
 			{#if selectedMembers.length > 0}
-				<h3 class="mt-4 font-semibold text-center">Selected Members:</h3>
-				<ul class="mt-2 space-y-2 max-w-md mx-auto">
+				<h3 class="mt-4 font-semibold">Selected Members:</h3>
+				<ul class="mt-2 space-y-2">
 					{#each selectedMembers as member}
 						<li class="flex justify-between items-center border p-2 rounded">
 							<span>{member.display_name}</span>
@@ -553,11 +553,16 @@
 				</ul>
 			{/if}
 
-			<input type="hidden" name="coauthors" value={selectedMembers.map(m => m.id).join(',')} />
-
+			<input
+				type="hidden"
+				name="coauthors"
+				value={selectedMembers.map(m => m.id).join(',')}
+			/>
 			<div class="flex justify-center pt-6">
-				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
-					on:click={() => (page = 4)}>
+				<Button
+					class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
+					on:click={() => (page = 4)}
+				>
 					<ArrowRight />
 				</Button>
 			</div>

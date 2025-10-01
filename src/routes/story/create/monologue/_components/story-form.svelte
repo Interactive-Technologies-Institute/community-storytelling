@@ -410,44 +410,43 @@
 			</Form.Field>
 
 			<div class="mx-auto mt-6 flex flex-col md:flex-row justify-center gap-y-6 md:gap-x-16 max-w-full">
-				<div class="w-full md:w-1/2">
+				<div class="w-full md:w-1/2 relative">
 					<h3 class="text-center font-semibold mb-2">Dicas de Conteúdo</h3>
-					<Carousel.Root class="relative">
-						<div class="flex items-center justify-between">
-							<Carousel.Previous />
-							<Carousel.Content class="flex-1 mx-2">
-								{#each prompts as prompt}
-									<Carousel.Item class="w-full">
-										<div class="p-2 text-center">
-											<span class="text-sm font-semibold">{prompt}</span>
-										</div>
-									</Carousel.Item>
-								{/each}
-							</Carousel.Content>
-							<Carousel.Next />
-						</div>
+					<Carousel.Root>
+					<Carousel.Content>
+						{#each prompts as prompt}
+						<Carousel.Item class="w-full">
+							<div class="p-2 text-center">
+							<span class="text-sm font-semibold">{prompt}</span>
+							</div>
+						</Carousel.Item>
+						{/each}
+					</Carousel.Content>
+
+					<Carousel.Previous class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
+					<Carousel.Next class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
 					</Carousel.Root>
 				</div>
 
-				<div class="w-full md:w-1/2">
+				<div class="w-full md:w-1/2 relative">
 					<h3 class="text-center font-semibold mb-2">Dicas de Filmagem</h3>
-					<Carousel.Root class="relative">
-						<div class="flex items-center justify-between">
-							<Carousel.Previous />
-							<Carousel.Content class="flex-1 mx-2">
-								{#each filming_tips as tip}
-									<Carousel.Item class="w-full">
-										<div class="p-2 text-center">
-											<span class="text-sm font-semibold">{tip}</span>
-										</div>
-									</Carousel.Item>
-								{/each}
-							</Carousel.Content>
-							<Carousel.Next />
-						</div>
+					<Carousel.Root>
+					<Carousel.Content>
+						{#each filming_tips as tip}
+						<Carousel.Item class="w-full">
+							<div class="p-2 text-center">
+							<span class="text-sm font-semibold">{tip}</span>
+							</div>
+						</Carousel.Item>
+						{/each}
+					</Carousel.Content>
+
+					<!-- Navigation arrows -->
+					<Carousel.Previous class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
+					<Carousel.Next class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
 					</Carousel.Root>
 				</div>
-			</div>
+				</div>
 
 			<div class="h-8"></div>
 
@@ -558,23 +557,24 @@
 		</div>
 
 		<div class="page" class:show={page === 3}>
-			<h2 class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-center">
+			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
 				Quem desenvolveu esta história contigo?
 			</h2>
-			<input 
-				type="text" 
-				placeholder="Procura por membros..." 
+
+			<input
+				type="text"
+				placeholder="Procura por membros..."
 				bind:value={search}
-				class="w-full p-2 border rounded mt-4 max-w-md mx-auto text-center" 
+				class="w-full max-w-md mx-auto p-2 border rounded mt-4"
 			/>
 
 			{#if results.length > 0}
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				<ul class="results-list mt-2 max-w-md mx-auto">
+				<ul class="results-list">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					{#each results as user}
-						<li 
-							class="results-item p-2 border rounded hover:bg-gray-100 cursor-pointer text-center"
+						<li
+							class="results-item"
 							on:click={() => addMember(user)}
 						>
 							{user.display_name}
@@ -582,9 +582,10 @@
 					{/each}
 				</ul>
 			{/if}
+
 			{#if selectedMembers.length > 0}
-				<h3 class="mt-4 font-semibold text-center">Co-Autores:</h3>
-				<ul class="mt-2 space-y-2 max-w-md mx-auto w-full">
+				<h3 class="mt-4 font-semibold">Selected Members:</h3>
+				<ul class="mt-2 space-y-2">
 					{#each selectedMembers as member}
 						<li class="flex justify-between items-center border p-2 rounded">
 							<span>{member.display_name}</span>
@@ -593,13 +594,17 @@
 					{/each}
 				</ul>
 			{/if}
+
 			<input
 				type="hidden"
 				name="coauthors"
 				value={selectedMembers.map(m => m.id).join(',')}
 			/>
 			<div class="flex justify-center pt-6">
-				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" on:click={() => (page = 4)}>
+				<Button
+					class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
+					on:click={() => (page = 4)}
+				>
 					<ArrowRight />
 				</Button>
 			</div>
@@ -652,7 +657,9 @@
 			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
 			<div class="flex justify-center pt-6">
-				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" on:click={() => (page = 6)} disabled={recorded === false}>
+				<Button 
+					class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" 
+					on:click={() => (page = 6)} disabled={recorded === false}>
 					<ArrowRight />
 				</Button>
 			</div>
