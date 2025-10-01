@@ -672,20 +672,24 @@
 						Submete duas fotografias do local que é o foco da história.
 					</Form.Label>
 					<div class="flex flex-col gap-4 items-center justify-center">
-						<div class="flex flex-col sm:flex-row gap-2">
-							{#if !firstImageTaken}
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => triggerFileInput('firstImageFile')}>
-									<ArrowUp/><span>Upload Primeira Fotografia</span>
+						<div class="flex flex-col sm:flex-row gap-2 justify-center">
+							{#if !firstImageTaken && !takingPhoto}
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => triggerFileInput('firstImageFile')}>
+									<ArrowUp /><span>Upload Primeira Fotografia</span>
 								</Button>
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => startPhotoCapture('first')}>
-									<Camera class="mr-2 h-4 w-4"/><span>Tirar Primeira Fotografia</span>
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => startPhotoCapture('first')}>
+									<Camera class="mr-2 h-4 w-4" /><span>Tirar Primeira Fotografia</span>
 								</Button>
-							{:else if !secondImageTaken}
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => triggerFileInput('secondImageFile')}>
-									<ArrowUp/><span>Upload Segunda Fotografia</span>
+							{:else if !secondImageTaken && !takingPhoto}
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => triggerFileInput('secondImageFile')}>
+									<ArrowUp /><span>Upload Segunda Fotografia</span>
 								</Button>
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center" on:click={() => startPhotoCapture('second')}>
-									<Camera class="mr-2 h-4 w-4"/><span>Tirar Segunda Fotografia</span>
+								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => startPhotoCapture('second')}>
+									<Camera class="mr-2 h-4 w-4" /><span>Tirar Segunda Fotografia</span>
 								</Button>
 							{/if}
 						</div>

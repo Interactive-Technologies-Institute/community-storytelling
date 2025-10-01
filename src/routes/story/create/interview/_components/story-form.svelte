@@ -635,7 +635,7 @@
 					</Form.Label>
 					<div class="flex flex-col gap-4 items-center">
 						<div class="flex flex-col sm:flex-row gap-2 justify-center">
-							{#if !firstImageTaken}
+							{#if !firstImageTaken && !takingPhoto}
 								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('firstImageFile')}>
 									<ArrowUp /><span>Upload Primeira Fotografia</span>
@@ -644,7 +644,7 @@
 									on:click={() => startPhotoCapture('first')}>
 									<Camera class="mr-2 h-4 w-4" /><span>Tirar Primeira Fotografia</span>
 								</Button>
-							{:else if !secondImageTaken}
+							{:else if !secondImageTaken && !takingPhoto}
 								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('secondImageFile')}>
 									<ArrowUp /><span>Upload Segunda Fotografia</span>
