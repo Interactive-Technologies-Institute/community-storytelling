@@ -48,11 +48,10 @@
 	let recordingType = '';
 
 	let createStoryForm: HTMLFormElement;
-	
+
 	let stream: MediaStream | null = null;
 	let mediaRecorder: MediaRecorder | null = null;
 	let recordedChunks: Blob[] = [];
-	let allVideoChunks: Blob[] = [];
 	let recording = false;
 	let recorded = false;
 	let videoBlob: File | Blob;
@@ -66,7 +65,8 @@
 	let photoVideoEl: HTMLVideoElement;
 	let takingPhoto = false;
 	let retakeMode = false;
-	let currentCamera: 'user' | 'environment' = 'user';
+	const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+	let currentCamera: 'user' | 'environment' = isMobile ? 'environment' : 'user';
 
 	$: submitting = false;
 
@@ -135,80 +135,19 @@
 		document.getElementById(id)!.click();
 	};
 
-	async function swapCameraDuringRecording() {
-		if (!recording || !stream) return;
-
-		stream.getVideoTracks().forEach(track => track.stop());
-
-		currentCamera = currentCamera === 'user' ? 'environment' : 'user';
-		const newVideoStream = await navigator.mediaDevices.getUserMedia({
-			video: { facingMode: currentCamera },
-			audio: false
-		});
-
-		const audioTrack = stream.getAudioTracks()[0];
-		if (audioTrack) newVideoStream.addTrack(audioTrack);
-
-		stream = newVideoStream;
-		videoElement.srcObject = stream;
-		await videoElement.play();
-
-		mediaRecorder?.stop();
-
-		mediaRecorder = new MediaRecorder(stream);
-		recordedChunks = [];
-
-		mediaRecorder.ondataavailable = e => {
-			if (e.data.size > 0) recordedChunks.push(e.data);
-		};
-		mediaRecorder.onstop = () => {
-			allVideoChunks.push(...recordedChunks);
-			recordedChunks = [];
-		};
-		mediaRecorder.start();
-	}
-
-
-	async function swapCamera() {
-		if (!stream && !photoStream) return;
-
-		const isRecording = recording;
-		const isPhoto = takingPhoto;
-
-		if (isRecording) {
-			await swapCameraDuringRecording();
-		} else if (isPhoto) {
-			photoStream?.getTracks().forEach(track => track.stop());
-			currentCamera = currentCamera === 'user' ? 'environment' : 'user';
-			photoStream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: currentCamera }
-			});
-			photoVideoEl.srcObject = photoStream;
-			await photoVideoEl.play();
-		} else {
-			currentCamera = currentCamera === 'user' ? 'environment' : 'user';
-		}
-	}
-
 	async function startPhotoCapture(slot: 'first' | 'second') {
 		try {
-			currentCaptureSlot = slot;
+			photoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: isMobile ? 'environment' : 'user' } });
 			takingPhoto = true;
 			retakeMode = false;
-
-			if (!photoStream) {
-				photoStream = await navigator.mediaDevices.getUserMedia({
-					video: { facingMode: currentCamera }
-				});
-			}
-
+			currentCaptureSlot = slot;
+			await tick();
 			photoVideoEl.srcObject = photoStream;
 			await photoVideoEl.play();
-		} catch (err) {
-			console.error('Error accessing camera for photo', err);
+		} catch (error) {
+			console.error('Camera access denied:', error);
 		}
 	}
-
 	function capturePhoto() {
 		const canvas = document.createElement('canvas');
 		canvas.width = photoVideoEl.videoWidth;
@@ -254,80 +193,70 @@
 		currentCaptureSlot = null;
 	}
 
-	async function startRecording(type: 'video' | 'audio') {
-		recordingType = type;
-
-		recorded = false;
-		videoBlob = new Blob();
-		videoUrl = null;
-		allVideoChunks = [];
-		recordedChunks = [];
-
-		recording = true;
-
-		if (type === 'video') {
-			if (!stream) {
+	async function startRecording(type: string) {
+		try {
+			if(type === 'video'){
 				stream = await navigator.mediaDevices.getUserMedia({
-					video: { facingMode: currentCamera },
+					video: { facingMode: isMobile ? 'environment' : 'user' },
 					audio: true
 				});
+				recording = true;
+				recordingType = 'video';
+				
+				await tick();
+				if (videoElement) {
+					videoElement.srcObject = stream;
+					await videoElement.play();
+				}
 			}
-			videoElement.srcObject = stream;
-			await videoElement.play();
-		}
 
-		mediaRecorder = new MediaRecorder(stream!);
-		mediaRecorder.ondataavailable = e => {
-			if (e.data.size > 0) recordedChunks.push(e.data);
-		};
-		mediaRecorder.onstop = () => {
-			const finalBlob = new Blob(recordedChunks, { type: 'video/webm' });
-			videoBlob = finalBlob;
-			videoUrl = URL.createObjectURL(finalBlob);
-			recorded = true;
+			else{
+				stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				recordingType = 'audio';
+				recording = true;
+			}
 
-			allVideoChunks = [];
+			mediaRecorder = new MediaRecorder(stream);
 			recordedChunks = [];
+
+		mediaRecorder.ondataavailable = (e) => {
+			if (e.data.size > 0) {
+				recordedChunks.push(e.data);
+			}
+		};
+
+		mediaRecorder.onstop = async () => {
+			videoBlob = new Blob(recordedChunks, { type: 'video' });
+			videoUrl = URL.createObjectURL(videoBlob);
+			recorded = true;
+			recording = false;
 		};
 
 		mediaRecorder.start();
+
+		} catch (err) {
+			console.error('Camera and/or audio access error:', err);
+		}
 	}
 
 	function stopRecording() {
-		if (!recording) return;
+		if (mediaRecorder && recording) {
+			mediaRecorder.stop();
 
-		mediaRecorder?.stop();
-
-		if (stream) stream.getTracks().forEach(track => track.stop());
-		recording = false;
-
-		const finalBlob = new Blob(allVideoChunks, { type: 'video/webm' });
-		videoBlob = finalBlob;
-		videoUrl = URL.createObjectURL(finalBlob);
-		recorded = true;
-
-		allVideoChunks = [];
-		recordedChunks = [];
+			if(stream){
+				stream.getTracks().forEach(track => track.stop());
+				recording = false;
+			}
+		}
 	}
 
 	function deleteRecording(){
 		videoBlob = new Blob();
-		videoUrl = null;
 		recorded = false;
 		recording = false;
-
+		videoUrl = null;
 		const id = recordingType === 'video' ? 'videoFile' : 'audioFile';
-		const input = document.getElementById(id) as HTMLInputElement;
-		if (input) input.value = '';
-
-		if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-			mediaRecorder.stop();
-		}
-		mediaRecorder = null;
-		if (stream) {
-			stream.getTracks().forEach(track => track.stop());
-			stream = null;
-		}
+		(document.getElementById(id) as HTMLInputElement).value = '';
 	}
 
 	function resetPhotos() {
@@ -539,11 +468,6 @@
 								<span>Upload Áudio</span>
 							</Button>
 						{:else if recording && !recorded}
-							{#if recordingType === 'video'}
-								<Button type="button" on:click={swapCamera} class="bg-blue-600 text-white p-2">
-									Trocar Câmera
-								</Button>
-							{/if}
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
@@ -551,7 +475,6 @@
 							>
 								Stop Recording
 							</Button>
-
 						{:else if recorded && !recording}
 							<Button
 								type="button"
@@ -748,9 +671,6 @@
 							<video bind:this={photoVideoEl} autoplay playsinline class="w-full max-w-md rounded-lg" />
 							<div class="mt-2 flex flex-wrap gap-2 justify-center">
 								<Button on:click={capturePhoto} class="bg-green-600 text-white p-2">Capturar Foto</Button>
-								<Button type="button" on:click={swapCamera} class="bg-blue-600 text-white p-2">
-									Trocar Câmara
-								</Button>
 								<Button on:click={stopPhotoCapture} class="bg-red-500 text-white p-2">Cancelar</Button>
 							</div>
 						{/if}
