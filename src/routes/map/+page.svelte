@@ -90,13 +90,10 @@
 		<div bind:this={timelineEl} class="timeline relative h-12 bg-gray-200 rounded-lg overflow-hidden">
 			{#each allYears as year}
 				<div
-					class="absolute top-0 h-full flex items-end text-xs sm:text-sm"
+					class="tick absolute top-0 h-full flex items-end"
 					style="left: {yearMapping(year, lowerBound)}%"
-				>
-					<span class="transform -translate-x-1/2">{year}</span>
-				</div>
+				></div>
 			{/each}
-
 			<div
 				class="selection absolute top-0 h-full bg-blue-400 opacity-40"
 				style="left: {yearMapping(minYear, lowerBound)}%; width: {yearMapping(maxYear, minYear)}%"

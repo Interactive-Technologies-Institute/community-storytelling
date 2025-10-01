@@ -523,7 +523,7 @@
 				type="text"
 				placeholder="Procura por membros..."
 				bind:value={search}
-				class="w-full max-w-md mx-auto p-2 border rounded mt-4"
+				class="block w-full max-w-md mx-auto p-2 border rounded mt-4"
 			/>
 
 			{#if results.length > 0}
