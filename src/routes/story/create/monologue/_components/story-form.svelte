@@ -555,7 +555,7 @@
 			</h2>
 			<input
 				type="text"
-				placeholder="Search users..."
+				placeholder="Procura por membros..."
 				bind:value={search}
 				class="w-full max-w-md p-2 border rounded mt-4"
 			/>
@@ -684,6 +684,7 @@
 							</div>
 						{/if}
 
+						<!-- svelte-ignore a11y-media-has-caption -->
 						{#if takingPhoto}
 							<video bind:this={photoVideoEl} autoplay playsinline class="w-full max-w-md rounded-lg" />
 							<div class="mt-2 flex flex-wrap gap-2 justify-center">

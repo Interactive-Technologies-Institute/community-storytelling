@@ -135,12 +135,9 @@
 		applyAction(result);
 	}
 
-	function triggerFileInput(id: string) {
-		(document.getElementById(id) as HTMLElement | null)?.click();
-	}
 </script>
 
-<div class="container mx-auto space-y-10 pb-10">
+<div class="container mx-auto space-y-10 pb-10 px-4 sm:px-6 lg:px-8">
 	<form
 		method="POST"
 		action="?/editStory"
@@ -150,24 +147,41 @@
 		class="flex flex-col gap-y-10"
 	>
 		<div class="page" class:show={page === 1}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<img
+				class="mx-auto max-w-[80%] sm:max-w-[280px]"
+				src="/app_images/taking_notes.png"
+				alt={altImg}
+				width={280}
+			/>
 			<Form.Field {form} name="storyteller" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Qual é o nome da pessoa a ser entrevistada?</Form.Label
-					>
+					<Form.Label class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight transition-colors">
+						Qual é o nome da pessoa a ser entrevistada?
+					</Form.Label>
 					<div class="flex flex-col items-center gap-3 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.storyteller} on:blur={() => form.validate('storyteller')} on:input={() => form.validate('storyteller')}/>
+						<Input
+							class="w-full max-w-md"
+							{...attrs}
+							bind:value={$formData.storyteller}
+							on:blur={() => form.validate('storyteller')}
+							on:input={() => form.validate('storyteller')}
+						/>
 						<Form.FieldErrors />
-						<Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 3)} disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}>
+						<Button
+							class="p-2 bg-green-600 text-white hover:bg-green-700"
+							type="button"
+							on:click={() => (page = 2)}
+							disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}
+						>
 							<ArrowRight />
 						</Button>
 					</div>
 				</Form.Control>
 			</Form.Field>
 		</div>
+
 		<div class="page" class:show={page === 2}>
-			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
+			<h2 class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight text-center">
 				Quem desenvolveu esta história contigo?
 			</h2>
 
@@ -175,16 +189,16 @@
 				type="text"
 				placeholder="Search users..."
 				bind:value={search}
-				class="w-full p-2 border rounded mt-4"
+				class="w-full max-w-md mx-auto p-2 border rounded mt-4"
 			/>
 
 			{#if results.length > 0}
-				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				<ul class="results-list">
+				<ul class="results-list mt-4 space-y-2">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 					{#each results as user}
 						<li
-							class="results-item"
+							class="results-item cursor-pointer p-2 border rounded hover:bg-gray-50"
 							on:click={() => addMember(user)}
 						>
 							{user.display_name}
@@ -210,6 +224,7 @@
 				name="coauthors"
 				value={selectedMembers.map(m => m.id).join(',')}
 			/>
+
 			<div class="flex justify-center pt-6">
 				<Button
 					class="p-2 bg-green-600 text-white hover:bg-green-700"
@@ -219,18 +234,36 @@
 				</Button>
 			</div>
 		</div>
+
 		<div class="page" class:show={page === 3}>
-			<img class="mx-auto" src="/app_images/taking_notes.png" alt={altImg} width={280} />
+			<img
+				class="mx-auto max-w-[80%] sm:max-w-[280px]"
+				src="/app_images/taking_notes.png"
+				alt={altImg}
+				width={280}
+			/>
 			<Form.Field {form} name="year" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-3xl font-semibold tracking-tight transition-colors"
-						>Se existe, em que período é que esta história se foca?</Form.Label
-					>
+					<Form.Label class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight transition-colors">
+						Se existe, em que período é que esta história se foca?
+					</Form.Label>
 					<div class="flex flex-col items-center gap-3 pt-3">
-						<Input class="w-auto" {...attrs} bind:value={$formData.year} on:blur={() => form.validate('year')} on:input={() => form.validate('year')} />
+						<Input
+							class="w-full max-w-md"
+							{...attrs}
+							bind:value={$formData.year}
+							on:blur={() => form.validate('year')}
+							on:input={() => form.validate('year')}
+						/>
 						<Form.FieldErrors />
-							<Button class="p-2 bg-green-600 text-white hover:bg-green-700" type="button" on:click={() => (page = 4)} disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}><ArrowRight />
-							</Button>
+						<Button
+							class="p-2 bg-green-600 text-white hover:bg-green-700"
+							type="button"
+							on:click={() => (page = 4)}
+							disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}
+						>
+							<ArrowRight />
+						</Button>
 					</div>
 				</Form.Control>
 			</Form.Field>
@@ -241,19 +274,26 @@
 				</Form.Control>
 			</Form.Field>
 		</div>
+		
 		<div class="page" class:show={page === 4}>
-			<h2 class="pb-4 text-center text-3xl font-semibold">
+			<h2 class="pb-4 text-center text-2xl sm:text-3xl font-semibold">
 				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
 			</h2>
 
-			<div class="h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
-				<Map lng={mapCenter.lng}
+			<div class="h-[400px] sm:h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
+				<Map
+					lng={mapCenter.lng}
 					lat={mapCenter.lat}
 					zoom={14}
-					on:mapClick={handleMapClick}>
-
+					on:mapClick={handleMapClick}
+				>
 					{#if markerPosition}
-						<Marker lng={markerPosition.lng} lat={markerPosition.lat} disableClick={true} marker_color={$formData.pinColor} />
+						<Marker
+							lng={markerPosition.lng}
+							lat={markerPosition.lat}
+							disableClick={true}
+							marker_color={$formData.pinColor}
+						/>
 					{/if}
 				</Map>
 			</div>
@@ -273,7 +313,7 @@
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
 
 			<div class="flex justify-center pt-6">
-				<Button type="submit">
+				<Button type="submit" class="p-2 bg-green-600 text-white hover:bg-green-700">
 					{#if submitting}
 						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 					{/if}
@@ -282,6 +322,7 @@
 			</div>
 		</div>
 	</form>
+
 	{#if page !== 1}
 		<div
 			class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
@@ -297,6 +338,7 @@
 		</div>
 	{/if}
 </div>
+
 
 <style>
 	.page {

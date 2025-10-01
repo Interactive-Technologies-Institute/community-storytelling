@@ -78,31 +78,49 @@
 	}
 </script>
 
-<div class="wrapper">
-	<h2 class="text-center text-4xl font-bold mb-6" in:fly={{ y: -20, duration: 500 }}>
+<div class="wrapper max-w-6xl mx-auto p-4 sm:p-8 space-y-8">
+	<h2
+		class="text-center text-2xl sm:text-4xl font-bold mb-6"
+		in:fly={{ y: -20, duration: 500 }}
+	>
 		Vamos viajar no tempo!
 	</h2>
 
-	<div class="timeline-wrapper">
-		<div bind:this={timelineEl} class="timeline">
+	<div class="timeline-wrapper space-y-4">
+		<div bind:this={timelineEl} class="timeline relative h-12 bg-gray-200 rounded-lg overflow-hidden">
 			{#each allYears as year}
-				<div class="tick" style="left: {yearMapping(year, lowerBound)}%">
-					<span>{year}</span>
+				<div
+					class="tick absolute top-0 h-full flex items-end text-xs sm:text-sm"
+					style="left: {yearMapping(year, lowerBound)}%"
+				>
+					<span class="transform -translate-x-1/2">{year}</span>
 				</div>
 			{/each}
 
 			<div
-				class="selection"
+				class="selection absolute top-0 h-full bg-blue-400 opacity-40"
 				style="left: {yearMapping(minYear, lowerBound)}%; width: {yearMapping(maxYear, minYear)}%"
 			></div>
 
-			<div class="handle" style="left: {yearMapping(minYear, lowerBound)}%" on:pointerdown={startDragging('min')}></div>
-			<div class="handle" style="left: {yearMapping(maxYear, lowerBound)}%" on:pointerdown={startDragging('max')}></div>
+			<div
+				class="handle absolute top-0 w-4 h-12 bg-blue-600 rounded cursor-pointer -translate-x-1/2"
+				style="left: {yearMapping(minYear, lowerBound)}%"
+				on:pointerdown={startDragging('min')}
+			></div>
+
+			<div
+				class="handle absolute top-0 w-4 h-12 bg-blue-600 rounded cursor-pointer -translate-x-1/2"
+				style="left: {yearMapping(maxYear, lowerBound)}%"
+				on:pointerdown={startDragging('max')}
+			></div>
 		</div>
-		<p class="range-label">De {minYear} até {maxYear}</p>
+
+		<p class="range-label text-center text-sm sm:text-base font-medium">
+			De {minYear} até {maxYear}
+		</p>
 	</div>
 
-	<div class="map-container relative">
+	<div class="map-container relative w-full h-[400px] sm:h-[600px] rounded-xl overflow-hidden shadow">
 		<Map bind:map lng={mapCenter.lng} lat={mapCenter.lat} zoom={14}>
 			{#each enrichedPins as pin (pin.story_id)}
 				<Marker
@@ -118,8 +136,11 @@
 			{/each}
 		</Map>
 
-		<Button href="/story/create" class="absolute bottom-8 right-4 rounded-full shadow-lg p-3 sm:px-4 sm:py-2">
-			<PlusCircle class="h-6 w-6 sm:mr-2" />
+		<Button
+			href="/story/create"
+			class="absolute bottom-6 right-4 flex items-center gap-2 rounded-full shadow-lg p-3 sm:px-4 sm:py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+		>
+			<PlusCircle class="h-6 w-6" />
 			<span class="sr-only sm:not-sr-only">Criar História</span>
 		</Button>
 	</div>

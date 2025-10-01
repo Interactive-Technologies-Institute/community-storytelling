@@ -31,17 +31,22 @@
 	}
 </script>
 
-<div class="flex flex-col items-center justify-center p-6 rounded-2xl shadow bg-background space-y-6">
-	<img class="mx-auto" src="/app_images/logic-and-emotion-9.16.12 PM.png" alt={altImg} width={700} />
-	<h2 class="text-4xl font-bold text-center">Conecta as tuas histórias</h2>
-	<h2 class="text-1xl font-bold text-center">Escolhe que história queres ligar com esta</h2>
+<div class="flex flex-col items-center justify-center p-6 sm:p-10 rounded-2xl shadow bg-background space-y-6 max-w-2xl mx-auto">
+	<img
+		class="mx-auto w-full max-w-[90%] sm:max-w-[700px] rounded-lg"
+		src="/app_images/logic-and-emotion-9.16.12 PM.png"
+		alt={altImg}
+	/>
+
+	<h2 class="text-2xl sm:text-4xl font-bold text-center">Conecta as tuas histórias</h2>
+	<h2 class="text-base sm:text-lg font-semibold text-center">Escolhe que história queres ligar com esta</h2>
 
 	<form
 		method="POST"
 		action="?/sendNotification"
 		on:submit|preventDefault={submitColinkRequest}
 		enctype="multipart/form-data"
-		class="flex flex-col gap-y-10"
+		class="flex flex-col gap-y-6 w-full"
 	>
 		<input type="hidden" name="requested_story_id" value={userStoryId} />
 
@@ -49,7 +54,7 @@
 			name="requester_story_id"
 			bind:value={selectedStory}
 			required
-			class="w-full sm:w-[300px] border rounded-lg px-3 py-2 text-center mx-auto"
+			class="w-full sm:w-[300px] border rounded-lg px-3 py-2 text-center mx-auto text-sm sm:text-base"
 		>
 			<option value="">Escolhe uma história</option>
 			{#each selectableStories as story}
@@ -58,20 +63,32 @@
 		</select>
 
 		{#if selectedStory}
-			<div class="flex flex-col items-center gap-2 mt-2">
-				<p class="text-lg text-center">
-					<strong>Selecionado:</strong> {selectableStories.find(s => s.id === Number(selectedStory))?.title}
+			<div class="flex flex-col items-center gap-3 mt-2">
+				<p class="text-base sm:text-lg text-center">
+					<strong>Selecionado:</strong>
+					{selectableStories.find(s => s.id === Number(selectedStory))?.title}
 				</p>
 
 				<button
 					type="submit"
 					name="intent"
 					value="sendNotification"
-					class="px-6 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+					class="px-5 py-2 sm:px-6 sm:py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
 					disabled={!selectedStory}
 				>
-					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8" />
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						class="h-4 w-4"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 8v8m-4-4h8"
+						/>
 					</svg>
 					Conectar
 				</button>
@@ -79,3 +96,4 @@
 		{/if}
 	</form>
 </div>
+

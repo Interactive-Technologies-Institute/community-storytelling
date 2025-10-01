@@ -44,35 +44,47 @@
 	}
 </script>
 
-<div class="max-w-2xl mx-auto p-6">
+<div class="max-w-3xl mx-auto p-6 sm:p-10 space-y-6">
 	{#if page === 1}
-		<h1 class="text-4xl font-bold mb-4">Your Story: {requestedStory.title}</h1>
-		<p class="mb-6 whitespace-pre-line">{formatStoryText(requestedStory.pub_story_text)}</p>
+		<h1 class="text-2xl sm:text-4xl font-bold mb-4 text-center sm:text-left">
+			Your Story: {requestedStory.title}
+		</h1>
+		<p class="mb-6 whitespace-pre-line text-base sm:text-lg leading-relaxed">
+			{formatStoryText(requestedStory.pub_story_text)}
+		</p>
 
-		<button
-			on:click={nextPage}
-			class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-		>
-			Next
-		</button>
+		<div class="flex justify-center sm:justify-end">
+			<button
+				on:click={nextPage}
+				class="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors w-full sm:w-auto"
+			>
+				Next
+			</button>
+		</div>
+
 	{:else if page === 2}
-		<h1 class="text-4xl font-bold mb-4">The Requester's Story: {requesterStory.title}</h1>
-		<p class="mb-6 whitespace-pre-line">{formatStoryText(requesterStory.pub_story_text)}</p>
+		<h1 class="text-2xl sm:text-4xl font-bold mb-4 text-center sm:text-left">
+			The Requester's Story: {requesterStory.title}
+		</h1>
+		<p class="mb-6 whitespace-pre-line text-base sm:text-lg leading-relaxed">
+			{formatStoryText(requesterStory.pub_story_text)}
+		</p>
 
-		<div class="flex gap-4">
+		<div class="flex flex-col sm:flex-row gap-4 justify-center sm:justify-end">
 			<button
 				on:click={prevPage}
-				class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+				class="px-6 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors w-full sm:w-auto"
 			>
 				Back
 			</button>
 
 			<button
 				on:click={acceptLink}
-				class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+				class="px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors w-full sm:w-auto"
 			>
 				Accept
 			</button>
 		</div>
 	{/if}
 </div>
+
