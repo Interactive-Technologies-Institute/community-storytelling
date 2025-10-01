@@ -721,10 +721,10 @@
 						{/if}
 
 						<div class="mt-6 flex flex-col sm:flex-row gap-2 justify-center">
-							{#if secondImageTaken}
+							{#if secondImageTaken && !takingPhoto}
 								<Button type="button" variant="destructive" on:click={resetPhotos} class="w-full sm:w-auto">Apagar Fotografias</Button>
 							{/if}
-							<Button type="submit" disabled={!secondImageTaken} class="w-full sm:w-auto">
+							<Button type="submit" disabled={!(secondImageTaken && !takingPhoto)} class="w-full sm:w-auto">
 								{#if submitting}
 									<Loader2 class="mr-2 h-4 w-4 animate-spin"/>
 								{/if}
