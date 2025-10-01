@@ -137,62 +137,50 @@
 	async function swapCamera() {
 		currentCamera = currentCamera === 'user' ? 'environment' : 'user';
 
-		if (recording && recordingType === 'video' && stream) {
+		async function switchCameraForStream(targetStream: MediaStream, videoEl?: HTMLVideoElement, hasAudio = false) {
+			const videoTrack = targetStream.getVideoTracks()[0];
+			if (!videoTrack) return;
+
 			try {
+				await videoTrack.applyConstraints({ facingMode: currentCamera });
+			} catch (err) {
+				console.warn('applyConstraints failed, recreating stream', err);
+
 				const newStream = await navigator.mediaDevices.getUserMedia({
 					video: { facingMode: currentCamera },
-					audio: true
+					audio: hasAudio
 				});
 
 				const newVideoTrack = newStream.getVideoTracks()[0];
-				const oldVideoTrack = stream.getVideoTracks()[0];
+				const oldVideoTrack = targetStream.getVideoTracks()[0];
 
-				stream.removeTrack(oldVideoTrack);
-				stream.addTrack(newVideoTrack);
+				targetStream.removeTrack(oldVideoTrack);
+				targetStream.addTrack(newVideoTrack);
 
-				if (videoElement) {
-					videoElement.srcObject = null;
-					videoElement.srcObject = stream;
-					await videoElement.play();
+				if (videoEl) {
+					videoEl.srcObject = targetStream;
+					await videoEl.play();
 				}
 
 				oldVideoTrack.stop();
-			} catch (err) {
-				console.error('Error swapping video camera:', err);
 			}
 		}
 
+		if (recording && stream) {
+			await switchCameraForStream(stream, videoElement, recordingType === 'video');
+		}
+
 		if (takingPhoto && photoStream) {
-			try {
-				const newStream = await navigator.mediaDevices.getUserMedia({
-					video: { facingMode: currentCamera },
-					audio: false
-				});
-
-				const newVideoTrack = newStream.getVideoTracks()[0];
-				const oldVideoTrack = photoStream.getVideoTracks()[0];
-
-				photoStream.removeTrack(oldVideoTrack);
-				photoStream.addTrack(newVideoTrack);
-
-				if (photoVideoEl) {
-					photoVideoEl.srcObject = null;
-					photoVideoEl.srcObject = photoStream;
-					await photoVideoEl.play();
-				}
-
-				oldVideoTrack.stop();
-			} catch (err) {
-				console.error('Error swapping photo camera:', err);
-			}
+			await switchCameraForStream(photoStream, photoVideoEl, false);
 		}
 	}
 
 
 	async function startPhotoCapture(slot: 'first' | 'second') {
 		try {
-			if (photoStream && !takingPhoto) {
+			if (photoStream) {
 				photoStream.getTracks().forEach(track => track.stop());
+				photoStream = null;
 			}
 
 			photoStream = await navigator.mediaDevices.getUserMedia({
@@ -204,8 +192,10 @@
 			currentCaptureSlot = slot;
 
 			await tick();
-			photoVideoEl.srcObject = photoStream;
-			await photoVideoEl.play();
+			if (photoVideoEl) {
+				photoVideoEl.srcObject = photoStream;
+				await photoVideoEl.play();
+			}
 		} catch (error) {
 			console.error('Camera access denied:', error);
 		}
@@ -256,7 +246,7 @@
 		currentCaptureSlot = null;
 	}
 
-	async function startRecording(type: string, resume = false) {
+	async function startRecording(type: 'video' | 'audio', resume = false) {
 		try {
 			if (type === 'video') {
 				if (!stream) {
@@ -265,28 +255,24 @@
 						audio: true
 					});
 				}
-
-				recording = true;
-				recordingType = 'video';
-				await tick();
-				if (videoElement) {
-					videoElement.srcObject = stream;
-					await videoElement.play();
-				}
+				videoElement && (videoElement.srcObject = stream);
 			} else {
-				stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-				recordingType = 'audio';
-				recording = true;
+				if (!stream) {
+					stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				}
 			}
 
-			mediaRecorder = new MediaRecorder(stream);
+			recordingType = type;
+			recording = true;
 			if (!resume) recordedChunks = [];
+
+			mediaRecorder = new MediaRecorder(stream!);
 
 			mediaRecorder.ondataavailable = (e) => {
 				if (e.data.size > 0) recordedChunks.push(e.data);
 			};
 
-			mediaRecorder.onstop = async () => {
+			mediaRecorder.onstop = () => {
 				videoBlob = new Blob(recordedChunks, { type: 'video' });
 				videoUrl = URL.createObjectURL(videoBlob);
 				recorded = true;
@@ -528,13 +514,15 @@
 								<span>Upload Áudio</span>
 							</Button>
 						{:else if recording && !recorded}
-							<Button
-								type="button"
-								class="md:hidden flex items-center gap-2 mb-2"
-								on:click={swapCamera}
-							>
-								<Repeat class="h-4 w-4" /> Alternar Câmera
-							</Button>
+							{#if recordingType === 'video'}
+								<Button
+									type="button"
+									class="md:hidden flex items-center gap-2 mb-2"
+									on:click={swapCamera}
+								>
+									<Repeat class="h-4 w-4" /> Alternar Câmera
+								</Button>
+							{/if}
 							<Button
 								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
