@@ -66,6 +66,7 @@
 	let videoUrl: string | null = null;
 	let videoElement: HTMLVideoElement;
 
+	let tempPhoto: File | null = null;
 	let firstImageTaken = false;
 	let secondImageTaken = false;
 	let imageFiles: File[] = [];
@@ -73,6 +74,7 @@
 	let photoVideoEl: HTMLVideoElement;
 	let takingPhoto = false;
 	let retakeMode = false;
+	const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
 	$: submitting = false;
 
@@ -144,7 +146,7 @@
 
 	async function startPhotoCapture(slot: 'first' | 'second') {
 		try {
-			photoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+			photoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: isMobile ? 'environment' : 'user' } });
 			takingPhoto = true;
 			retakeMode = false;
 			currentCaptureSlot = slot;
@@ -155,6 +157,7 @@
 			console.error('Camera access denied:', error);
 		}
 	}
+
 	function capturePhoto() {
 		const canvas = document.createElement('canvas');
 		canvas.width = photoVideoEl.videoWidth;
@@ -165,15 +168,7 @@
 			ctx.drawImage(photoVideoEl, 0, 0, canvas.width, canvas.height);
 			canvas.toBlob((blob) => {
 				if (blob) {
-					const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-
-					if (!firstImageTaken) {
-						imageFiles[0] = file;
-						firstImageTaken = true;
-					} else if (!secondImageTaken) {
-						imageFiles[1] = file;
-						secondImageTaken = true;
-					}
+					tempPhoto = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
 					retakeMode = true;
 					stopPhotoCapture();
 				}
@@ -189,6 +184,7 @@
 	}
 
 	function retakePhoto() {
+		tempPhoto = null;
 		retakeMode = false;
 		if (currentCaptureSlot) {
 			startPhotoCapture(currentCaptureSlot);
@@ -196,6 +192,16 @@
 	}
 
 	function confirmPhoto() {
+		if (tempPhoto && currentCaptureSlot) {
+			if (currentCaptureSlot === 'first') {
+				imageFiles[0] = tempPhoto;
+				firstImageTaken = true;
+			} else if (currentCaptureSlot === 'second') {
+				imageFiles[1] = tempPhoto;
+				secondImageTaken = true;
+			}
+		}
+		tempPhoto = null;
 		retakeMode = false;
 		currentCaptureSlot = null;
 	}
@@ -306,7 +312,9 @@
 		event.preventDefault();
 
 		$formData.tags = [
-			$formData.year?.toString() ?? '0',
+			(!isNaN(Number($formData.year)) && Number($formData.year) >= 1950 && Number($formData.year) <= 2030) 
+			? String($formData.year) 
+			: '0',
 			$formData.tags[0]
 		]
 
@@ -511,7 +519,7 @@
 								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => stopRecording()}
 							>
-								Stop Recording
+								Parar Gravação
 							</Button>
 						{:else if recorded && !recording}
 							<Button
@@ -583,7 +591,7 @@
 			{/if}
 
 			{#if selectedMembers.length > 0}
-				<h3 class="mt-4 font-semibold">Selected Members:</h3>
+				<h3 class="mt-4 font-semibold">Membros Selecionados:</h3>
 				<ul class="mt-2 space-y-2">
 					{#each selectedMembers as member}
 						<li class="flex justify-between items-center border p-2 rounded">
@@ -671,9 +679,9 @@
 					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
 						Submete duas fotografias do local que é o foco da história.
 					</Form.Label>
-					<div class="flex flex-col gap-4 items-center justify-center">
+					<div class="flex flex-col gap-4 items-center">
 						<div class="flex flex-col sm:flex-row gap-2 justify-center">
-							{#if !firstImageTaken && !takingPhoto}
+							{#if !firstImageTaken && !takingPhoto && !retakeMode}
 								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('firstImageFile')}>
 									<ArrowUp /><span>Upload Primeira Fotografia</span>
@@ -682,7 +690,7 @@
 									on:click={() => startPhotoCapture('first')}>
 									<Camera class="mr-2 h-4 w-4" /><span>Tirar Primeira Fotografia</span>
 								</Button>
-							{:else if !secondImageTaken && !takingPhoto}
+							{:else if !secondImageTaken && !takingPhoto && !retakeMode}
 								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
 									on:click={() => triggerFileInput('secondImageFile')}>
 									<ArrowUp /><span>Upload Segunda Fotografia</span>
@@ -693,13 +701,14 @@
 								</Button>
 							{/if}
 						</div>
-						<input id="firstImageFile" type="file" accept="image/*" on:change={handleImageUpload} class="hidden"/>
-						<input id="secondImageFile" type="file" accept="image/*" on:change={handleImageUpload} class="hidden"/>
+
+						<input id="firstImageFile" type="file" accept="image/*" on:change={handleImageUpload} class="hidden" />
+						<input id="secondImageFile" type="file" accept="image/*" on:change={handleImageUpload} class="hidden" />
 
 						{#if imageFiles.length > 0}
-							<div class="flex items-center gap-2">
-								<Check class="h-4 w-4 text-green-600"/>
-								<p class="text-green-600">Fotografias guardadas ({imageFiles.length})</p>
+							<div class="flex items-center gap-2 text-sm text-green-600">
+								<Check class="h-4 w-4" />
+								<p>Fotografias guardadas ({imageFiles.length})</p>
 							</div>
 						{/if}
 
@@ -712,34 +721,37 @@
 							</div>
 						{/if}
 
-						{#if retakeMode}
-							<img src={URL.createObjectURL(currentCaptureSlot === 'first' ? imageFiles[0] : imageFiles[1])} alt="Foto capturada" class="w-full max-w-md rounded-lg mt-4"/>
-							<div class="flex flex-wrap gap-2 justify-center mt-2">
+						{#if retakeMode && tempPhoto}
+							<img src={URL.createObjectURL(tempPhoto)}
+								alt="Foto capturada" class="w-full max-w-md rounded-lg mt-4" />
+							<div class="flex gap-2 justify-center mt-2">
 								<Button on:click={confirmPhoto} class="bg-green-600 text-white p-2">Confirmar</Button>
 								<Button on:click={retakePhoto} class="bg-yellow-500 text-white p-2">Refazer</Button>
 							</div>
 						{/if}
-
-						<div class="mt-6 flex flex-col sm:flex-row gap-2 justify-center">
-							{#if secondImageTaken && !takingPhoto}
-								<Button type="button" variant="destructive" on:click={resetPhotos} class="w-full sm:w-auto">Apagar Fotografias</Button>
-							{/if}
-							<Button type="submit" disabled={!(secondImageTaken && !takingPhoto)} class="w-full sm:w-auto">
-								{#if submitting}
-									<Loader2 class="mr-2 h-4 w-4 animate-spin"/>
-								{/if}
-								Guardar História
-							</Button>
-						</div>
 					</div>
 				</Form.Control>
 			</Form.Field>
+
+			<div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+				{#if secondImageTaken && !takingPhoto}
+					<Button type="button" variant="destructive" disabled={submitting} on:click={resetPhotos} class="w-full sm:w-auto">
+						Apagar Fotografias
+					</Button>
+				{/if}
+				<Button type="submit" disabled={!(secondImageTaken && !takingPhoto)} class="w-full sm:w-auto">
+					{#if submitting}
+						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+					{/if}
+					Guardar História
+				</Button>
+			</div>
 		</div>
 	</form>
 
 	{#if page !== 1}
 		<div class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8 px-4">
-			<Button variant="outline" on:click={() => (page > 1 ? (page = page - 1) : page)} class="w-full sm:w-auto">
+			<Button variant="outline" disabled={submitting} on:click={() => (page > 1 ? (page = page - 1) : page)} class="w-full sm:w-auto">
 				<ArrowLeft class="mr-2 h-4 w-4"/>
 				Voltar
 			</Button>

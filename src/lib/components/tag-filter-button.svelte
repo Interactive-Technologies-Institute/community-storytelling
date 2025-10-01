@@ -11,10 +11,10 @@
 	let open = false;
 
 	function handleSelect(currentValue: string) {
-		if (Array.isArray(filterValues) && filterValues.includes(currentValue)) {
-			filterValues = filterValues.filter((v) => v !== currentValue);
+		if (Array.isArray(filterValues) && filterValues[0] === currentValue) {
+			filterValues = [];
 		} else {
-			filterValues = [...(Array.isArray(filterValues) ? filterValues : []), currentValue];
+			filterValues = [currentValue];
 		}
 	}
 </script>
@@ -55,9 +55,6 @@
 								<Check class="h-4 w-4" />
 							</div>
 							<span>{tag[0]}</span>
-							<span class="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-								{tag[1]}
-							</span>
 						</Command.Item>
 					{/each}
 				</Command.Group>
