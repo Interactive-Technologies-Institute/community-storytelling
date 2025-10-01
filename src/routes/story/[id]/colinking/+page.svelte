@@ -32,11 +32,7 @@
 </script>
 
 <div class="flex flex-col items-center justify-center p-6 sm:p-10 rounded-2xl shadow bg-background space-y-6 max-w-2xl mx-auto">
-	<img
-		class="mx-auto w-full max-w-[90%] sm:max-w-[700px] rounded-lg"
-		src="/app_images/logic-and-emotion-9.16.12 PM.png"
-		alt={altImg}
-	/>
+	<img class="mx-auto" src="/static/app_images/logic-and-emotion-9.16.12 PM.png" alt={altImg} width={700} />
 
 	<h2 class="text-2xl sm:text-4xl font-bold text-center">Conecta as tuas histórias</h2>
 	<h2 class="text-base sm:text-lg font-semibold text-center">Escolhe que história queres ligar com esta</h2>
@@ -56,9 +52,9 @@
 			required
 			class="w-full sm:w-[300px] border rounded-lg px-3 py-2 text-center mx-auto text-sm sm:text-base"
 		>
-			<option value="">Escolhe uma história</option>
+			<option class="text-center" value="">Escolhe uma história</option>
 			{#each selectableStories as story}
-				<option value={story.id}>{story.title}</option>
+				<option class="text-center" value={story.id}>{story.title}</option>
 			{/each}
 		</select>
 

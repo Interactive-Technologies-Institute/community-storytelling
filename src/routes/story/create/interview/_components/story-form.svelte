@@ -297,7 +297,7 @@
 		event.preventDefault();
 
 		$formData.tags = [
-			$formData.year?.toString() ?? '',
+			$formData.year?.toString() ?? '0',
 			$formData.tags[0]
 		]
 
@@ -417,47 +417,74 @@
 			</div>
 
 			<div class="mt-4 text-center">
-				<div class="flex flex-col items-center gap-4">
+				<div class="flex flex-col items-center gap-2">
 					{#if recording && recordingType === 'video'}
 						<video
 							bind:this={videoElement}
-							autoplay muted playsinline
-							class="rounded border border-gray-300 w-full max-w-xl aspect-video"
+							autoplay
+							muted
+							playsinline
+							class="rounded border border-gray-300 w-full max-w-md md:w-[640px] md:h-[480px]"
 						></video>
 					{/if}
 
-					<div class="flex flex-wrap items-center justify-center gap-2 w-full">
+					<div class="flex flex-wrap justify-center gap-2 mt-2">
 						{#if !recording && !recorded}
-							<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex-1 sm:flex-none"
-								on:click={() => startRecording('video')}>
-								<Video /><span>Gravar Vídeo</span>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
+								on:click={() => startRecording('video')}
+							>
+								<Video />
+								<span>Gravar Vídeo</span>
 							</Button>
-							<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex-1 sm:flex-none"
-								on:click={() => startRecording('audio')}>
-								<Mic /><span>Gravar Áudio</span>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
+								on:click={() => startRecording('audio')}
+							>
+								<Mic />
+								<span>Gravar Áudio</span>
 							</Button>
-							<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex-1 sm:flex-none"
-								on:click={() => upload('video')}>
-								<ArrowUp /><span>Upload Vídeo</span>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
+								on:click={() => upload('video')}
+							>
+								<ArrowUp />
+								<span>Upload Vídeo</span>
 							</Button>
-							<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex-1 sm:flex-none"
-								on:click={() => upload('audio')}>
-								<ArrowUp /><span>Upload Áudio</span>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
+								on:click={() => upload('audio')}
+							>
+								<ArrowUp />
+								<span>Upload Áudio</span>
 							</Button>
 						{:else if recording && !recorded}
-							<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex-1 sm:flex-none"
-								on:click={() => stopRecording()}>
+							<Button
+								type="button"
+								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
+								on:click={() => stopRecording()}
+							>
 								Stop Recording
 							</Button>
 						{:else if recorded && !recording}
-							<Button type="button" class="cursor-pointer bg-red-500 p-2 text-sm text-white flex-1 sm:flex-none"
-								on:click={() => deleteRecording()}>
+							<Button
+								type="button"
+								class="cursor-pointer bg-red-500 p-2 text-sm text-white flex-1 min-w-[120px]"
+								on:click={() => deleteRecording()}
+							>
 								Refazer gravação
 							</Button>
 						{/if}
 
-						<Button class="p-2 bg-green-600 text-white hover:bg-green-700 flex-1 sm:flex-none"
-							on:click={() => (page = 2)} disabled={!recorded}>
+						<Button
+							class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
+							on:click={() => (page = 2)}
+							disabled={!recorded}
+						>
 							<ArrowRight />
 						</Button>
 					</div>
@@ -477,7 +504,7 @@
 							on:blur={() => form.validate('storyteller')}
 							on:input={() => form.validate('storyteller')} />
 						<Form.FieldErrors />
-						<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs"
+						<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
 							type="button" on:click={() => (page = 3)}
 							disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}>
 							<ArrowRight />
@@ -492,16 +519,22 @@
 				Quem desenvolveu esta história contigo?
 			</h2>
 
-			<input type="text" placeholder="Procura por membros..." bind:value={search}
-				class="w-full p-2 border rounded mt-4 max-w-md mx-auto" />
+			<input 
+				type="text" 
+				placeholder="Procura por membros..." 
+				bind:value={search}
+				class="w-full p-2 border rounded mt-4 max-w-md mx-auto text-center" 
+			/>
 
 			{#if results.length > 0}
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 				<ul class="results-list mt-2 max-w-md mx-auto">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					{#each results as user}
-						<li class="results-item p-2 border rounded hover:bg-gray-100 cursor-pointer"
-							on:click={() => addMember(user)}>
+						<li 
+							class="results-item p-2 border rounded hover:bg-gray-100 cursor-pointer text-center"
+							on:click={() => addMember(user)}
+						>
 							{user.display_name}
 						</li>
 					{/each}
@@ -523,7 +556,7 @@
 			<input type="hidden" name="coauthors" value={selectedMembers.map(m => m.id).join(',')} />
 
 			<div class="flex justify-center pt-6">
-				<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs"
+				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
 					on:click={() => (page = 4)}>
 					<ArrowRight />
 				</Button>
@@ -542,7 +575,7 @@
 							on:blur={() => form.validate('year')}
 							on:input={() => form.validate('year')} />
 						<Form.FieldErrors />
-						<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs"
+						<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
 							type="button" on:click={() => (page = 5)}
 							disabled={$formData.year !== '' && $formData.year !== undefined &&
 								(isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}>
@@ -576,7 +609,7 @@
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
 
 			<div class="flex justify-center pt-6">
-				<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs"
+				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
 					on:click={() => (page = 6)} disabled={recorded === false}>
 					<ArrowRight />
 				</Button>

@@ -166,7 +166,8 @@
 	height: 16px;
 	background: #f2f2f2;
 	border-radius: 8px;
-	overflow: hidden;
+	overflow: visible;
+	touch-action: none; 
 }
 
 .tick {
@@ -206,6 +207,7 @@
 	cursor: ew-resize;
 	border-radius: 50%;
 	box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+	touch-action: none;
 }
 
 .range-label {

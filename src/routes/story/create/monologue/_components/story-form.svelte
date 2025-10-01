@@ -306,7 +306,7 @@
 		event.preventDefault();
 
 		$formData.tags = [
-			$formData.year?.toString() ?? '',
+			$formData.year?.toString() ?? '0',
 			$formData.tags[0]
 		]
 
@@ -412,40 +412,45 @@
 			<div class="mx-auto mt-6 flex flex-col md:flex-row justify-center gap-y-6 md:gap-x-16 max-w-full">
 				<div class="w-full md:w-1/2">
 					<h3 class="text-center font-semibold mb-2">Dicas de Conteúdo</h3>
-					<Carousel.Root>
-						<Carousel.Content>
-							{#each prompts as prompt}
-								<Carousel.Item class="w-full">
-									<div class="p-2 text-center">
-										<span class="text-sm font-semibold">{prompt}</span>
-									</div>
-								</Carousel.Item>
-							{/each}
-						</Carousel.Content>
-						<Carousel.Previous />
-						<Carousel.Next />
+					<Carousel.Root class="relative">
+						<div class="flex items-center justify-between">
+							<Carousel.Previous />
+							<Carousel.Content class="flex-1 mx-2">
+								{#each prompts as prompt}
+									<Carousel.Item class="w-full">
+										<div class="p-2 text-center">
+											<span class="text-sm font-semibold">{prompt}</span>
+										</div>
+									</Carousel.Item>
+								{/each}
+							</Carousel.Content>
+							<Carousel.Next />
+						</div>
 					</Carousel.Root>
 				</div>
 
 				<div class="w-full md:w-1/2">
 					<h3 class="text-center font-semibold mb-2">Dicas de Filmagem</h3>
-					<Carousel.Root>
-						<Carousel.Content>
-							{#each filming_tips as tip}
-								<Carousel.Item class="w-full">
-									<div class="p-2 text-center">
-										<span class="text-sm font-semibold">{tip}</span>
-									</div>
-								</Carousel.Item>
-							{/each}
-						</Carousel.Content>
-						<Carousel.Previous />
-						<Carousel.Next />
+					<Carousel.Root class="relative">
+						<div class="flex items-center justify-between">
+							<Carousel.Previous />
+							<Carousel.Content class="flex-1 mx-2">
+								{#each filming_tips as tip}
+									<Carousel.Item class="w-full">
+										<div class="p-2 text-center">
+											<span class="text-sm font-semibold">{tip}</span>
+										</div>
+									</Carousel.Item>
+								{/each}
+							</Carousel.Content>
+							<Carousel.Next />
+						</div>
 					</Carousel.Root>
 				</div>
 			</div>
 
 			<div class="h-8"></div>
+
 			<div class="flex justify-center mt-4">
 				<!-- svelte-ignore a11y-media-has-caption -->
 				{#if videoUrl && !recording}
@@ -520,7 +525,7 @@
 							</Button>
 						{/if}
 						<Button
-							class="p-2 bg-green-600 text-white hover:bg-green-700 flex-1 min-w-[120px]"
+							class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
 							on:click={() => (page = 2)}
 							disabled={!recorded}
 						>
@@ -541,7 +546,10 @@
 					<div class="flex flex-col items-center gap-3 pt-3">
 						<Input class="w-full max-w-md" {...attrs} bind:value={$formData.storyteller} on:blur={() => form.validate('storyteller')} on:input={() => form.validate('storyteller')} />
 						<Form.FieldErrors />
-						<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs mt-2" type="button" on:click={() => (page = 3)} disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}>
+						<Button 
+							class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" type="button" 
+							on:click={() => (page = 3)} disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}
+							>
 							<ArrowRight />
 						</Button>
 					</div>
@@ -553,19 +561,20 @@
 			<h2 class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-center">
 				Quem desenvolveu esta história contigo?
 			</h2>
-			<input
-				type="text"
-				placeholder="Procura por membros..."
+			<input 
+				type="text" 
+				placeholder="Procura por membros..." 
 				bind:value={search}
-				class="w-full max-w-md p-2 border rounded mt-4"
+				class="w-full p-2 border rounded mt-4 max-w-md mx-auto text-center" 
 			/>
+
 			{#if results.length > 0}
-				<ul class="results-list max-w-md mx-auto mt-2 w-full">
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+				<ul class="results-list mt-2 max-w-md mx-auto">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 					{#each results as user}
-						<li
-							class="results-item p-2 border-b cursor-pointer"
+						<li 
+							class="results-item p-2 border rounded hover:bg-gray-100 cursor-pointer text-center"
 							on:click={() => addMember(user)}
 						>
 							{user.display_name}
@@ -590,7 +599,7 @@
 				value={selectedMembers.map(m => m.id).join(',')}
 			/>
 			<div class="flex justify-center pt-6">
-				<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs" on:click={() => (page = 4)}>
+				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" on:click={() => (page = 4)}>
 					<ArrowRight />
 				</Button>
 			</div>
@@ -606,7 +615,7 @@
 					<div class="flex flex-col items-center gap-3 pt-3">
 						<Input class="w-full max-w-md" {...attrs} bind:value={$formData.year} on:blur={() => form.validate('year')} on:input={() => form.validate('year')} />
 						<Form.FieldErrors />
-						<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs mt-2" type="button" on:click={() => (page = 5)} disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}>
+						<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" type="button" on:click={() => (page = 5)} disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}>
 							<ArrowRight />
 						</Button>
 					</div>
@@ -643,7 +652,7 @@
 			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
 			<div class="flex justify-center pt-6">
-				<Button class="p-2 bg-green-600 text-white hover:bg-green-700 w-full max-w-xs" on:click={() => (page = 6)} disabled={recorded === false}>
+				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" on:click={() => (page = 6)} disabled={recorded === false}>
 					<ArrowRight />
 				</Button>
 			</div>
