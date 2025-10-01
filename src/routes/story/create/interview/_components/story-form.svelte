@@ -48,10 +48,11 @@
 	let recordingType = '';
 
 	let createStoryForm: HTMLFormElement;
-
+	
 	let stream: MediaStream | null = null;
 	let mediaRecorder: MediaRecorder | null = null;
 	let recordedChunks: Blob[] = [];
+	let allVideoChunks: Blob[] = [];
 	let recording = false;
 	let recorded = false;
 	let videoBlob: File | Blob;
@@ -134,33 +135,58 @@
 		document.getElementById(id)!.click();
 	};
 
+	async function swapCameraDuringRecording() {
+		if (!recording || !stream) return;
+
+		stream.getVideoTracks().forEach(track => track.stop());
+
+		currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+
+		const newVideoStream = await navigator.mediaDevices.getUserMedia({
+			video: { facingMode: currentCamera },
+			audio: false 
+		});
+
+		const audioTrack = stream.getAudioTracks()[0];
+		if (audioTrack) newVideoStream.addTrack(audioTrack);
+
+		stream = newVideoStream;
+		videoElement.srcObject = stream;
+		await videoElement.play();
+
+		mediaRecorder?.stop();
+		mediaRecorder = new MediaRecorder(stream);
+		recordedChunks = [];
+
+		mediaRecorder.ondataavailable = e => {
+			if (e.data.size > 0) recordedChunks.push(e.data);
+		};
+		mediaRecorder.onstop = () => {
+			allVideoChunks.push(new Blob(recordedChunks, { type: 'video/webm' }));
+			recordedChunks = [];
+		};
+		mediaRecorder.start();
+	}
+
+
 	async function swapCamera() {
 		if (!stream && !photoStream) return;
 
 		const isRecording = recording;
 		const isPhoto = takingPhoto;
 
-		const tracks = isRecording ? stream?.getVideoTracks() : photoStream?.getVideoTracks();
-		tracks?.forEach(track => track.stop());
-
-		currentCamera = currentCamera === 'user' ? 'environment' : 'user';
-
-		const newStream = await navigator.mediaDevices.getUserMedia({
-			video: { facingMode: currentCamera },
-			audio: isRecording ? true : false
-		});
-
 		if (isRecording) {
-			const audioTrack = stream?.getAudioTracks()[0];
-			if (audioTrack) newStream.addTrack(audioTrack);
-
-			stream = newStream;
-			videoElement.srcObject = stream;
-			await videoElement.play();
+			await swapCameraDuringRecording();
 		} else if (isPhoto) {
-			photoStream = newStream;
+			photoStream?.getTracks().forEach(track => track.stop());
+			currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+			photoStream = await navigator.mediaDevices.getUserMedia({
+				video: { facingMode: currentCamera }
+			});
 			photoVideoEl.srcObject = photoStream;
 			await photoVideoEl.play();
+		} else {
+			currentCamera = currentCamera === 'user' ? 'environment' : 'user';
 		}
 	}
 
@@ -229,50 +255,50 @@
 	}
 
 	async function startRecording(type: 'video' | 'audio') {
-		try {
-			recordingType = type;
-			recording = true;
-			recordedChunks = [];
+		recordingType = type;
+		recording = true;
 
-			if (type === 'video') {
-				if (!stream) {
-					stream = await navigator.mediaDevices.getUserMedia({
-						video: { facingMode: currentCamera },
-						audio: true
-					});
-				}
-				videoElement.srcObject = stream;
-				await videoElement.play();
-			} else {
-				if (!stream) {
-					stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-				}
+		if (type === 'video') {
+			if (!stream) {
+				stream = await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: currentCamera },
+					audio: true
+				});
 			}
-
-			mediaRecorder = new MediaRecorder(stream!);
-			mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
-			mediaRecorder.onstop = () => {
-				videoBlob = new Blob(recordedChunks, { type: 'video' });
-				videoUrl = URL.createObjectURL(videoBlob);
-				recorded = true;
-				recording = false;
-			};
-			mediaRecorder.start();
-		} catch (err) {
-			console.error('Error accessing media devices', err);
+			videoElement.srcObject = stream;
+			await videoElement.play();
 		}
+
+		mediaRecorder = new MediaRecorder(stream!);
+		recordedChunks = [];
+
+		mediaRecorder.ondataavailable = e => {
+			if (e.data.size > 0) recordedChunks.push(e.data);
+		};
+		mediaRecorder.onstop = () => {
+			allVideoChunks.push(new Blob(recordedChunks, { type: 'video/webm' }));
+			recordedChunks = [];
+		};
+		mediaRecorder.start();
 	}
 
 
 	function stopRecording() {
-		if (mediaRecorder && recording) {
-			mediaRecorder.stop();
+		if (!recording) return;
 
-			if(stream){
-				stream.getTracks().forEach(track => track.stop());
-				recording = false;
-			}
-		}
+		mediaRecorder?.stop();
+
+		if (stream) stream.getTracks().forEach(track => track.stop());
+		recording = false;
+
+		const finalBlob = new Blob(allVideoChunks, { type: 'video/webm' });
+		videoBlob = finalBlob;
+		videoUrl = URL.createObjectURL(finalBlob);
+		recorded = true;
+
+		// Clear chunks
+		allVideoChunks = [];
+		recordedChunks = [];
 	}
 
 	function deleteRecording(){
