@@ -11,6 +11,7 @@
 	import StoryLikeButton from './_components/story-like-button.svelte';
 	import * as Avatar from '../../../lib/components/ui/avatar';
 	import { firstAndLastInitials } from '../../../lib/utils';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -146,12 +147,18 @@
 				</Button>
 			{/if}
 
-			{#if isPending && data.story.transcription}
-				<Button href={`/story/${data.story.id}/preview`} class="w-full sm:w-auto">
+			{#if isPending}
+				<Button
+					class="w-full sm:w-auto"
+					on:click={() => data.story.transcription && goto(`/story/${data.story.id}/preview`)}
+					disabled={!data.story.transcription}
+					title={!data.story.transcription ? "Gerar transcrição primeiro para habilitar este passo" : ""}
+					>
 					<LayoutPanelTop class="mr-2 h-4 w-4" />
-					Pré-visualizar história
+					Resumo e submissão da história
 				</Button>
 			{/if}
+
 
 			{#if isModerator && isBeingReviewed}
 				<Button 
