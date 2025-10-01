@@ -141,10 +141,9 @@
 		stream.getVideoTracks().forEach(track => track.stop());
 
 		currentCamera = currentCamera === 'user' ? 'environment' : 'user';
-
 		const newVideoStream = await navigator.mediaDevices.getUserMedia({
 			video: { facingMode: currentCamera },
-			audio: false 
+			audio: false
 		});
 
 		const audioTrack = stream.getAudioTracks()[0];
@@ -155,6 +154,7 @@
 		await videoElement.play();
 
 		mediaRecorder?.stop();
+
 		mediaRecorder = new MediaRecorder(stream);
 		recordedChunks = [];
 
@@ -162,7 +162,7 @@
 			if (e.data.size > 0) recordedChunks.push(e.data);
 		};
 		mediaRecorder.onstop = () => {
-			allVideoChunks.push(new Blob(recordedChunks, { type: 'video/webm' }));
+			allVideoChunks.push(...recordedChunks);
 			recordedChunks = [];
 		};
 		mediaRecorder.start();
@@ -256,6 +256,13 @@
 
 	async function startRecording(type: 'video' | 'audio') {
 		recordingType = type;
+
+		recorded = false;
+		videoBlob = new Blob();
+		videoUrl = null;
+		allVideoChunks = [];
+		recordedChunks = [];
+
 		recording = true;
 
 		if (type === 'video') {
@@ -270,18 +277,21 @@
 		}
 
 		mediaRecorder = new MediaRecorder(stream!);
-		recordedChunks = [];
-
 		mediaRecorder.ondataavailable = e => {
 			if (e.data.size > 0) recordedChunks.push(e.data);
 		};
 		mediaRecorder.onstop = () => {
-			allVideoChunks.push(new Blob(recordedChunks, { type: 'video/webm' }));
+			const finalBlob = new Blob(recordedChunks, { type: 'video/webm' });
+			videoBlob = finalBlob;
+			videoUrl = URL.createObjectURL(finalBlob);
+			recorded = true;
+
+			allVideoChunks = [];
 			recordedChunks = [];
 		};
+
 		mediaRecorder.start();
 	}
-
 
 	function stopRecording() {
 		if (!recording) return;
@@ -296,18 +306,28 @@
 		videoUrl = URL.createObjectURL(finalBlob);
 		recorded = true;
 
-		// Clear chunks
 		allVideoChunks = [];
 		recordedChunks = [];
 	}
 
 	function deleteRecording(){
 		videoBlob = new Blob();
+		videoUrl = null;
 		recorded = false;
 		recording = false;
-		videoUrl = null;
+
 		const id = recordingType === 'video' ? 'videoFile' : 'audioFile';
-		(document.getElementById(id) as HTMLInputElement).value = '';
+		const input = document.getElementById(id) as HTMLInputElement;
+		if (input) input.value = '';
+
+		if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+			mediaRecorder.stop();
+		}
+		mediaRecorder = null;
+		if (stream) {
+			stream.getTracks().forEach(track => track.stop());
+			stream = null;
+		}
 	}
 
 	function resetPhotos() {
