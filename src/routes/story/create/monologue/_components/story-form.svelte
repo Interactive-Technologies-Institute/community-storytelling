@@ -441,8 +441,7 @@
 						{/each}
 					</Carousel.Content>
 
-					<!-- Navigation arrows -->
-					<Carousel.Previous class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
+					<Carousel.Previous class="left-2 top-1/2 transform -translate-y-1/2 z-10" />
 					<Carousel.Next class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
 					</Carousel.Root>
 				</div>

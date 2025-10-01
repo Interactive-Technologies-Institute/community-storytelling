@@ -12,7 +12,7 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { onMount, tick } from 'svelte';
 
-	import { ArrowLeft, ArrowRight, ArrowUp, Camera, Check, Loader2, Mic, Video } from 'lucide-svelte';
+	import { ArrowLeft, ArrowRight, ArrowUp, Camera, Check, Loader2, Mic, Repeat, Video } from 'lucide-svelte';
 
 	import Map from '../../../../map/_components/map.svelte';
 	import Marker from '../../../../map/_components/marker.svelte';
@@ -57,6 +57,7 @@
 	let videoBlob: File | Blob;
 	let videoUrl: string | null = null;
 	let videoElement: HTMLVideoElement;
+	let currentCamera: 'user' | 'environment' = 'user';
 
 	let firstImageTaken = false;
 	let secondImageTaken = false;
@@ -133,12 +134,75 @@
 		document.getElementById(id)!.click();
 	};
 
+	async function swapCamera() {
+		currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+
+		if (recording && recordingType === 'video' && stream) {
+			try {
+				const newStream = await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: currentCamera },
+					audio: true
+				});
+
+				const newVideoTrack = newStream.getVideoTracks()[0];
+				const oldVideoTrack = stream.getVideoTracks()[0];
+
+				stream.removeTrack(oldVideoTrack);
+				stream.addTrack(newVideoTrack);
+
+				if (videoElement) {
+					videoElement.srcObject = null;
+					videoElement.srcObject = stream;
+					await videoElement.play();
+				}
+
+				oldVideoTrack.stop();
+			} catch (err) {
+				console.error('Error swapping video camera:', err);
+			}
+		}
+
+		if (takingPhoto && photoStream) {
+			try {
+				const newStream = await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: currentCamera },
+					audio: false
+				});
+
+				const newVideoTrack = newStream.getVideoTracks()[0];
+				const oldVideoTrack = photoStream.getVideoTracks()[0];
+
+				photoStream.removeTrack(oldVideoTrack);
+				photoStream.addTrack(newVideoTrack);
+
+				if (photoVideoEl) {
+					photoVideoEl.srcObject = null;
+					photoVideoEl.srcObject = photoStream;
+					await photoVideoEl.play();
+				}
+
+				oldVideoTrack.stop();
+			} catch (err) {
+				console.error('Error swapping photo camera:', err);
+			}
+		}
+	}
+
+
 	async function startPhotoCapture(slot: 'first' | 'second') {
 		try {
-			photoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+			if (photoStream && !takingPhoto) {
+				photoStream.getTracks().forEach(track => track.stop());
+			}
+
+			photoStream = await navigator.mediaDevices.getUserMedia({
+				video: { facingMode: currentCamera }
+			});
+
 			takingPhoto = true;
 			retakeMode = false;
 			currentCaptureSlot = slot;
+
 			await tick();
 			photoVideoEl.srcObject = photoStream;
 			await photoVideoEl.play();
@@ -146,6 +210,7 @@
 			console.error('Camera access denied:', error);
 		}
 	}
+
 	function capturePhoto() {
 		const canvas = document.createElement('canvas');
 		canvas.width = photoVideoEl.videoWidth;
@@ -191,46 +256,46 @@
 		currentCaptureSlot = null;
 	}
 
-	async function startRecording(type: string) {
+	async function startRecording(type: string, resume = false) {
 		try {
-			if(type === 'video'){
-				stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+			if (type === 'video') {
+				if (!stream) {
+					stream = await navigator.mediaDevices.getUserMedia({
+						video: { facingMode: currentCamera },
+						audio: true
+					});
+				}
+
 				recording = true;
 				recordingType = 'video';
-				
 				await tick();
 				if (videoElement) {
 					videoElement.srcObject = stream;
 					await videoElement.play();
 				}
-			}
-
-			else{
+			} else {
 				stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 				recordingType = 'audio';
 				recording = true;
 			}
 
 			mediaRecorder = new MediaRecorder(stream);
-			recordedChunks = [];
+			if (!resume) recordedChunks = [];
 
-		mediaRecorder.ondataavailable = (e) => {
-			if (e.data.size > 0) {
-				recordedChunks.push(e.data);
-			}
-		};
+			mediaRecorder.ondataavailable = (e) => {
+				if (e.data.size > 0) recordedChunks.push(e.data);
+			};
 
-		mediaRecorder.onstop = async () => {
-			videoBlob = new Blob(recordedChunks, { type: 'video' });
-			videoUrl = URL.createObjectURL(videoBlob);
-			recorded = true;
-			recording = false;
-		};
+			mediaRecorder.onstop = async () => {
+				videoBlob = new Blob(recordedChunks, { type: 'video' });
+				videoUrl = URL.createObjectURL(videoBlob);
+				recorded = true;
+				recording = false;
+			};
 
-		mediaRecorder.start();
-
+			mediaRecorder.start();
 		} catch (err) {
-			console.error('Camera and/or audio access error:', err);
+			console.error('Camera/audio access error:', err);
 		}
 	}
 
@@ -465,6 +530,13 @@
 						{:else if recording && !recorded}
 							<Button
 								type="button"
+								class="md:hidden flex items-center gap-2 mb-2"
+								on:click={swapCamera}
+							>
+								<Repeat class="h-4 w-4" /> Alternar Câmera
+							</Button>
+							<Button
+								type="button"
 								class="cursor-pointer bg-black p-2 text-sm text-white flex-1 min-w-[120px]"
 								on:click={() => stopRecording()}
 							>
@@ -666,6 +738,13 @@
 							<video bind:this={photoVideoEl} autoplay playsinline class="w-full max-w-md rounded-lg" />
 							<div class="mt-2 flex flex-wrap gap-2 justify-center">
 								<Button on:click={capturePhoto} class="bg-green-600 text-white p-2">Capturar Foto</Button>
+								<Button
+									type="button"
+									class="md:hidden flex items-center gap-2 mb-2"
+									on:click={swapCamera}
+								>
+									<Repeat class="h-4 w-4" /> Alternar Câmera
+								</Button>
 								<Button on:click={stopPhotoCapture} class="bg-red-500 text-white p-2">Cancelar</Button>
 							</div>
 						{/if}
