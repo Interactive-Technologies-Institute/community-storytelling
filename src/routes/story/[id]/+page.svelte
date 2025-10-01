@@ -73,9 +73,11 @@
 			</div>
 		{/if}
 		</div>
-		<div class="flex justify-center my-6">
-			<StoryLikeButton count={data.likeCount} data={data.toggleLikeForm} />
-		</div>
+		{#if data.permission}
+			<div class="flex justify-center my-6">
+				<StoryLikeButton count={data.likeCount} data={data.toggleLikeForm} />
+			</div>
+		{/if}
 	{/if}
 	<div class="mb-10 flex flex-col items-center gap-y-4">
 		<div class="flex flex-row gap-x-2">
@@ -92,11 +94,9 @@
 			<Story data={data.story} />
 		{/if}
 
-		{#if data.permission || isOwner}
-			<div class="mb-12">
-				<Pending data={data.story} />
-			</div>
-		{/if}
+		<div class="mb-12">
+			<Pending data={data.story} />
+		</div>
 
 		{#if isApproved}
 			{#if data.story.colinked_stories && data.story.colinked_stories.length > 0}
@@ -120,17 +120,20 @@
 		{/if}
 	</div>
 
-	{#if data.permission || isOwner}
-		<div
-			class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
-		>
+	<div
+		class="sticky bottom-0 flex w-full flex-col items-center justify-center gap-y-4 border-t bg-background/95 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:flex-row sm:gap-x-10 sm:py-8"
+	>
+		{#if data.story.transcription}
+			<Button href={`/story/${data.story.id}/transcription`} class="w-full sm:w-auto">
+			<Eye class="mr-2 h-4 w-4" />
+			Abrir Transcrição
+			</Button>
+		{/if}
+
+		{#if data.permission || isOwner}
+
 			{#if isOwner && isPending}
-				{#if data.story.transcription}
-					<Button href={`/story/${data.story.id}/transcription`} class="w-full sm:w-auto">
-					<Eye class="mr-2 h-4 w-4" />
-					Abrir Transcrição
-					</Button>
-				{:else}
+				{#if !data.story.transcription}
 					<Button href={`/story/${data.story.id}/edit-transcription`} class="w-full sm:w-auto">
 					<Wand class="mr-2 h-4 w-4" />
 					Gerar Transcrição
@@ -150,15 +153,22 @@
 			{/if}
 
 			{#if isPending}
-				<Button
-					class="w-full sm:w-auto"
-					on:click={() => data.story.transcription && goto(`/story/${data.story.id}/preview`)}
-					disabled={!data.story.transcription}
-					title={!data.story.transcription ? "Gerar transcrição primeiro para habilitar este passo" : ""}
+				<div class="flex flex-col items-center gap-1 sm:gap-2">
+					{#if !data.story.transcription}
+						<p class="text-center text-sm text-yellow-700 px-2 sm:px-0">
+							⚠ Gera e guarda a transcrição primeiro para habilitar este passo
+						</p>
+					{/if}
+
+					<Button
+						class="w-full sm:w-auto"
+						on:click={() => data.story.transcription && goto(`/story/${data.story.id}/preview`)}
+						disabled={!data.story.transcription}
 					>
-					<LayoutPanelTop class="mr-2 h-4 w-4" />
-					Resumo e submissão da história
-				</Button>
+						<LayoutPanelTop class="mr-2 h-4 w-4" />
+						Resumo e submissão da história
+					</Button>
+				</div>
 			{/if}
 
 
@@ -191,8 +201,8 @@
 					Excluir
 				</Button>
 			{/if}
-		</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <StoryApproveDialog storyId={data.story.id} storyOwner={data.story.user_id} data={data.approveForm} bind:open={openApproveDialog} />

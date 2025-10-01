@@ -19,9 +19,11 @@
 			<ArrowLeft class="mr-2 h-4 w-4" />
 			Voltar
 		</Button>
-		<Button href="/story/{data.story.id}/edit-transcription">
-			<Pen class="mr-2 h-4 w-4" />
-			Editar transcrição
-		</Button>
+		{#if data.story.user_id === data.userId && data.storyModeration[0].status === 'pending'}
+			<Button href="/story/{data.story.id}/edit-transcription">
+				<Pen class="mr-2 h-4 w-4" />
+				Editar transcrição
+			</Button>
+		{/if}
 	</div>
 </div>

@@ -17,7 +17,7 @@ export const load = async (event) => {
 		let videoFileTemp;
 
 		const { data: storyInfo, error: storyError } = await event.locals.supabase
-			.from('story')
+			.from('story_view')
 			.select('recording_link, transcription')
 			.eq('id', id)
 			.single();
