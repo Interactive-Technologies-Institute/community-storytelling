@@ -33,13 +33,13 @@
 	}
 
 	onMount(() => {
-		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
-			if (newSession?.expires_at !== session?.expires_at) {
+		const { data: subscription } = supabase.auth.onAuthStateChange((event, newSession) => {
+			if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
 				invalidate('supabase:auth');
 			}
 		});
 
-		return () => data.subscription.unsubscribe();
+		return () => subscription.subscription.unsubscribe();
 	});
 </script>
 

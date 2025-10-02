@@ -24,8 +24,8 @@
 				<NotificationsButton {notifications} />
 				<UserNav {role} {profile} />
 			{:else}
-				<Button variant="outline" size="sm" href="/sign-in">Login</Button>
-				<Button size="sm" href="/sign-up">Join</Button>
+				<Button variant="outline" size="sm" href="/sign-in">Entrar</Button>
+				<Button size="sm" href="/sign-up">Inscrever</Button>
 			{/if}
 		</div>
 	</div>
