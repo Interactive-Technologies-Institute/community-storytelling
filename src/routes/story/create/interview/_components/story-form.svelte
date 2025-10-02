@@ -21,11 +21,12 @@
 	let markerPosition: { lat: number; lng: number } | null = null;
 
 	const questions = [
-		'Pode apresentar-se e falar um pouco sobre si? Que atividades ou funções exerce atualmente no bairro?',
-		'Que memórias ou histórias marcantes possui do bairro? De que forma já esteve envolvido(a) com a comunidade no passado (trabalho, projetos ou atividades)?',
+		'Pode se apresentar e falar um pouco sobre si? Que atividades ou funções exerce atualmente no bairro?',
+		'Que memórias ou histórias marcantes possui do bairro?',
 		'Na sua perspetiva, que mudanças mais importantes aconteceram no bairro ao longo dos anos?',
-		'Como é que as suas atividades e o seu papel no bairro influenciam a sua vida pessoal e a comunidade em geral?',
-		'Quais são os seus sonhos ou expectativas para o bairro nos próximos anos? De que forma gostaria de contribuir para o futuro do bairro através do seu papel?',
+		'Como é que seu papel no bairro influencia a sua vida pessoal e a comunidade hoje em dia?',
+		'Quais são os seus sonhos ou expectativas para o bairro nos próximos anos?',
+		'De que forma gostaria de contribuir para o futuro do bairro através do seu papel?',
 	];
 
 	let altImg = 'Taking notes';
@@ -528,7 +529,7 @@
 
 		<div class="page" class:show={page === 3}>
 			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
-				Quem desenvolveu esta história contigo?
+				Quem desenvolveu esta história contigo? (Opcional)
 			</h2>
 
 			<input
@@ -585,7 +586,7 @@
 			<Form.Field {form} name="year" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight">
-						Se existe, em que período é que esta história se foca?
+						Se existe, em que período é que esta história se foca? (Opcional)
 					</Form.Label>
 					<div class="flex flex-col items-center gap-3 pt-3 w-full">
 						<Input class="w-full max-w-xs" {...attrs} bind:value={$formData.year}
@@ -605,7 +606,7 @@
 
 		<div class="page" class:show={page === 5}>
 			<h2 class="pb-4 text-2xl sm:text-3xl font-semibold text-center">
-				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
+				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa. (Opcional)
 			</h2>
 
 			<div class="h-[400px] sm:h-[500px] md:h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">

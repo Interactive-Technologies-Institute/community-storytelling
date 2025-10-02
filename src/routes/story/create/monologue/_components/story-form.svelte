@@ -33,7 +33,7 @@
 		'Fixa a câmara no ponto central do local',
 		'Movimenta a câmera devagar pelo espaço para ilustrar o que está a descrever.',
 		'Focar a câmara num ponto importante do local',
-		'Foca no seu rosto enquanto falas'
+		'Foca no seu rosto enquanto falas',
 	];
 
 	let altImg = 'Taking notes';
@@ -565,7 +565,7 @@
 
 		<div class="page" class:show={page === 3}>
 			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
-				Quem desenvolveu esta história contigo?
+				Quem desenvolveu esta história contigo? (Opcional)
 			</h2>
 
 			<input
@@ -622,7 +622,7 @@
 			<Form.Field {form} name="year" class="text-center">
 				<Form.Control let:attrs>
 					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
-						Se existe, em que período é que esta história se foca?
+						Se existe, em que período é que esta história se foca? (Opcional)
 					</Form.Label>
 					<div class="flex flex-col items-center gap-3 pt-3">
 						<Input class="w-full max-w-md" {...attrs} bind:value={$formData.year} on:blur={() => form.validate('year')} on:input={() => form.validate('year')} />
@@ -647,7 +647,7 @@
 
 		<div class="page" class:show={page === 5}>
 			<h2 class="pb-4 text-2xl sm:text-3xl md:text-4xl text-center font-semibold">
-				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa.
+				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa. (Opcional)
 			</h2>
 			<div class="h-[400px] sm:h-[500px] md:h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
 				<Map lng={mapCenter.lng} lat={mapCenter.lat} zoom={14} on:mapClick={handleMapClick}>

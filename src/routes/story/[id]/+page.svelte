@@ -147,7 +147,7 @@
 			{#if !isOwner && isApproved}
 				<Button href={`/story/${data.story.id}/colinking`} class="w-full sm:w-auto">
 					<Network class="mr-2 h-4 w-4" />
-					Colinking
+					Ligar Histórias
 				</Button>
 			{/if}
 
