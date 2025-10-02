@@ -170,7 +170,7 @@
 				</div>
 			{/if}
 
-			{#if canManage && isBeingReviewed}
+			{#if isModerator && isBeingReviewed}
 				<Button 
 					on:click={() => (openApproveDialog = true)} class="w-full sm:w-auto">
 					<Check class="mr-2 h-4 w-4" />
@@ -178,7 +178,7 @@
 				</Button>
 			{/if}
 
-			{#if canManage && (isBeingReviewed || isApproved)}
+			{#if isModerator && (isBeingReviewed || isApproved)}
 				<Button
 					variant="destructive"
 					on:click={() => (openUnpublishDialog = true)}
@@ -189,7 +189,7 @@
 				</Button>
 			{/if}
 
-			{#if canManage}
+			{#if isModerator && (isBeingReviewed || isApproved)}
 				<Button
 					variant="destructive"
 					on:click={() => (openDeleteDialog = true)}
