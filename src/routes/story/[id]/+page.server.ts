@@ -94,10 +94,6 @@ export const load = async (event) => {
 		return Object.fromEntries(withAvatars.map((p) => [p.id, p]));
 	}
 
-	function getUserPermission() {
-		return user ? user.role !== 'user' : false;
-	}
-
 	async function getLikeCount(id: string): Promise<{ count: number; userLiked: boolean }> {
 		const { data: liked, error: interestedError } = await event.locals.supabase
 			.rpc('get_story_like_count', {
@@ -142,7 +138,6 @@ export const load = async (event) => {
 		profile: await getUserProfile(event.params.id),
 		coauthors,
 		colinkedStories,
-		permission: getUserPermission(),
 		likeCount: likeCount.count,
 		approveForm: await superValidate(zod(approveStorySchema), { id: 'approve-story' }),
 		deleteForm: await superValidate(zod(deleteStorySchema), { id: 'delete-story' }),

@@ -73,7 +73,7 @@
 			</div>
 		{/if}
 		</div>
-		{#if data.permission}
+		{#if data.user}
 			<div class="flex justify-center my-6">
 				<StoryLikeButton count={data.likeCount} data={data.toggleLikeForm} />
 			</div>
@@ -130,8 +130,7 @@
 			</Button>
 		{/if}
 
-		{#if data.permission || isOwner}
-
+		{#if data.user}
 			{#if isOwner && isPending}
 				{#if !data.story.transcription}
 					<Button href={`/story/${data.story.id}/edit-transcription`} class="w-full sm:w-auto">
@@ -171,8 +170,7 @@
 				</div>
 			{/if}
 
-
-			{#if isModerator && isBeingReviewed}
+			{#if canManage && isBeingReviewed}
 				<Button 
 					on:click={() => (openApproveDialog = true)} class="w-full sm:w-auto">
 					<Check class="mr-2 h-4 w-4" />
