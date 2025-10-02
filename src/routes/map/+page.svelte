@@ -138,7 +138,7 @@
 			class="absolute bottom-6 right-4 flex items-center gap-2 rounded-full shadow-lg p-3 sm:px-4 sm:py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
 		>
 			<PlusCircle class="h-6 w-6" />
-			<span class="sr-only sm:not-sr-only">Criar História</span>
+			<span class="not-sr-only">Criar História</span>
 		</Button>
 	</div>
 </div>
