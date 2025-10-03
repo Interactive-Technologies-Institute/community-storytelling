@@ -170,26 +170,28 @@
 				</div>
 			{/if}
 
-			{#if isModerator && isBeingReviewed}
-				<Button 
-					on:click={() => (openApproveDialog = true)} class="w-full sm:w-auto">
-					<Check class="mr-2 h-4 w-4" />
-					Aprovar
-				</Button>
+			{#if isModerator}
+				{#if isBeingReviewed}
+					<Button 
+						on:click={() => (openApproveDialog = true)} class="w-full sm:w-auto">
+						<Check class="mr-2 h-4 w-4" />
+						Aprovar
+					</Button>
+				{/if}
+
+				{#if isBeingReviewed || isApproved}
+					<Button
+						variant="destructive"
+						on:click={() => (openUnpublishDialog = true)}
+						class="w-full sm:w-auto"
+					>
+						<MessageCircleCode class="mr-2 h-4 w-4" />
+						Pedir Alterações
+					</Button>
+				{/if}
 			{/if}
 
-			{#if isModerator && (isBeingReviewed || isApproved)}
-				<Button
-					variant="destructive"
-					on:click={() => (openUnpublishDialog = true)}
-					class="w-full sm:w-auto"
-				>
-					<MessageCircleCode class="mr-2 h-4 w-4" />
-					Pedir Alterações
-				</Button>
-			{/if}
-
-			{#if isModerator && (isBeingReviewed || isApproved)}
+			{#if isModerator || isOwner}
 				<Button
 					variant="destructive"
 					on:click={() => (openDeleteDialog = true)}

@@ -40,7 +40,7 @@
 			</div>
 			<div class="mb-5">
 				{#if story.role === 'interview'}
-					<h2 class="text-medium font-medium">Narrador: {story.storyteller}</h2>
+					<h2 class="text-medium font-medium">Narrador/a: {story.storyteller}</h2>
 				{:else}
 					<h2 class="text-medium font-medium">Local: {story.storyteller}</h2>
 				{/if}

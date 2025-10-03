@@ -362,7 +362,7 @@
 	}
 </script>
 
-<PageHeader title={'Pré-visualização'} subtitle="" />
+<PageHeader title={'Resumo da história'} subtitle="" />
 <form method="POST" bind:this={updateStoryForm} on:submit|preventDefault={submitUpdateStoryForm}>
 	<div class="container mx-auto space-y-10 pb-10">
 		{#if paragraphs.length === 0}
@@ -379,9 +379,9 @@
 				<Tabs.Content value="t1">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Pré-visualização do Modelo 1</Card.Title>
+							<Card.Title>Resumo com Modelo 1</Card.Title>
 							<Card.Description>
-								Isto é uma pré-visualização. A sua história aparecerá neste formato quando a
+								Isto é um resumo da sua história. A sua história aparecerá neste formato quando a
 								publicar. Pode editá-la clicando no texto. Arraste as imagens e os quotes para o
 								lado para escolher o que mostrar.
 							</Card.Description>
@@ -429,9 +429,9 @@
 				<Tabs.Content value="t2">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Pré-visualização do Modelo 2</Card.Title>
+							<Card.Title>Resumo com Modelo 2</Card.Title>
 							<Card.Description>
-								Isto é uma pré-visualização. A sua história aparecerá neste formato quando a
+								Isto é um resumo da sua história. A sua história aparecerá neste formato quando a
 								publicar. Pode editá-la clicando no texto. Arraste as imagens e os quotes para o
 								lado para escolher o que mostrar.
 							</Card.Description>
@@ -497,9 +497,9 @@
 				<Tabs.Content value="t3">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Pré-visualização do Modelo 3</Card.Title>
+							<Card.Title>Resumo com Modelo 3</Card.Title>
 							<Card.Description>
-								Isto é uma pré-visualização. A sua história aparecerá neste formato quando a
+								Isto é um resumo da sua história. A sua história aparecerá neste formato quando a
 								publicar. Pode editá-la clicando no texto. Arraste as imagens e os quotes para o
 								lado para escolher o que mostrar.
 							</Card.Description>

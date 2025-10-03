@@ -44,7 +44,8 @@ export const actions = {
 				.from('story')
 				.insert({ 
 					storyteller: form.data.storyteller, 
-					tags: form.data.tags, role: form.data.role, 
+					tags: form.data.tags, 
+					role: form.data.role, 
 					image: form.data.image, 
 					user_id: userId, 
 					recording_link: form.data.recording_link ?? '', 

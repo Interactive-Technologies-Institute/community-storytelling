@@ -50,7 +50,7 @@
 
       if (
         story.moderation_status === "story_for_review" &&
-        (userRole === "moderator" || userRole === "admin")
+        (userRole === "moderator" || userRole === "admin" || story.user_id === userId)
       ) {
         return true;
       }

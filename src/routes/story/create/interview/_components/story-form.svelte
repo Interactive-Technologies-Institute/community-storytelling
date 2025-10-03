@@ -602,6 +602,16 @@
 					</div>
 				</Form.Control>
 			</Form.Field>
+			<Form.Field {form} hidden name="role" class="text-center">
+				<Form.Control let:attrs>
+					<input hidden name="role" bind:value={$formData.role} />
+				</Form.Control>
+			</Form.Field>
+			<Form.Field {form} hidden name="tags" class="text-center">
+				<Form.Control let:attrs>
+					<input hidden name="tags" bind:value={$formData.tags[0]} />
+				</Form.Control>
+			</Form.Field>
 		</div>
 
 		<div class="page" class:show={page === 5}>
