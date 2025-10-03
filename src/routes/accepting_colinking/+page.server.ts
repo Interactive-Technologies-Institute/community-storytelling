@@ -48,30 +48,39 @@ export const actions = {
 			return { success: false, message: 'Missing story IDs' };
 		}
 
-		const { data: storyData, error: fetchError } = await event.locals.supabase
-			.from('story')
-			.select('colinked_stories')
-			.eq('id', requestedStoryId)
-			.single();
+		const updateColinkedStories = async (storyId: string, otherId: string) => {
+			const { data, error: fetchError } = await event.locals.supabase
+				.from('story')
+				.select('colinked_stories')
+				.eq('id', storyId)
+				.single();
 
-		if (fetchError || !storyData) {
-			return { success: false, message: fetchError?.message || 'Story not found' };
-		}
+			if (fetchError || !data) {
+				return { success: false, message: fetchError?.message || `Story ${storyId} not found` };
+			}
 
-		const currentArray: number[] = storyData.colinked_stories ?? [];
-		const newId = parseInt(requesterStoryId);
+			const current: number[] = data.colinked_stories ?? [];
+			const otherIdInt = parseInt(otherId, 10);
 
+			const updated = current.includes(otherIdInt) ? current : [...current, otherIdInt];
 
-		const updatedArray = currentArray.includes(newId) ? currentArray : [...currentArray, newId];
+			const { error: updateError } = await event.locals.supabase
+				.from('story')
+				.update({ colinked_stories: updated })
+				.eq('id', storyId);
 
-		const { error: updateError } = await event.locals.supabase
-			.from('story')
-			.update({ colinked_stories: updatedArray })
-			.eq('id', requestedStoryId);
+			if (updateError) {
+				return { success: false, message: updateError.message };
+			}
 
-		if (updateError) {
-			return { success: false, message: updateError.message };
-		}
+			return { success: true };
+		};
+
+		const updateRequested = await updateColinkedStories(requestedStoryId, requesterStoryId);
+		if (!updateRequested.success) return updateRequested;
+
+		const updateRequester = await updateColinkedStories(requesterStoryId, requestedStoryId);
+		if (!updateRequester.success) return updateRequester;
 
 		const { error: deleteError } = await event.locals.supabase
 			.from('notifications')
