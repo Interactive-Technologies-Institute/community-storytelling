@@ -94,6 +94,29 @@ export const actions = {
 		}
 
 		return { success: true };
+	},
+	deleteColink: async (event) => {
+		const formData = await event.request.formData();
+		const requestedStoryId = formData.get('requestedStoryId') as string;
+		const requesterStoryId = formData.get('requesterStoryId') as string;
+
+		if (!requestedStoryId || !requesterStoryId) {
+			return { success: false, message: 'Missing story IDs' };
+		}
+
+		const { error: deleteError } = await event.locals.supabase
+			.from('notifications')
+			.delete()
+			.eq('type', 'colinking_pending')
+			.eq('data->>requested_story_id', requestedStoryId)
+			.eq('data->>requester_story_id', requesterStoryId);
+
+		if (deleteError) {
+			console.error('Failed to delete notification:', deleteError.message);
+			return { success: false, message: deleteError.message };
+		}
+
+		return { success: true };
 	}
 };
 

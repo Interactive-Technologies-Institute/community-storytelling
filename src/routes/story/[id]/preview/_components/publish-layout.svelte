@@ -367,7 +367,7 @@
 	<div class="container mx-auto space-y-10 pb-10">
 		{#if paragraphs.length === 0}
 			<PencilLine class="mx-auto h-32 w-32" />
-			<h2 class="mb-2 text-center text-2xl font-medium">A gerar a história...</h2>
+			<h2 class="mb-2 text-center text-2xl font-medium">A gerar o resumo...</h2>
 			<p class="text-center">Por favor, não recarregue a página.</p>
 		{:else}
 			<Tabs.Root bind:value={currentTab}>
@@ -382,8 +382,8 @@
 							<Card.Title>Resumo com Modelo 1</Card.Title>
 							<Card.Description>
 								Isto é um resumo da sua história. A sua história aparecerá neste formato quando a
-								publicar. Pode editá-la clicando no texto. Arraste as imagens e os quotes para o
-								lado para escolher o que mostrar.
+								publicar. Pode editá-la clicando no texto. Ambos o título e o corpo da história são possíveis de ser editados.
+								Arraste as imagens e os quotes para o lado para escolher o que mostrar.
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-2">
@@ -432,8 +432,8 @@
 							<Card.Title>Resumo com Modelo 2</Card.Title>
 							<Card.Description>
 								Isto é um resumo da sua história. A sua história aparecerá neste formato quando a
-								publicar. Pode editá-la clicando no texto. Arraste as imagens e os quotes para o
-								lado para escolher o que mostrar.
+								publicar. Pode editá-la clicando no texto. Ambos o título e o corpo da história são possíveis de ser editados.
+								Arraste as imagens e os quotes para o lado para escolher o que mostrar.
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-2">
@@ -500,8 +500,8 @@
 							<Card.Title>Resumo com Modelo 3</Card.Title>
 							<Card.Description>
 								Isto é um resumo da sua história. A sua história aparecerá neste formato quando a
-								publicar. Pode editá-la clicando no texto. Arraste as imagens e os quotes para o
-								lado para escolher o que mostrar.
+								publicar. Pode editá-la clicando no texto. Ambos o título e o corpo da história são possíveis de ser editados.
+								Arraste as imagens e os quotes para o lado para escolher o que mostrar.
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-2">

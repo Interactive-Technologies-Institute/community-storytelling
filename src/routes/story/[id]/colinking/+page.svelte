@@ -8,7 +8,8 @@
 
 	const linkedStoryIds: number[] = data.story.colinked_stories ?? [];
 
-	const selectableStories = data.myStories.filter(s => !linkedStoryIds.includes(s.id));
+	const selectableStories = data.myStories
+	.filter(s => !linkedStoryIds.includes(s.id) && s.id !== userStoryId);
 
 	async function submitColinkRequest(event: Event) {
 		event.preventDefault();

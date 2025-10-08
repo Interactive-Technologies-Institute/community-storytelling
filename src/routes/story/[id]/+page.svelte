@@ -3,7 +3,7 @@
 	import PageHeader from '@/components/page-header.svelte';
 	import { Button } from '@/components/ui/button';
 	import { Eye, LayoutPanelTop, Tag, Network, Trash, Wand, Pencil, Check, MessageCircleCode } from 'lucide-svelte';
-	import Pending from './_components/pending.svelte';
+	import MediaSection from './_components/media-files.svelte';
 	import StoryApproveDialog from './_components/story-approve-dialog.svelte';
 	import StoryDeleteDialog from './_components/story-delete-dialog.svelte';
 	import StoryUnpublishDialog from './_components/story-unpublish-dialog.svelte';
@@ -95,7 +95,7 @@
 		{/if}
 
 		<div class="mb-12">
-			<Pending data={data.story} />
+			<MediaSection data={data.story} />
 		</div>
 
 		{#if isApproved}
@@ -144,7 +144,7 @@
 				</Button>
 			{/if}
 
-			{#if !isOwner && isApproved}
+			{#if isApproved}
 				<Button href={`/story/${data.story.id}/colinking`} class="w-full sm:w-auto">
 					<Network class="mr-2 h-4 w-4" />
 					Ligar Histórias
