@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { Button } from '@/components/ui/button';
 	import type { PageData } from './$types';
+	import { ArrowRight } from 'lucide-svelte';
 	export let data: PageData;
 
 	let page = 1;
@@ -77,12 +79,10 @@
 		</p>
 
 		<div class="flex justify-center sm:justify-end">
-			<button
-				on:click={nextPage}
-				class="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors w-full sm:w-auto"
-			>
-				Next
-			</button>
+			<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
+					on:click={nextPage}>
+					<ArrowRight />
+			</Button>
 		</div>
 
 	{:else if page === 2}
@@ -98,7 +98,7 @@
 				on:click={prevPage}
 				class="px-6 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors w-full sm:w-auto"
 			>
-				Back
+				Voltar
 			</button>
 
 			<button
@@ -112,7 +112,7 @@
 				on:click={acceptLink}
 				class="px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors w-full sm:w-auto"
 			>
-				Accept
+				Aceitar
 			</button>
 		</div>
 	{/if}
