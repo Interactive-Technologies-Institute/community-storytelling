@@ -12,56 +12,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 
+CREATE SCHEMA IF NOT EXISTS "public";
+
+
+ALTER SCHEMA "public" OWNER TO "pg_database_owner";
+
+
 COMMENT ON SCHEMA "public" IS 'standard public schema';
-
-
-
-CREATE EXTENSION IF NOT EXISTS "moddatetime" WITH SCHEMA "extensions";
-
-
-
-
-
-
-CREATE EXTENSION IF NOT EXISTS "pg_graphql" WITH SCHEMA "graphql";
-
-
-
-
-
-
-CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
-
-
-
-
-
-
-CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
-
-
-
-
-
-
-CREATE EXTENSION IF NOT EXISTS "pgjwt" WITH SCHEMA "extensions";
-
-
-
-
-
-
-CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
-
-
-
-
-
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
-
-
-
 
 
 
@@ -70,7 +27,8 @@ CREATE TYPE "public"."feature" AS ENUM (
     'events',
     'map',
     'academy',
-    'stories'
+    'stories',
+    'members'
 );
 
 
@@ -101,7 +59,8 @@ CREATE TYPE "public"."moderation_status" AS ENUM (
     'pending',
     'changes_requested',
     'approved',
-    'rejected'
+    'rejected',
+    'story_for_review'
 );
 
 
@@ -121,7 +80,10 @@ CREATE TYPE "public"."notification_type" AS ENUM (
     'map_pin_changes_requested',
     'map_pin_approved',
     'map_pin_rejected',
-    'colinking_pending'
+    'colinking_pending',
+    'story_changes_requested',
+    'story_approved',
+    'story_rejected'
 );
 
 
@@ -369,7 +331,7 @@ ALTER FUNCTION "public"."handle_howtos_moderation_notification"() OWNER TO "post
 
 CREATE OR REPLACE FUNCTION "public"."handle_map_pin_moderation_updates"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
-    AS $$ begin
+    AS $$begin
 insert into public.map_pins_moderation (map_pin_id, user_id, status, comment)
 values (
 		new.id,
@@ -378,8 +340,7 @@ values (
 		'Pending moderation'
 	);
 return new;
-end;
-$$;
+end;$$;
 
 
 ALTER FUNCTION "public"."handle_map_pin_moderation_updates"() OWNER TO "postgres";
@@ -387,9 +348,10 @@ ALTER FUNCTION "public"."handle_map_pin_moderation_updates"() OWNER TO "postgres
 
 CREATE OR REPLACE FUNCTION "public"."handle_map_pins_moderation_notification"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
-    AS $$
-declare notification_type notification_type;
-begin if new.status = 'pending' then notification_type := 'map_pin_pending';
+    AS $$declare notification_type notification_type;
+begin 
+/* No need for now
+if new.status = 'pending' then notification_type := 'map_pin_pending';
 elsif new.status = 'changes_requested' then notification_type := 'map_pin_changes_requested';
 elsif new.status = 'approved' then notification_type := 'map_pin_approved';
 elsif new.status = 'rejected' then notification_type := 'map_pin_rejected';
@@ -400,9 +362,9 @@ values (
 		notification_type,
 		jsonb_build_object('map_pin_id', new.map_pin_id)
 	);
+*/
 return new;
-end;
-$$;
+end;$$;
 
 
 ALTER FUNCTION "public"."handle_map_pins_moderation_notification"() OWNER TO "postgres";
@@ -971,7 +933,8 @@ CREATE TABLE IF NOT EXISTS "public"."story" (
     "pub_selected_images" "text"[],
     "title" "text",
     "fts" "tsvector" GENERATED ALWAYS AS ("to_tsvector"('"simple"'::"regconfig", COALESCE("title", ''::"text"))) STORED,
-    "coauthors" "uuid"[]
+    "coauthors" "uuid"[],
+    "colinked_stories" bigint[] DEFAULT '{}'::bigint[]
 );
 
 
@@ -1042,6 +1005,7 @@ CREATE OR REPLACE VIEW "public"."story_view" WITH ("security_invoker"='on') AS
     "h"."title",
     "h"."fts",
     "h"."coauthors",
+    "h"."colinked_stories",
     "m"."status" AS "moderation_status"
    FROM ("public"."story" "h"
      JOIN "public"."story_moderation" "m" ON (("h"."id" = "m"."story_id")));
@@ -1439,6 +1403,10 @@ CREATE POLICY "Allow moderators read all stories" ON "public"."story" FOR SELECT
 
 
 
+CREATE POLICY "Allow moderators to create their own stories" ON "public"."story" FOR INSERT WITH CHECK ((( SELECT "public"."authorize"('story.create'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id")));
+
+
+
 CREATE POLICY "Allow moderators to insert all events moderation" ON "public"."events_moderation" FOR INSERT WITH CHECK (( SELECT "public"."authorize"('events.moderate'::"public"."user_permission") AS "authorize"));
 
 
@@ -1512,10 +1480,6 @@ CREATE POLICY "Allow users to create their own liked stories" ON "public"."liked
 
 
 CREATE POLICY "Allow users to create their own map pins" ON "public"."map_pins" FOR INSERT WITH CHECK ((( SELECT "public"."authorize"('map.create'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id")));
-
-
-
-CREATE POLICY "Allow users to create their own stories" ON "public"."story" FOR INSERT WITH CHECK ((( SELECT "public"."authorize"('story.create'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id")));
 
 
 
@@ -1643,10 +1607,6 @@ CREATE POLICY "Allow users to update their own profiles" ON "public"."profiles" 
 
 
 
-CREATE POLICY "Allow users to update their own stories" ON "public"."story" FOR UPDATE USING ((( SELECT "public"."authorize"('story.update'::"public"."user_permission") AS "authorize") AND ("auth"."uid"() = "user_id"))) WITH CHECK (("auth"."uid"() = "user_id"));
-
-
-
 ALTER TABLE "public"."branding" ENABLE ROW LEVEL SECURITY;
 
 
@@ -1698,187 +1658,11 @@ ALTER TABLE "public"."user_roles" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."user_types" ENABLE ROW LEVEL SECURITY;
 
 
-
-
-ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
-
-
 GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
 GRANT USAGE ON SCHEMA "public" TO "supabase_auth_admin";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1969,21 +1753,6 @@ GRANT ALL ON FUNCTION "public"."update_user_types"("types" "public"."user_type"[
 GRANT ALL ON FUNCTION "public"."verify_user_password"("password" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."verify_user_password"("password" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."verify_user_password"("password" "text") TO "service_role";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2246,12 +2015,6 @@ GRANT ALL ON TABLE "public"."user_types" TO "service_role";
 
 
 
-
-
-
-
-
-
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "postgres";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "authenticated";
@@ -2276,30 +2039,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "service_role";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

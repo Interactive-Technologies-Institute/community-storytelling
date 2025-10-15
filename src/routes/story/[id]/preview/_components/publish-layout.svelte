@@ -42,7 +42,7 @@
 	$: transcription = '';
 
 	let interview_text = `
-    Eu tenho uma transcrição de uma entrevista sobre o tema (X). O entrevistador fez perguntas para explorar passado, presente e futuro, seguindo este modelo como base:  
+    Eu tenho uma transcrição de uma entrevista. O entrevistador fez perguntas para explorar passado, presente e futuro, seguindo este modelo de perguntas como base:  
 
 	1. "Pode apresentar-se e falar um pouco sobre si? Que atividades ou funções exerce atualmente no bairro?"  
 	2. "Que memórias ou histórias marcantes possui do bairro? De que forma já esteve envolvido(a) com a comunidade no passado (trabalho, projetos ou atividades)?"  

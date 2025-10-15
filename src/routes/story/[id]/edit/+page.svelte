@@ -34,6 +34,10 @@
 	const { form: formData, errors } = form;
 
 	$formData.pinColor = $formData.pinColor ?? '#ff0000';
+	
+	if ($formData.year === '0'){
+		$formData.year = '';
+	}
 
 	let editStoryForm: HTMLFormElement;
 
@@ -181,24 +185,24 @@
 		</div>
 
 		<div class="page" class:show={page === 2}>
-			<h2 class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight text-center">
-				Quem desenvolveu esta história contigo?
+			<h2 class="pb-2 text-3xl font-semibold tracking-tight text-center">
+				Quem desenvolveu esta história contigo? (Opcional)
 			</h2>
 
 			<input
 				type="text"
-				placeholder="Search users..."
+				placeholder="Procura por membros..."
 				bind:value={search}
-				class="w-full max-w-md mx-auto p-2 border rounded mt-4"
+				class="block w-full max-w-md mx-auto p-2 border rounded mt-4"
 			/>
 
 			{#if results.length > 0}
-				<ul class="results-list mt-4 space-y-2">
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+				<ul class="results-list">
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 					{#each results as user}
 						<li
-							class="results-item cursor-pointer p-2 border rounded hover:bg-gray-50"
+							class="results-item"
 							on:click={() => addMember(user)}
 						>
 							{user.display_name}
@@ -208,7 +212,7 @@
 			{/if}
 
 			{#if selectedMembers.length > 0}
-				<h3 class="mt-4 font-semibold">Selected Members:</h3>
+				<h3 class="mt-4 font-semibold">Membros Selecionados:</h3>
 				<ul class="mt-2 space-y-2">
 					{#each selectedMembers as member}
 						<li class="flex justify-between items-center border p-2 rounded">
