@@ -202,6 +202,15 @@ export const actions = {
 			return redirect(303, '/story');
 		}),
 	delete: async (event) =>
+
+		/*
+		\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+		Missing logic to delete files from cloudinary
+
+		\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+		*/
+
 		handleFormAction(event, deleteStorySchema, 'delete-story', async (event, userId, form) => {
 			const { error: supabaseError2 } = await event.locals.supabase
 				.from('map_pins')
