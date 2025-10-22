@@ -90,14 +90,14 @@ CREATE TYPE "public"."notification_type" AS ENUM (
 ALTER TYPE "public"."notification_type" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."story_role" AS ENUM (
+CREATE TYPE "public"."story_type" AS ENUM (
     'community',
     'monologue',
     'interview'
 );
 
 
-ALTER TYPE "public"."story_role" OWNER TO "postgres";
+ALTER TYPE "public"."story_type" OWNER TO "postgres";
 
 
 CREATE TYPE "public"."user_permission" AS ENUM (
@@ -923,7 +923,7 @@ CREATE TABLE IF NOT EXISTS "public"."story" (
     "storyteller" "text" NOT NULL,
     "user_id" "uuid" NOT NULL,
     "tags" "text"[] NOT NULL,
-    "role" "public"."story_role" NOT NULL,
+    "type" "public"."story_type" NOT NULL,
     "recording_link" "text" NOT NULL,
     "transcription" "text",
     "image" "text"[] NOT NULL,
@@ -994,7 +994,6 @@ CREATE OR REPLACE VIEW "public"."story_view" WITH ("security_invoker"='on') AS
     "h"."storyteller",
     "h"."user_id",
     "h"."tags",
-    "h"."role",
     "h"."recording_link",
     "h"."transcription",
     "h"."image",
@@ -1006,7 +1005,8 @@ CREATE OR REPLACE VIEW "public"."story_view" WITH ("security_invoker"='on') AS
     "h"."fts",
     "h"."coauthors",
     "h"."colinked_stories",
-    "m"."status" AS "moderation_status"
+    "m"."status" AS "moderation_status",
+    "h"."type"
    FROM ("public"."story" "h"
      JOIN "public"."story_moderation" "m" ON (("h"."id" = "m"."story_id")));
 
