@@ -57,7 +57,7 @@
 
 	$: enrichedPins = filteredPins.map(pin => {
 		const story = allStories.find(s => s.id === pin.story_id);
-		const type = story?.role;
+		const type = story?.type;
 		const initial = type === 'interview' ? 'E' : type === 'monologue' ? 'M' : '?';
 		return {
 			...pin,

@@ -29,7 +29,7 @@
 
 <PageHeader
 	title={data.story.storyteller}
-	subtitle={data.story.role === 'interview' ? 'Interview' : 'Monologue'}
+	subtitle={data.story.type === 'interview' ? 'Interview' : 'Monologue'}
 />
 	<div class="container mx-auto space-y-10 pb-10">
 	{#if !isApproved}
@@ -83,7 +83,7 @@
 		<div class="flex flex-row gap-x-2">
 			{#each data.story.tags as tag}
 				{#if tag !== '0'}
-					<Button variant="secondary" size="sm" href="/user/0">
+					<Button variant="secondary" size="sm">
 						<Tag class="mr-2 h-4 w-4" />
 						{tag}
 					</Button>

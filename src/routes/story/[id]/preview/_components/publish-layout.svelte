@@ -196,14 +196,14 @@
 		}
 	}
 
-	async function generate_story(role: string, transcription: string) {
+	async function generate_story(type: string, transcription: string) {
 		try {
 			const response = await openai.chat.completions.create({
 				model: 'gpt-4o',
 				messages: [
 					{
 						role: 'system',
-						content: role === 'interview' ? `${interview_text}` : `${monologue_text}`,
+						content: type === 'interview' ? `${interview_text}` : `${monologue_text}`,
 					},
 					{
 						role: 'user',
@@ -274,7 +274,7 @@
 				if (formData.recording_link !== undefined){
 					const transcriptionResult = await transcribeRecording(formData.recording_link);
 					transcription = transcriptionResult ?? "";
-					let storyResult = await generate_story(formData.role, transcription);
+					let storyResult = await generate_story(formData.type, transcription);
 					if(storyResult && storyResult.choices[0].message.content){
 						let [paragraphsResult, quotesResult, titleResult] = await organizeText(storyResult.choices[0].message.content);				
 						paragraphs = paragraphsResult;
@@ -293,7 +293,7 @@
 					title = formData.title;
 				}
 			} else {
-				let storyResult = await generate_story(formData.role, formData.transcription);
+				let storyResult = await generate_story(formData.type, formData.transcription);
 				if(storyResult && storyResult.choices[0].message.content){
 					let [paragraphsResult, quotesResult, titleResult] = await organizeText(storyResult.choices[0].message.content);				
 					paragraphs = paragraphsResult;

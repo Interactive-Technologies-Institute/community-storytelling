@@ -142,7 +142,7 @@ export type Notification = {
 	read: boolean;
 };
 
-export type CommunityRole = 'monologue' | 'interview';
+export type StoryType = 'monologue' | 'interview';
 
 export type Story = {
 	id: number;
@@ -152,7 +152,6 @@ export type Story = {
 	updated_at: string;
 	image: string[];
 	tags: string[];
-	role: CommunityRole;
 	transcription: string;
 	recording_link: string;
 	pub_story_text: string[];
@@ -164,16 +163,10 @@ export type Story = {
 	coauthors: string[];
 	likeCount: number;
 	colinked_stories: number[];
+	type: StoryType;
 };
 
 export type StoryWithTranscription = {
 	recording_link: string;
-	transcription: string;
-};
-
-export type StoryWithInsights = {
-	role: CommunityRole;
-	recording_link: string;
-	insights_gpt: string;
 	transcription: string;
 };

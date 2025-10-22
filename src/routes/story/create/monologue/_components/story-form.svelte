@@ -49,7 +49,7 @@
 	});
 
 	const { form: formData, errors } = form;
-	$formData.role = 'monologue';
+	$formData.type = 'monologue';
 	$formData.tags[0] = 'Monólogo';
 	$formData.pinColor = $formData.pinColor ?? '#ff0000';
 
@@ -543,19 +543,27 @@
 		</div>
 
 		<div class="page" class:show={page === 2}>
-			<img class="mx-auto w-64 sm:w-72 md:w-80" src="/app_images/taking_notes.png" alt={altImg} />
+			<img class="mx-auto w-40 sm:w-56 md:w-72" src="/app_images/taking_notes.png" alt={altImg} />
 			<Form.Field {form} name="storyteller" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
+					<Form.Label class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight">
 						Qual é o nome do local que é o foco desta história?
 					</Form.Label>
-					<div class="flex flex-col items-center gap-3 pt-3">
-						<Input class="w-full max-w-md" {...attrs} bind:value={$formData.storyteller} on:blur={() => form.validate('storyteller')} on:input={() => form.validate('storyteller')} />
+					<div class="flex flex-col items-center gap-3 pt-3 w-full">
+						<Input
+							class="w-full max-w-sm"
+							{...attrs}
+							bind:value={$formData.storyteller}
+							on:blur={() => form.validate('storyteller')}
+							on:input={() => form.validate('storyteller')}
+						/>
 						<Form.FieldErrors />
-						<Button 
-							class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" type="button" 
-							on:click={() => (page = 3)} disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}
-							>
+						<Button
+							class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
+							type="button"
+							on:click={() => (page = 3)}
+							disabled={$formData.storyteller.length < 2 || $formData.storyteller.length > 100}
+						>
 							<ArrowRight />
 						</Button>
 					</div>
@@ -618,24 +626,38 @@
 		</div>
 
 		<div class="page" class:show={page === 4}>
-			<img class="mx-auto w-64 sm:w-72 md:w-80" src="/app_images/taking_notes.png" alt={altImg} />
+			<img class="mx-auto w-40 sm:w-56 md:w-72" src="/app_images/taking_notes.png" alt={altImg} />
 			<Form.Field {form} name="year" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
+					<Form.Label class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight">
 						Se existe, em que período é que esta história se foca? (Opcional)
 					</Form.Label>
-					<div class="flex flex-col items-center gap-3 pt-3">
-						<Input class="w-full max-w-md" {...attrs} bind:value={$formData.year} on:blur={() => form.validate('year')} on:input={() => form.validate('year')} />
+					<div class="flex flex-col items-center gap-3 pt-3 w-full">
+						<Input
+							class="w-full max-w-xs"
+							{...attrs}
+							bind:value={$formData.year}
+							on:blur={() => form.validate('year')}
+							on:input={() => form.validate('year')}
+						/>
 						<Form.FieldErrors />
-						<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" type="button" on:click={() => (page = 5)} disabled={$formData.year !== '' && $formData.year !== undefined && (isNaN(Number($formData.year)) || Number($formData.year) < 1950 || Number($formData.year) > 2030)}>
+						<Button
+							class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
+							type="button"
+							on:click={() => (page = 5)}
+							disabled={$formData.year !== '' && $formData.year !== undefined &&
+								(isNaN(Number($formData.year)) ||
+								Number($formData.year) < 1950 ||
+								Number($formData.year) > 2030)}
+						>
 							<ArrowRight />
 						</Button>
 					</div>
 				</Form.Control>
 			</Form.Field>
-			<Form.Field {form} hidden name="role" class="text-center">
+			<Form.Field {form} hidden name="type" class="text-center">
 				<Form.Control let:attrs>
-					<input hidden name="role" bind:value={$formData.role} />
+					<input hidden name="type" bind:value={$formData.type} />
 				</Form.Control>
 			</Form.Field>
 			<Form.Field {form} hidden name="tags" class="text-center">
@@ -646,26 +668,34 @@
 		</div>
 
 		<div class="page" class:show={page === 5}>
-			<h2 class="pb-4 text-2xl sm:text-3xl md:text-4xl text-center font-semibold">
+			<h2 class="pb-4 text-2xl sm:text-3xl font-semibold text-center">
 				A história está relacionada com um local específico? Se sim, escolhe esse local no mapa. (Opcional)
 			</h2>
+
 			<div class="h-[400px] sm:h-[500px] md:h-[600px] w-full max-w-2xl mx-auto rounded shadow-lg">
 				<Map lng={mapCenter.lng} lat={mapCenter.lat} zoom={14} on:mapClick={handleMapClick}>
 					{#if markerPosition}
-						<Marker lng={markerPosition.lng} lat={markerPosition.lat} disableClick={true} marker_color={$formData.pinColor} />
+						<Marker
+							lng={markerPosition.lng}
+							lat={markerPosition.lat}
+							disableClick={true}
+							marker_color={$formData.pinColor}
+						/>
 					{/if}
 				</Map>
 			</div>
+
 			<div class="mt-4 flex flex-col items-center gap-2">
 				<label for="pinColor" class="text-lg font-medium">Escolhe a cor do marcador:</label>
 				<input type="color" id="pinColor" bind:value={$formData.pinColor} class="w-12 h-12 rounded-full border p-0" />
 			</div>
+
 			<input type="hidden" name="pinColor" value={$formData.pinColor} />
 			<input type="hidden" name="lat" value={$formData.lat ?? ''} />
 			<input type="hidden" name="lng" value={$formData.lng ?? ''} />
+
 			<div class="flex justify-center pt-6">
-				<Button 
-					class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" 
+				<Button class="px-6 py-2 bg-green-600 text-white hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2"
 					on:click={() => (page = 6)} disabled={recorded === false}>
 					<ArrowRight />
 				</Button>
@@ -673,31 +703,47 @@
 		</div>
 
 		<div class="page" class:show={page === 6}>
-			<img class="mx-auto w-64 sm:w-72 md:w-80" src="/app_images/taking_notes.png" alt={altImg} />
+			<img class="mx-auto w-40 sm:w-56 md:w-72" src="/app_images/taking_notes.png" alt={altImg} />
 			<Form.Field {form} name="image" class="text-center">
 				<Form.Control let:attrs>
-					<Form.Label class="pb-2 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors text-center">
+					<Form.Label class="pb-2 text-2xl sm:text-3xl font-semibold tracking-tight">
 						Submete duas fotografias do local que é o foco da história.
 					</Form.Label>
 					<div class="flex flex-col gap-4 items-center">
 						<div class="flex flex-col sm:flex-row gap-2 justify-center">
 							{#if !firstImageTaken && !takingPhoto && !retakeMode}
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => triggerFileInput('firstImageFile')}>
-									<ArrowUp /><span>Upload Primeira Fotografia</span>
+								<Button
+									type="button"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => triggerFileInput('firstImageFile')}
+								>
+									<ArrowUp />
+									<span>Upload Primeira Fotografia</span>
 								</Button>
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => startPhotoCapture('first')}>
-									<Camera class="mr-2 h-4 w-4" /><span>Tirar Primeira Fotografia</span>
+								<Button
+									type="button"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => startPhotoCapture('first')}
+								>
+									<Camera class="mr-2 h-4 w-4" />
+									<span>Tirar Primeira Fotografia</span>
 								</Button>
 							{:else if !secondImageTaken && !takingPhoto && !retakeMode}
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => triggerFileInput('secondImageFile')}>
-									<ArrowUp /><span>Upload Segunda Fotografia</span>
+								<Button
+									type="button"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => triggerFileInput('secondImageFile')}
+								>
+									<ArrowUp />
+									<span>Upload Segunda Fotografia</span>
 								</Button>
-								<Button type="button" class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
-									on:click={() => startPhotoCapture('second')}>
-									<Camera class="mr-2 h-4 w-4" /><span>Tirar Segunda Fotografia</span>
+								<Button
+									type="button"
+									class="cursor-pointer bg-black p-2 text-sm text-white flex items-center"
+									on:click={() => startPhotoCapture('second')}
+								>
+									<Camera class="mr-2 h-4 w-4" />
+									<span>Tirar Segunda Fotografia</span>
 								</Button>
 							{/if}
 						</div>
@@ -722,8 +768,11 @@
 						{/if}
 
 						{#if retakeMode && tempPhoto}
-							<img src={URL.createObjectURL(tempPhoto)}
-								alt="Foto capturada" class="w-full max-w-md rounded-lg mt-4" />
+							<img
+								src={URL.createObjectURL(tempPhoto)}
+								alt="Foto capturada"
+								class="w-full max-w-md rounded-lg mt-4"
+							/>
 							<div class="flex gap-2 justify-center mt-2">
 								<Button on:click={confirmPhoto} class="bg-green-600 text-white p-2">Confirmar</Button>
 								<Button on:click={retakePhoto} class="bg-yellow-500 text-white p-2">Refazer</Button>
@@ -735,7 +784,13 @@
 
 			<div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
 				{#if secondImageTaken && !takingPhoto}
-					<Button type="button" variant="destructive" disabled={submitting} on:click={resetPhotos} class="w-full sm:w-auto">
+					<Button
+						type="button"
+						variant="destructive"
+						disabled={submitting}
+						on:click={resetPhotos}
+						class="w-full sm:w-auto"
+					>
 						Apagar Fotografias
 					</Button>
 				{/if}

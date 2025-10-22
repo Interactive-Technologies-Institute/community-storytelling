@@ -2,20 +2,22 @@
 	export let data;
 </script>
 
-<div
-	class="mb-4 w-full flex-shrink-0 sm:max-w-sm md:float-left md:max-w-md lg:float-left lg:mb-0 lg:mr-4 lg:max-w-xs"
-><div class="mb-6 text-center">
-	<h2 class="text-5xl font-bold"> {data.title} </h2>
+<div class="flex flex-col md:flex-row md:items-start md:gap-4 mb-6">
+	<div class="w-full md:max-w-md lg:max-w-sm flex-shrink-0 text-center md:text-left">
+		<h2 class="text-4xl sm:text-5xl font-bold mb-4 break-words">
+			{data.title}
+		</h2>
+		<img
+			src={data.pub_selected_images[0]}
+			alt={'Fotografia de ' + data.storyteller}
+			class="w-full h-auto rounded-lg object-cover"
+		/>
 	</div>
-	<img
-		src={data.pub_selected_images[0]}
-		alt={'Fotografia de ' + data.storyteller}
-		class="h-auto w-full rounded-lg object-cover"
-	/>
+
+	<div class="flex-1 mt-4 md:mt-0">
+		{#each data.pub_story_text as p}
+			<p class="text-justify mb-3">{p}</p>
+		{/each}
+	</div>
 </div>
 
-{#each data.pub_story_text as p}
-	<p class="text-justify">
-		{p}
-	</p>
-{/each}

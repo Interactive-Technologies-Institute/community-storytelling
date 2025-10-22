@@ -42,7 +42,7 @@
 	});
 
 	const { form: formData, errors } = form;
-	$formData.role = 'interview';
+	$formData.type = 'interview';
 	$formData.tags[0] = 'Entrevista';
 	$formData.pinColor = $formData.pinColor ?? '#ff0000';
 
@@ -602,9 +602,9 @@
 					</div>
 				</Form.Control>
 			</Form.Field>
-			<Form.Field {form} hidden name="role" class="text-center">
+			<Form.Field {form} hidden name="type" class="text-center">
 				<Form.Control let:attrs>
-					<input hidden name="role" bind:value={$formData.role} />
+					<input hidden name="type" bind:value={$formData.type} />
 				</Form.Control>
 			</Form.Field>
 			<Form.Field {form} hidden name="tags" class="text-center">
