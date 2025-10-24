@@ -1285,12 +1285,12 @@ ALTER TABLE ONLY "public"."map_pins_moderation"
 
 
 ALTER TABLE ONLY "public"."map_pins"
-    ADD CONSTRAINT "map_pins_story_id_fkey" FOREIGN KEY ("story_id") REFERENCES "public"."story"("id");
+    ADD CONSTRAINT "map_pins_story_id_fkey" FOREIGN KEY ("story_id") REFERENCES "public"."story"("id") ON DELETE CASCADE;
 
 
 
 ALTER TABLE ONLY "public"."notifications"
-    ADD CONSTRAINT "notifications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id");
+    ADD CONSTRAINT "notifications_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
 
 
 
